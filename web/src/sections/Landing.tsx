@@ -21,14 +21,18 @@ export const Landing = (): JSX.Element => {
                 className={css({
                     backgroundImage: `url(${CoverPhoto})`,
                     backgroundSize: 'cover',
-                    boxShadow: 'inset 0 0 0 1000px rgba(0,0,0,.2)',
-                    minHeight: '100vh',
+                    boxShadow: 'inset 0 0 0 1000px rgba(0,0,0,.3)',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    paddingLeft: isMobile ? '10px' : '20px',
-                    paddingRight: isMobile ? '10px' : '20px',
-                    paddingTop: !isMobile ? '150px' : undefined,
+                    ...(isMobile && {
+                        padding: '10px',
+                        minHeight: 'calc(100vh - 75px)',
+                    }),
+                    ...(!isMobile && {
+                        padding: '150px 20px 20px 20px',
+                        minHeight: '100vh',
+                    }),
                 })}
             >
                 <div

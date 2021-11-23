@@ -16,6 +16,7 @@ export const Discord = (): JSX.Element => {
             <div
                 className={css({
                     display: 'flex',
+                    boxShadow: 'inset 0 0 0 1000px rgba(0,0,0,.3)',
                     justifyContent: 'center',
                     backgroundImage: `url(${BG})`,
                     backgroundSize: 'cover',

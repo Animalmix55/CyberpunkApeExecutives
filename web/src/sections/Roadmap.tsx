@@ -17,6 +17,7 @@ export const Roadmap = (): JSX.Element => {
                     backgroundImage: `url(${BG})`,
                     backgroundSize: 'cover',
                     minHeight: '100vh',
+                    boxShadow: 'inset 0 0 0 1000px rgba(0,0,0,.3)',
                     padding: isMobile ? '10px' : '20px',
                 })}
             >

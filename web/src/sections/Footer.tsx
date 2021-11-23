@@ -12,7 +12,7 @@ export const Footer = (): JSX.Element => {
     return (
         <div
             className={css({
-                height: isMobile ? '100vw' : '100px',
+                height: isMobile ? '250px' : '100px',
                 backgroundColor: 'black',
                 color: 'white',
                 display: 'flex',
@@ -37,6 +37,9 @@ export const Footer = (): JSX.Element => {
             </div>
             <div
                 className={css({
+                    position: !isMobile ? 'fixed' : undefined,
+                    bottom: '30px',
+                    right: '30px',
                     marginLeft: 'auto',
                     marginRight: isMobile ? 'auto' : undefined,
                     marginBottom: isMobile ? '20px' : undefined,
@@ -46,8 +49,8 @@ export const Footer = (): JSX.Element => {
                     url={twitterUrl}
                     bgColor="white"
                     style={{
-                        height: isMobile ? '100px' : '50px',
-                        width: isMobile ? '100px' : '50px',
+                        height: '50px',
+                        width: '50px',
                     }}
                     className={css({
                         margin: '5px',
@@ -55,8 +58,8 @@ export const Footer = (): JSX.Element => {
                 />
                 <SocialIcon
                     style={{
-                        height: isMobile ? '100px' : '50px',
-                        width: isMobile ? '100px' : '50px',
+                        height: '50px',
+                        width: '50px',
                     }}
                     url={discordUrl}
                     bgColor="white"

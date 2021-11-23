@@ -3,6 +3,7 @@ import { useStyletron } from 'styletron-react';
 import Hamburger from 'hamburger-react';
 import { useScrollSection } from 'react-scroll-section';
 import { useHistory, useLocation } from 'react-router';
+import { SocialIcon } from 'react-social-icons';
 import Button, { ButtonType } from '../../atoms/Button';
 import { ClassNameBuilder } from '../../utilties/ClassNameBuilder';
 import { useThemeContext } from '../../contexts/ThemeContext';
@@ -36,7 +37,7 @@ export const Header = (): JSX.Element => {
     const [css] = useStyletron();
     const [scrollTop, setScrollTop] = React.useState(0);
     const isMobile = useMobile();
-    const { discordUrl } = useCyberpunkApesContext();
+    const { discordUrl, twitterUrl } = useCyberpunkApesContext();
 
     const [isOpen, setOpen] = React.useState(false);
 
@@ -57,7 +58,7 @@ export const Header = (): JSX.Element => {
 
     const collapsed = React.useMemo(() => {
         if (!ref.current) return false;
-        if (scrollTop >= ref.current.getBoundingClientRect().height)
+        if (scrollTop >= ref.current.getBoundingClientRect().height / 2)
             return true;
         return false;
     }, [scrollTop]);
@@ -172,6 +173,13 @@ export const Header = (): JSX.Element => {
         return collapsed ? '20px' : '25px';
     }, [isMobile, collapsed]);
 
+    const bannerMinHeight = React.useMemo(() => {
+        if (isMobile) {
+            return 75;
+        }
+        return collapsed ? 50 : 150;
+    }, [collapsed, isMobile]);
+
     return (
         <div
             className={css({
@@ -188,7 +196,7 @@ export const Header = (): JSX.Element => {
         >
             <div
                 className={css({
-                    minHeight: collapsed && !isMobile ? '50px' : '150px',
+                    minHeight: `${bannerMinHeight}px`,
                     backgroundColor:
                         collapsed || isMobile
                             ? theme.backgroundColor.getCSSColor(1)
@@ -220,7 +228,7 @@ export const Header = (): JSX.Element => {
                     <FollowingEye
                         alt="International Megadigital"
                         className={css({
-                            height: collapsed && !isMobile ? '35px' : '105px',
+                            height: `${bannerMinHeight - 15}px`,
                             transition: 'height 1s, background 1s',
                         })}
                     />
@@ -289,6 +297,8 @@ export const Header = (): JSX.Element => {
                     paddingBottom: isMobile && isOpen ? '20px' : undefined,
                     paddingTop: isMobile && isOpen ? '20px' : undefined,
                     flex: isMobile && isOpen ? '1' : undefined,
+                    display: 'flex',
+                    flexDirection: 'column',
                 })}
             >
                 <MetaMaskButton
@@ -296,18 +306,36 @@ export const Header = (): JSX.Element => {
                     className={ClassNameBuilder(css({ height: '80px' }))}
                 />
                 {buttons}
-                <Button
-                    style={buttonStyle}
-                    className={ClassNameBuilder(
-                        css({ marginLeft: 'auto', marginRight: 'auto' })
-                    )}
-                    buttonType={ButtonType.wireframe}
-                    onClick={(): void => {
-                        window.location.href = discordUrl;
-                    }}
+                <div
+                    className={css({
+                        marginTop: 'auto',
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    })}
                 >
-                    Become an Intern
-                </Button>
+                    <SocialIcon
+                        url={twitterUrl}
+                        bgColor="white"
+                        style={{
+                            height: '50px',
+                            width: '50px',
+                        }}
+                        className={css({
+                            margin: '5px',
+                        })}
+                    />
+                    <SocialIcon
+                        style={{
+                            height: '50px',
+                            width: '50px',
+                        }}
+                        url={discordUrl}
+                        bgColor="white"
+                        className={css({ margin: '5px' })}
+                    />
+                </div>
             </div>
         </div>
     );
