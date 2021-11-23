@@ -39,7 +39,7 @@ export const Landing = (): JSX.Element => {
                         color: 'white',
                         padding: '20px',
                         backgroundColor: 'rgba(0, 0, 0, .4)',
-                        margin: '130px 20px 20px 20px',
+                        margin: !isMobile ? '130px 20px 20px 20px' : '20px',
                         borderRadius: '20px',
                     })}
                 >
