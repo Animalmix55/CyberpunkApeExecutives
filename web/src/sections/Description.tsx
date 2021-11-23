@@ -1,8 +1,10 @@
 import React from 'react';
 import { useStyletron } from 'styletron-react';
+import useMobile from '../hooks/useMobile';
 
 export const Description = (): JSX.Element => {
     const [css] = useStyletron();
+    const isMobile = useMobile();
 
     return (
         <div>
@@ -12,11 +14,11 @@ export const Description = (): JSX.Element => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     minHeight: '100vh',
+                    padding: isMobile ? '10px' : '20px',
                 })}
             >
                 <div
                     className={css({
-                        margin: '40px',
                         color: 'white',
                         padding: '20px',
                         backgroundColor: 'rgba(0, 0, 0, .4)',

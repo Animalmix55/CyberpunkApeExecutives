@@ -1,9 +1,11 @@
 import React from 'react';
 import { useStyletron } from 'styletron-react';
 import BG from '../assets/Urban cyberpunk.png';
+import useMobile from '../hooks/useMobile';
 
 export const Roadmap = (): JSX.Element => {
     const [css] = useStyletron();
+    const isMobile = useMobile();
 
     return (
         <div>
@@ -15,11 +17,11 @@ export const Roadmap = (): JSX.Element => {
                     backgroundImage: `url(${BG})`,
                     backgroundSize: 'cover',
                     minHeight: '100vh',
+                    padding: isMobile ? '10px' : '20px',
                 })}
             >
                 <div
                     className={css({
-                        margin: '40px',
                         color: 'white',
                         padding: '20px',
                         backgroundColor: 'rgba(0, 0, 0, .4)',

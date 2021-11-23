@@ -21,6 +21,7 @@ export const Discord = (): JSX.Element => {
                     backgroundSize: 'cover',
                     minHeight: '100vh',
                     alignItems: 'center',
+                    padding: isMobile ? '10px' : '20px',
                 })}
             >
                 <div
@@ -32,7 +33,6 @@ export const Discord = (): JSX.Element => {
                 >
                     <div
                         className={css({
-                            margin: '20px',
                             color: 'white',
                             padding: '20px',
                             backgroundColor: 'rgba(0, 0, 0, .4)',
@@ -86,7 +86,11 @@ export const Discord = (): JSX.Element => {
                     {!isMobile && (
                         <img
                             src={InternPoster}
-                            className={css({ width: '300px', margin: '20px' })}
+                            className={css({
+                                width: '300px',
+                                marginLeft: '20px',
+                                marginRight: '20px',
+                            })}
                             alt="Intern Poster"
                         />
                     )}

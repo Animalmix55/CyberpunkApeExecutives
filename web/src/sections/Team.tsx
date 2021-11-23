@@ -4,9 +4,11 @@ import { useStyletron } from 'styletron-react';
 import Isis from '../assets/Team/Isis Sakura.png';
 import Olly from '../assets/Team/Olly Bellwether.png';
 import Seth from '../assets/Team/Seth Horus.png';
+import useMobile from '../hooks/useMobile';
 
 export const Team = (): JSX.Element => {
     const [css] = useStyletron();
+    const isMobile = useMobile();
 
     return (
         <div>
@@ -16,15 +18,15 @@ export const Team = (): JSX.Element => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     minHeight: '100vh',
+                    padding: isMobile ? '10px' : '20px',
                 })}
             >
                 <div
                     className={css({
-                        margin: '40px',
                         color: 'white',
-                        padding: '20px',
                         backgroundColor: 'rgba(0, 0, 0, .4)',
                         borderRadius: '20px',
+                        width: '100%',
                     })}
                 >
                     <h1>The Team</h1>
@@ -34,21 +36,23 @@ export const Team = (): JSX.Element => {
                             flexWrap: 'wrap',
                             justifyContent: 'center',
                             alignItems: 'center',
+                            width: '100%',
                         })}
                     >
                         <div
                             className={css({
                                 position: 'relative',
-                                margin: '20px',
+                                margin: isMobile ? '10px' : '20px',
                                 borderRadius: '20px',
                                 overflow: 'hidden',
+                                width: isMobile ? '100%' : undefined,
                             })}
                         >
                             <img
                                 src={Seth}
                                 alt="Seth Horus"
                                 className={css({
-                                    width: '500px',
+                                    width: isMobile ? '100%' : '500px',
                                     height: 'auto',
                                 })}
                             />
@@ -70,16 +74,17 @@ export const Team = (): JSX.Element => {
                         <div
                             className={css({
                                 position: 'relative',
-                                margin: '20px',
+                                margin: isMobile ? '10px' : '20px',
                                 borderRadius: '20px',
                                 overflow: 'hidden',
+                                width: isMobile ? '100%' : undefined,
                             })}
                         >
                             <img
                                 src={Olly}
                                 alt="Olly Bellwether"
                                 className={css({
-                                    width: '500px',
+                                    width: isMobile ? '100%' : '500px',
                                     height: 'auto',
                                 })}
                             />
@@ -101,16 +106,17 @@ export const Team = (): JSX.Element => {
                         <div
                             className={css({
                                 position: 'relative',
-                                margin: '20px',
+                                margin: isMobile ? '10px' : '20px',
                                 borderRadius: '20px',
                                 overflow: 'hidden',
+                                width: isMobile ? '100%' : undefined,
                             })}
                         >
                             <img
                                 src={Isis}
                                 alt="Isis Sakura"
                                 className={css({
-                                    width: '500px',
+                                    width: isMobile ? '100%' : '500px',
                                     height: 'auto',
                                 })}
                             />

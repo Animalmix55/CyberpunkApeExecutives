@@ -27,8 +27,9 @@ export const Footer = (): JSX.Element => {
                 className={css({
                     ...(isMobile && {
                         position: 'absolute',
-                        bottom: '10px',
+                        bottom: '0px',
                         zIndex: 100,
+                        margin: '10px',
                     }),
                 })}
             >

@@ -26,6 +26,8 @@ export const Landing = (): JSX.Element => {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    paddingLeft: isMobile ? '10px' : '20px',
+                    paddingRight: isMobile ? '10px' : '20px',
                     paddingTop: !isMobile ? '150px' : undefined,
                 })}
             >
@@ -48,8 +50,8 @@ export const Landing = (): JSX.Element => {
                             Example5,
                         ]}
                         imageClass={css({
-                            height: '500px',
-                            width: 'auto',
+                            height: 'auto',
+                            width: isMobile ? '100%' : '500px',
                             borderRadius: '20px',
                             overflow: 'hidden',
                         })}
