@@ -30,7 +30,6 @@ export const Landing = (): JSX.Element => {
                         minHeight: 'calc(100vh - 75px)',
                     }),
                     ...(!isMobile && {
-                        padding: '150px 20px 20px 20px',
                         minHeight: '100vh',
                     }),
                 })}
@@ -40,6 +39,7 @@ export const Landing = (): JSX.Element => {
                         color: 'white',
                         padding: '20px',
                         backgroundColor: 'rgba(0, 0, 0, .4)',
+                        margin: '130px 20px 20px 20px',
                         borderRadius: '20px',
                     })}
                 >

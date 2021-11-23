@@ -177,7 +177,7 @@ export const Header = (): JSX.Element => {
         if (isMobile) {
             return 75;
         }
-        return collapsed ? 50 : 150;
+        return collapsed ? 50 : 110;
     }, [collapsed, isMobile]);
 
     return (
