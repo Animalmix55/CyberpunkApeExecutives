@@ -85,6 +85,7 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
      * @param _maxYield the maximum yield for the stakable token.
      * @param _step the amount yield increases per yield period.
      * @param _yieldPeriod the length (in seconds) of a yield period (the amount of period after which a yield is calculated)
+     * @dev owner only
      */
     function addStakableToken(
         address _token,
@@ -185,26 +186,7 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
         returns (uint256)
     {
         require(_isStakable(_token), "Not stakable");
-        uint256 amount = 0;
-
-        uint256 i = 0;
-        for (
-            i;
-            i < stakableTokenAttributes[_token].stakedTokenIds.length;
-            i++
-        ) {
-            if (
-                stakableTokenAttributes[_token]
-                    .stakedTokens[
-                        stakableTokenAttributes[_token].stakedTokenIds[i]
-                    ]
-                    .owner == _user
-            ) {
-                amount++;
-            }
-        }
-
-        return amount;
+        return _totalStaked(_user, _token);
     }
 
     /**
@@ -213,6 +195,22 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
      */
     function totalStaked(address _token) external view returns (uint256) {
         return stakableTokenAttributes[_token].stakedTokenIds.length;
+    }
+
+    /**
+     * Gets all of the token ids that a user has staked from a given contract.
+     * @param _user the user whose token ids are being analyzed.
+     * @param _token the address of the token contract being analyzed.
+     * @return an array of token ids staked by that user.
+     * @dev reverts if called on an invalid token address.
+     */
+    function stakedTokenIds(address _user, address _token)
+        external
+        view
+        returns (uint256[] memory)
+    {
+        require(_isStakable(_token), "Not stakable");
+        return _stakedTokenIds(_user, _token);
     }
 
     // --------------- INTERNAL FUNCTIONS -----------------
@@ -300,6 +298,78 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
     }
 
     /**
+     * Gets the total amount of tokens staked for the given user in the given contract.
+     * @param _user the user whose stakes are being counted.
+     * @param _token the address of the contract whose staked tokens we are skimming.
+     * @dev does not check if the token address is stakable.
+     */
+    function _totalStaked(address _user, address _token)
+        internal
+        view
+        returns (uint256)
+    {
+        uint256 tokenCount = 0;
+
+        uint256 tokenIdIndex = 0;
+        for (
+            tokenIdIndex;
+            tokenIdIndex <
+            stakableTokenAttributes[_token].stakedTokenIds.length;
+            tokenIdIndex++
+        ) {
+            StakedToken memory stakedToken = stakableTokenAttributes[_token]
+                .stakedTokens[
+                    stakableTokenAttributes[_token].stakedTokenIds[tokenIdIndex]
+                ];
+
+            if (stakedToken.owner == _user) tokenCount++;
+        }
+
+        return tokenCount;
+    }
+
+    /**
+     * Gets all of the token ids that a user has staked from a given contract.
+     * @param _user the user whose token ids are being analyzed.
+     * @param _token the address of the token contract being analyzed.
+     * @return an array of token ids staked by that user.
+     * @dev does not check if the token address is stakable.
+     */
+    function _stakedTokenIds(address _user, address _token)
+        internal
+        view
+        returns (uint256[] memory)
+    {
+        uint256 numStaked = _totalStaked(_user, _token);
+        uint256[] memory tokenIds = new uint256[](numStaked);
+
+        uint256 numFound = 0;
+        uint256 tokenIdIndex = 0;
+        for (
+            tokenIdIndex;
+            tokenIdIndex <
+            stakableTokenAttributes[_token].stakedTokenIds.length;
+            tokenIdIndex++
+        ) {
+            if (
+                stakableTokenAttributes[_token]
+                    .stakedTokens[
+                        stakableTokenAttributes[_token].stakedTokenIds[
+                            tokenIdIndex
+                        ]
+                    ]
+                    .owner == _user
+            ) {
+                tokenIds[numFound] = stakableTokenAttributes[_token]
+                    .stakedTokenIds[tokenIdIndex];
+                numFound++;
+            }
+        }
+
+        return tokenIds;
+    }
+
+    /**
      * Gets the College Credit dividend of the provided user.
      * @param _user the user whose dividend we are checking.
      */
@@ -315,7 +385,7 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
                 stakableTokenAttributes[stakableTokens[tokenIndex]]
                     .stakedTokenIds
                     .length;
-                tokenIndex++
+                tokenIdIndex++
             ) {
                 StakedToken memory stakedToken = stakableTokenAttributes[
                     stakableTokens[tokenIndex]
