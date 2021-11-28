@@ -45,6 +45,10 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
         rewardToken = new CollegeCredit();
     }
 
+    function mintRewardToken(address _recipient, uint256 _amount) external onlyOwner {
+        rewardToken.mint(_recipient, _amount);
+    }
+
     function addStakableToken(
         address _token,
         uint16 _minYield,
@@ -75,7 +79,15 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
         _withdrawRewards(_user);
     }
 
-    function unstakeAndClaimRewards(address _token, uint256 _tokenId, address _user) external {
+    function dividendOf(address _user) external view returns (uint256) {
+        return _dividendOf(_user);
+    }
+
+    function unstakeAndClaimRewards(
+        address _token,
+        uint256 _tokenId,
+        address _user
+    ) external {
         _withdrawRewards(_user);
         _unstake(_token, _tokenId);
     }
