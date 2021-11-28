@@ -12,6 +12,4 @@ interface IStakingInterface {
     function unstake(address token, uint256 tokenId) external;
     function totalStakedFor(address addr, address token) external view returns (uint256);
     function totalStaked(address token) external view returns (uint256);
-    function token() external view returns (address);
-    function supportsHistory() external pure returns (bool);
 }
