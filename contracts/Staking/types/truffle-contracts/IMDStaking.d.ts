@@ -27,35 +27,7 @@ export interface OwnershipTransferred {
   };
 }
 
-export interface Staked {
-  name: "Staked";
-  args: {
-    user: string;
-    amount: BN;
-    total: BN;
-    data: string;
-    0: string;
-    1: BN;
-    2: BN;
-    3: string;
-  };
-}
-
-export interface Unstaked {
-  name: "Unstaked";
-  args: {
-    user: string;
-    amount: BN;
-    total: BN;
-    data: string;
-    0: string;
-    1: BN;
-    2: BN;
-    3: string;
-  };
-}
-
-type AllEvents = OwnershipTransferred | Staked | Unstaked;
+type AllEvents = OwnershipTransferred;
 
 export interface IMDStakingInstance extends Truffle.ContractInstance {
   /**
@@ -215,32 +187,27 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
    * the contract must be approved to transfer that token first.      the address must be a stakable token.
    * Stakes a given token id from a given contract.
    * @param _token the address of the stakable token.
-   * @param _tokenId the id of the token to stake.
-   * @param _user the user from which to transfer the token.
+   * @param _tokenIds the ids of the tokens to stake.
    */
-  stakeFor: {
+  stakeMany: {
     (
-      _user: string,
       _token: string,
-      _tokenId: number | BN | string,
+      _tokenIds: (number | BN | string)[],
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
-      _user: string,
       _token: string,
-      _tokenId: number | BN | string,
+      _tokenIds: (number | BN | string)[],
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
-      _user: string,
       _token: string,
-      _tokenId: number | BN | string,
+      _tokenIds: (number | BN | string)[],
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      _user: string,
       _token: string,
-      _tokenId: number | BN | string,
+      _tokenIds: (number | BN | string)[],
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -270,6 +237,35 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
     estimateGas(
       _token: string,
       _tokenId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  /**
+   * reverts if the token(s) are not owned by the caller.
+   * Unstakes the given tokens held by the calling user.
+   * @param _token the address of the token contract that the tokens belong to.
+   * @param _tokenIds the ids of the tokens to unstake.
+   */
+  unstakeMany: {
+    (
+      _token: string,
+      _tokenIds: (number | BN | string)[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      _token: string,
+      _tokenIds: (number | BN | string)[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _token: string,
+      _tokenIds: (number | BN | string)[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _token: string,
+      _tokenIds: (number | BN | string)[],
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -329,6 +325,35 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
     estimateGas(
       _token: string,
       _tokenId: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  /**
+   * reverts if the tokens are not owned by the caller.
+   * Unstakes the given tokens held by the calling user AND withdraws all dividends.
+   * @param _token the address of the token contract that the token belongs to.
+   * @param _tokenIds the ids of the tokens to unstake.
+   */
+  unstakeManyAndClaimRewards: {
+    (
+      _token: string,
+      _tokenIds: (number | BN | string)[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      _token: string,
+      _tokenIds: (number | BN | string)[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _token: string,
+      _tokenIds: (number | BN | string)[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _token: string,
+      _tokenIds: (number | BN | string)[],
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -524,32 +549,27 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
      * the contract must be approved to transfer that token first.      the address must be a stakable token.
      * Stakes a given token id from a given contract.
      * @param _token the address of the stakable token.
-     * @param _tokenId the id of the token to stake.
-     * @param _user the user from which to transfer the token.
+     * @param _tokenIds the ids of the tokens to stake.
      */
-    stakeFor: {
+    stakeMany: {
       (
-        _user: string,
         _token: string,
-        _tokenId: number | BN | string,
+        _tokenIds: (number | BN | string)[],
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
-        _user: string,
         _token: string,
-        _tokenId: number | BN | string,
+        _tokenIds: (number | BN | string)[],
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
-        _user: string,
         _token: string,
-        _tokenId: number | BN | string,
+        _tokenIds: (number | BN | string)[],
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        _user: string,
         _token: string,
-        _tokenId: number | BN | string,
+        _tokenIds: (number | BN | string)[],
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
@@ -579,6 +599,35 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
       estimateGas(
         _token: string,
         _tokenId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    /**
+     * reverts if the token(s) are not owned by the caller.
+     * Unstakes the given tokens held by the calling user.
+     * @param _token the address of the token contract that the tokens belong to.
+     * @param _tokenIds the ids of the tokens to unstake.
+     */
+    unstakeMany: {
+      (
+        _token: string,
+        _tokenIds: (number | BN | string)[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        _token: string,
+        _tokenIds: (number | BN | string)[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        _token: string,
+        _tokenIds: (number | BN | string)[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        _token: string,
+        _tokenIds: (number | BN | string)[],
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
@@ -641,6 +690,35 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
       estimateGas(
         _token: string,
         _tokenId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    /**
+     * reverts if the tokens are not owned by the caller.
+     * Unstakes the given tokens held by the calling user AND withdraws all dividends.
+     * @param _token the address of the token contract that the token belongs to.
+     * @param _tokenIds the ids of the tokens to unstake.
+     */
+    unstakeManyAndClaimRewards: {
+      (
+        _token: string,
+        _tokenIds: (number | BN | string)[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        _token: string,
+        _tokenIds: (number | BN | string)[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        _token: string,
+        _tokenIds: (number | BN | string)[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        _token: string,
+        _tokenIds: (number | BN | string)[],
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

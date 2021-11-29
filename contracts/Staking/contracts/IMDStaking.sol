@@ -128,19 +128,16 @@ contract IMDStaking is Ownable {
 
     /**
      * Stakes a given token id from a given contract.
-     * @param _user the user from which to transfer the token.
      * @param _token the address of the stakable token.
-     * @param _tokenId the id of the token to stake.
+     * @param _tokenIds the ids of the tokens to stake.
      * @dev the contract must be approved to transfer that token first.
      *      the address must be a stakable token.
      */
-    function stakeFor(
-        address _user,
-        address _token,
-        uint256 _tokenId
-    ) external {
+    function stakeMany(address _token, uint256[] calldata _tokenIds) external {
         require(_isStakable(_token), "Not stakable");
-        _stakeFor(_user, _token, _tokenId);
+        for (uint256 i = 0; i < _tokenIds.length; i++) {
+            _stakeFor(msg.sender, _token, _tokenIds[i]);
+        }
     }
 
     /**
@@ -157,6 +154,28 @@ contract IMDStaking is Ownable {
             "Not owner"
         );
         _unstake(_token, _tokenId);
+    }
+
+    /**
+     * Unstakes the given tokens held by the calling user.
+     * @param _token the address of the token contract that the tokens belong to.
+     * @param _tokenIds the ids of the tokens to unstake.
+     * @dev reverts if the token(s) are not owned by the caller.
+     */
+    function unstakeMany(address _token, uint256[] calldata _tokenIds)
+        external
+    {
+        require(_isStakable(_token), "Not stakable");
+        for (uint256 i = 0; i < _tokenIds.length; i++) {
+            require(
+                stakableTokenAttributes[_token]
+                    .stakedTokens[_tokenIds[i]]
+                    .owner == msg.sender,
+                "Not owner"
+            );
+
+            _unstake(_token, _tokenIds[i]);
+        }
     }
 
     /**
@@ -197,6 +216,26 @@ contract IMDStaking is Ownable {
         );
         _withdrawRewards(msg.sender, _token);
         _unstake(_token, _tokenId);
+    }
+
+    /**
+     * Unstakes the given tokens held by the calling user AND withdraws all dividends.
+     * @param _token the address of the token contract that the token belongs to.
+     * @param _tokenIds the ids of the tokens to unstake.
+     * @dev reverts if the tokens are not owned by the caller.
+     */
+    function unstakeManyAndClaimRewards(address _token, uint256[] calldata _tokenIds) external {
+        require(_isStakable(_token), "Not stakable");
+        for (uint256 i = 0; i < _tokenIds.length; i++) {
+            require(
+                stakableTokenAttributes[_token].stakedTokens[_tokenIds[i]].owner ==
+                        msg.sender,
+                    "Not owner"
+            );
+            _unstake(_token, _tokenIds[i]);
+
+        }
+        _withdrawRewards(msg.sender, _token);
     }
 
     /**
@@ -444,31 +483,21 @@ contract IMDStaking is Ownable {
             stakableTokenAttributes[_token].stakedTokenIds.length;
             tokenIdIndex++
         ) {
-            if (
-                stakableTokenAttributes[_token]
-                    .stakedTokens[
-                        stakableTokenAttributes[_token].stakedTokenIds[
-                            tokenIdIndex
-                        ]
-                    ]
-                    .owner != _user
-            ) continue;
+            StakedToken memory stakedToken = stakableTokenAttributes[_token]
+                .stakedTokens[
+                    stakableTokenAttributes[_token].stakedTokenIds[tokenIdIndex]
+                ];
 
+            if (stakedToken.owner != _user) continue;
             dividend += _tokenDividend(
                 stakableTokenAttributes[_token],
-                stakableTokenAttributes[_token]
-                    .stakedTokens[
-                        stakableTokenAttributes[_token].stakedTokenIds[
-                            tokenIdIndex
-                        ]
-                    ]
-                    .stakeTimestamp
+                stakedToken.stakeTimestamp
             );
         }
 
         int256 resultantDividend = int256(dividend) +
             stakableTokenAttributes[_token].rewardModifier[_user];
-        
+
         require(resultantDividend >= 0, "Underflow");
         return uint256(resultantDividend);
     }
@@ -520,6 +549,7 @@ contract IMDStaking is Ownable {
     function _withdrawRewards(address _user, address _token) internal {
         uint256 dividend = _dividendOf(_user, _token);
         require(dividend > 0, "Zero dividend");
+
         stakableTokenAttributes[_token].rewardModifier[_user] -= int256(
             dividend
         );

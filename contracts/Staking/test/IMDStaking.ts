@@ -103,6 +103,33 @@ contract('IMDStaking', (accounts) => {
     assert.equal(stakedTokens[0].toString(), '1');
   });
 
+  it('allows bulk staking of a stakable tokens', async () => {
+    const stakableNFT = await MockNFT.new();
+    const imdStakingInstance = await IMDStaking.new(stakableNFT.address, to18Decimals(10), to18Decimals(50), to18Decimals(10), ONEWEEK);
+
+    // grant nft #1 to owner
+    await stakableNFT.mint(accounts[0], 1);
+    await stakableNFT.mint(accounts[0], 2);
+    await stakableNFT.mint(accounts[0], 3);
+    await stakableNFT.mint(accounts[0], 4);
+    await stakableNFT.mint(accounts[0], 5);
+    await stakableNFT.mint(accounts[0], 6);
+    // approve for all
+    await stakableNFT.setApprovalForAll(imdStakingInstance.address, true);
+
+    // fails for bad token id (7)
+    await truffleAssert.fails(
+      imdStakingInstance.stakeMany(stakableNFT.address, [1, 2, 3, 4, 5, 6, 7])
+    );
+
+    // stake
+    const trans = await imdStakingInstance.stakeMany(stakableNFT.address, [1, 2, 3, 4, 5, 6]);
+    console.log('Gas cost to bulk stake 6:', trans.receipt.gasUsed);
+    const stakedTokens = await imdStakingInstance.stakedTokenIds(accounts[0], stakableNFT.address);
+
+    assert.equal(stakedTokens.length, 6);
+  });
+
   it('tracks the total number staked in contract for a given token', async () => {
     const stakableNFT = await MockNFT.new();
     const imdStakingInstance = await IMDStaking.new(stakableNFT.address, to18Decimals(10), to18Decimals(50), to18Decimals(10), ONEWEEK);
@@ -157,6 +184,38 @@ contract('IMDStaking', (accounts) => {
   });
 
   it('allows unstaking of a staked token', async () => {
+    const stakableNFT = await MockNFT.new();
+    const imdStakingInstance = await IMDStaking.new(stakableNFT.address, to18Decimals(10), to18Decimals(50), to18Decimals(10), ONEWEEK);
+
+    await stakableNFT.mint(accounts[0], 1);
+    await stakableNFT.mint(accounts[0], 2);
+    await stakableNFT.mint(accounts[0], 3);
+    await stakableNFT.mint(accounts[0], 4);
+    await stakableNFT.mint(accounts[0], 5);
+    await stakableNFT.mint(accounts[0], 6);
+    await stakableNFT.setApprovalForAll(imdStakingInstance.address, true);
+    await imdStakingInstance.stakeMany(stakableNFT.address, [1, 2, 3, 4, 5, 6]);
+
+    // fails for bad token id
+    await truffleAssert.reverts(
+      imdStakingInstance.unstakeMany(stakableNFT.address, [8, 9, 10])
+    );
+
+    // fails for bad token owner
+    await truffleAssert.reverts(
+      imdStakingInstance.unstakeMany(stakableNFT.address, [1, 2, 3], { from: accounts[1] })
+    );
+
+    assert.equal((await stakableNFT.balanceOf(accounts[0])).toNumber(), 0);
+    const trans = await imdStakingInstance.unstakeMany(stakableNFT.address, [1, 2, 3, 4]);
+    console.log('Gas cost to unstake 4:', trans.receipt.gasUsed);
+    assert.equal((await stakableNFT.balanceOf(accounts[0])).toNumber(), 4);
+
+    const stakedTokens = await imdStakingInstance.stakedTokenIds(accounts[0], stakableNFT.address);
+    assert.equal(stakedTokens.length, 2);
+  });
+
+  it('allows bulk unstaking of staked tokens', async () => {
     const stakableNFT = await MockNFT.new();
     const imdStakingInstance = await IMDStaking.new(stakableNFT.address, to18Decimals(10), to18Decimals(50), to18Decimals(10), ONEWEEK);
 
@@ -534,6 +593,38 @@ contract('IMDStaking', (accounts) => {
 
     assert.equal((await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address)).toString(), '0', stakableNFT.address);
     assert.equal((await imdStakingInstance.stakedTokenIds(accounts[0], stakableNFT.address)).length, 0);
+    assert.equal((await rewardToken.balanceOf(accounts[0])).toString(), dividend.toString());
+  });
+
+  it('withdraws multiple stakes and dividend', async () => {
+    const minYield = to18Decimals(10);
+    const maxYield = to18Decimals(50);
+    const step = to18Decimals(10);
+
+    const stakableNFT = await MockNFT.new();
+    const imdStakingInstance = await IMDStaking.new(stakableNFT.address, minYield, maxYield, step, ONEWEEK);
+    const rewardToken = await RewardToken.at(await imdStakingInstance.rewardToken());
+
+    await stakableNFT.mint(accounts[0], 1);
+    await stakableNFT.mint(accounts[0], 2);
+    await stakableNFT.mint(accounts[0], 3);
+    await stakableNFT.mint(accounts[0], 4);
+    await stakableNFT.setApprovalForAll(imdStakingInstance.address, true);
+    await imdStakingInstance.stakeMany(stakableNFT.address, [1, 2, 3, 4]);
+
+    await advanceTime(ONEWEEK.toNumber() * 10 + 100);
+
+    const dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
+
+    // fails for bad token owner
+    await truffleAssert.fails(
+      imdStakingInstance.unstakeManyAndClaimRewards(stakableNFT.address, [1, 2, 3], { from: accounts[1] })
+    );
+    const trans = await imdStakingInstance.unstakeManyAndClaimRewards(stakableNFT.address, [1, 2, 3]);
+    console.log('Gas cost withdraw dividend and unstake 4:', trans.receipt.gasUsed);
+
+    assert.equal((await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address)).toString(), '0', stakableNFT.address);
+    assert.equal((await imdStakingInstance.stakedTokenIds(accounts[0], stakableNFT.address)).length, 1);
     assert.equal((await rewardToken.balanceOf(accounts[0])).toString(), dividend.toString());
   });
 });
