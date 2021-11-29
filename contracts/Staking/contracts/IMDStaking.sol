@@ -16,9 +16,9 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
     }
 
     struct StakableTokenAttributes {
-        uint16 minYield;
-        uint16 maxYield;
-        uint16 step;
+        uint256 minYield;
+        uint256 maxYield;
+        uint256 step;
         uint256 yieldPeriod;
         mapping(uint256 => StakedToken) stakedTokens;
         uint256[] stakedTokenIds;
@@ -28,7 +28,7 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
      * A mapping of modifiers to rewards for each staker's
      * address.
      */
-    mapping(address => uint256) rewardModifier;
+    mapping(address => int256) rewardModifier;
 
     /**
      * A mapping of token addresses to staking configurations.
@@ -56,9 +56,9 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
      */
     constructor(
         address _token,
-        uint16 _minYield,
-        uint16 _maxYield,
-        uint16 _step,
+        uint256 _minYield,
+        uint256 _maxYield,
+        uint256 _step,
         uint256 _yieldPeriod
     ) {
         _addStakableToken(_token, _minYield, _maxYield, _step, _yieldPeriod);
@@ -85,15 +85,16 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
      * @param _maxYield the maximum yield for the stakable token.
      * @param _step the amount yield increases per yield period.
      * @param _yieldPeriod the length (in seconds) of a yield period (the amount of period after which a yield is calculated)
-     * @dev owner only
+     * @dev owner only, doesn't allow adding already staked tokens
      */
     function addStakableToken(
         address _token,
-        uint16 _minYield,
-        uint16 _maxYield,
-        uint16 _step,
+        uint256 _minYield,
+        uint256 _maxYield,
+        uint256 _step,
         uint256 _yieldPeriod
     ) external onlyOwner {
+        require(!_isStakable(_token), "Already exists");
         _addStakableToken(_token, _minYield, _maxYield, _step, _yieldPeriod);
     }
 
@@ -162,15 +163,14 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
      */
     function unstakeAndClaimRewards(
         address _token,
-        uint256 _tokenId,
-        address _user
+        uint256 _tokenId
     ) external {
         require(
             stakableTokenAttributes[_token].stakedTokens[_tokenId].owner ==
                 msg.sender,
             "Not owner"
         );
-        _withdrawRewards(_user);
+        _withdrawRewards(msg.sender);
         _unstake(_token, _tokenId);
     }
 
@@ -194,7 +194,7 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
      * @param _token the address to get the amount staked from.
      */
     function totalStaked(address _token) external view returns (uint256) {
-        return stakableTokenAttributes[_token].stakedTokenIds.length;
+        return _totalStaked(_token);
     }
 
     /**
@@ -216,6 +216,19 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
     // --------------- INTERNAL FUNCTIONS -----------------
 
     /**
+     * Gets the total amount staked for a given token address.
+     * @param _token the address to get the amount staked from.
+     */
+    function _totalStaked(address _token) internal view returns (uint256) {
+        uint256 result = 0;
+        for (uint256 i = 0; i < stakableTokenAttributes[_token].stakedTokenIds.length; i++) {
+            if (stakableTokenAttributes[_token].stakedTokenIds[i] != 0) result++;
+        }
+
+        return result;
+    }
+
+    /**
      * @return if the given token address is stakable.
      * @dev does not check if is ERC721, that is up to the user.
      */
@@ -233,9 +246,9 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
      */
     function _addStakableToken(
         address _token,
-        uint16 _minYield,
-        uint16 _maxYield,
-        uint16 _step,
+        uint256 _minYield,
+        uint256 _maxYield,
+        uint256 _step,
         uint256 _yieldPeriod
     ) internal {
         stakableTokenAttributes[_token].maxYield = _maxYield;
@@ -285,16 +298,24 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
         uint256 periods = (block.timestamp - _timestamp) /
             _tokenAttributes.yieldPeriod;
 
-        if (periods == 0) return 0;
+        uint256 dividend = 0;
+        uint256 i = 0;
+        for (i; i < periods; i++) {
+            uint256 uncappedYield = _tokenAttributes.minYield +
+                i *
+                _tokenAttributes.step;
 
-        uint256 uncappedYield = _tokenAttributes.minYield +
-            periods *
-            _tokenAttributes.step;
+            if (uncappedYield > _tokenAttributes.maxYield) {
+                dividend += _tokenAttributes.maxYield;
+                i++;
+                break;
+            }
+            dividend += uncappedYield;
+        }
 
-        return
-            uncappedYield > _tokenAttributes.maxYield
-                ? _tokenAttributes.maxYield
-                : uncappedYield;
+        dividend += (periods - i) * _tokenAttributes.maxYield;
+
+        return dividend;
     }
 
     /**
@@ -402,7 +423,10 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
             }
         }
 
-        return dividend + rewardModifier[_user];
+        int256 resultantDividend = int256(dividend) + rewardModifier[_user];
+        require(resultantDividend >= 0, "Underflow");
+
+        return uint256(resultantDividend);
     }
 
     /**
@@ -424,7 +448,7 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
                 .stakeTimestamp
         );
 
-        rewardModifier[owner] += dividend;
+        rewardModifier[owner] += int256(dividend);
         delete stakableTokenAttributes[_token].stakedTokens[_tokenId];
 
         for (
@@ -447,7 +471,8 @@ contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
      */
     function _withdrawRewards(address _user) internal {
         uint256 dividend = _dividendOf(_user);
-        rewardModifier[_user] -= dividend;
+        require(dividend > 0, "Zero dividend");
+        rewardModifier[_user] -= int256(dividend);
 
         rewardToken.mint(_user, dividend);
     }

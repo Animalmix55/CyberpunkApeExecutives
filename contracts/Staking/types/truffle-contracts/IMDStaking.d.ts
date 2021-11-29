@@ -75,10 +75,13 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
     estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
 
+  /**
+   * The reward token (college credit) to be issued to stakers.
+   */
   rewardToken(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   /**
-   * A mapping of token addresses to staking configurations
+   * A mapping of token addresses to staking configurations.
    */
   stakableTokenAttributes(
     arg0: string,
@@ -106,6 +109,44 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
+  /**
+   * owner only
+   * Mints the reward token to an account.
+   * @param _amount the amount of tokens to mint.
+   * @param _recipient the recipient of the minted tokens.
+   */
+  mintRewardToken: {
+    (
+      _recipient: string,
+      _amount: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      _recipient: string,
+      _amount: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      _recipient: string,
+      _amount: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _recipient: string,
+      _amount: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  /**
+   * owner only, doesn't allow adding already staked tokens
+   * Adds a new token that can be staked in the contract.
+   * @param _maxYield the maximum yield for the stakable token.
+   * @param _minYield the minimum yield for the stakable token.
+   * @param _step the amount yield increases per yield period.
+   * @param _token the first stakable token address.
+   * @param _yieldPeriod the length (in seconds) of a yield period (the amount of period after which a yield is calculated)
+   */
   addStakableToken: {
     (
       _token: string,
@@ -141,6 +182,12 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
+  /**
+   * the contract must be approved to transfer that token first.      the address must be a stakable token.
+   * Stakes a given token id from a given contract.
+   * @param _token the address of the stakable token.
+   * @param _tokenId the id of the token to stake.
+   */
   stake: {
     (
       _token: string,
@@ -164,6 +211,13 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
+  /**
+   * the contract must be approved to transfer that token first.      the address must be a stakable token.
+   * Stakes a given token id from a given contract.
+   * @param _token the address of the stakable token.
+   * @param _tokenId the id of the token to stake.
+   * @param _user the user from which to transfer the token.
+   */
   stakeFor: {
     (
       _user: string,
@@ -191,6 +245,12 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
+  /**
+   * reverts if the token is not owned by the caller.
+   * Unstakes a given token held by the calling user.
+   * @param _token the address of the token contract that the token belongs to.
+   * @param _tokenId the id of the token to unstake.
+   */
   unstake: {
     (
       _token: string,
@@ -214,62 +274,88 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
     ): Promise<number>;
   };
 
+  /**
+   * Claims the rewards for the caller.
+   */
   claimRewards: {
-    (_user: string, txDetails?: Truffle.TransactionDetails): Promise<
+    (txDetails?: Truffle.TransactionDetails): Promise<
       Truffle.TransactionResponse<AllEvents>
     >;
-    call(_user: string, txDetails?: Truffle.TransactionDetails): Promise<void>;
-    sendTransaction(
-      _user: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
-      _user: string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
+    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
   };
 
+  /**
+   * Gets the College Credit dividend of the provided user.
+   * @param _user the user whose dividend we are checking.
+   */
+  dividendOf(
+    _user: string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<BN>;
+
+  /**
+   * reverts if the token is not owned by the caller.
+   * Unstakes a given token held by the calling user AND withdraws all dividends.
+   * @param _token the address of the token contract that the token belongs to.
+   * @param _tokenId the id of the token to unstake.
+   */
   unstakeAndClaimRewards: {
     (
       _token: string,
       _tokenId: number | BN | string,
-      _user: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
       _token: string,
       _tokenId: number | BN | string,
-      _user: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
       _token: string,
       _tokenId: number | BN | string,
-      _user: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
       _token: string,
       _tokenId: number | BN | string,
-      _user: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
 
+  /**
+   * reverts if called on an invalid token address.
+   * Gets the total amount of tokens staked for the given user in the given contract.
+   * @param _token the address of the contract whose staked tokens we are skimming.
+   * @param _user the user whose stakes are being counted.
+   */
   totalStakedFor(
-    _addr: string,
+    _user: string,
     _token: string,
     txDetails?: Truffle.TransactionDetails
   ): Promise<BN>;
 
+  /**
+   * Gets the total amount staked for a given token address.
+   * @param _token the address to get the amount staked from.
+   */
   totalStaked(
     _token: string,
     txDetails?: Truffle.TransactionDetails
   ): Promise<BN>;
 
-  token(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  supportsHistory(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
+  /**
+   * reverts if called on an invalid token address.
+   * Gets all of the token ids that a user has staked from a given contract.
+   * @param _token the address of the token contract being analyzed.
+   * @param _user the user whose token ids are being analyzed.
+   */
+  stakedTokenIds(
+    _user: string,
+    _token: string,
+    txDetails?: Truffle.TransactionDetails
+  ): Promise<BN[]>;
 
   methods: {
     /**
@@ -289,10 +375,13 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
       estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
     };
 
+    /**
+     * The reward token (college credit) to be issued to stakers.
+     */
     rewardToken(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     /**
-     * A mapping of token addresses to staking configurations
+     * A mapping of token addresses to staking configurations.
      */
     stakableTokenAttributes(
       arg0: string,
@@ -320,6 +409,44 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
       ): Promise<number>;
     };
 
+    /**
+     * owner only
+     * Mints the reward token to an account.
+     * @param _amount the amount of tokens to mint.
+     * @param _recipient the recipient of the minted tokens.
+     */
+    mintRewardToken: {
+      (
+        _recipient: string,
+        _amount: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        _recipient: string,
+        _amount: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        _recipient: string,
+        _amount: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        _recipient: string,
+        _amount: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    /**
+     * owner only, doesn't allow adding already staked tokens
+     * Adds a new token that can be staked in the contract.
+     * @param _maxYield the maximum yield for the stakable token.
+     * @param _minYield the minimum yield for the stakable token.
+     * @param _step the amount yield increases per yield period.
+     * @param _token the first stakable token address.
+     * @param _yieldPeriod the length (in seconds) of a yield period (the amount of period after which a yield is calculated)
+     */
     addStakableToken: {
       (
         _token: string,
@@ -355,6 +482,12 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
       ): Promise<number>;
     };
 
+    /**
+     * the contract must be approved to transfer that token first.      the address must be a stakable token.
+     * Stakes a given token id from a given contract.
+     * @param _token the address of the stakable token.
+     * @param _tokenId the id of the token to stake.
+     */
     stake: {
       (
         _token: string,
@@ -378,6 +511,13 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
       ): Promise<number>;
     };
 
+    /**
+     * the contract must be approved to transfer that token first.      the address must be a stakable token.
+     * Stakes a given token id from a given contract.
+     * @param _token the address of the stakable token.
+     * @param _tokenId the id of the token to stake.
+     * @param _user the user from which to transfer the token.
+     */
     stakeFor: {
       (
         _user: string,
@@ -405,6 +545,12 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
       ): Promise<number>;
     };
 
+    /**
+     * reverts if the token is not owned by the caller.
+     * Unstakes a given token held by the calling user.
+     * @param _token the address of the token contract that the token belongs to.
+     * @param _tokenId the id of the token to unstake.
+     */
     unstake: {
       (
         _token: string,
@@ -428,65 +574,88 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
       ): Promise<number>;
     };
 
+    /**
+     * Claims the rewards for the caller.
+     */
     claimRewards: {
-      (_user: string, txDetails?: Truffle.TransactionDetails): Promise<
+      (txDetails?: Truffle.TransactionDetails): Promise<
         Truffle.TransactionResponse<AllEvents>
       >;
-      call(
-        _user: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        _user: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
-        _user: string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
+      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
+      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
+      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
     };
 
+    /**
+     * Gets the College Credit dividend of the provided user.
+     * @param _user the user whose dividend we are checking.
+     */
+    dividendOf(
+      _user: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<BN>;
+
+    /**
+     * reverts if the token is not owned by the caller.
+     * Unstakes a given token held by the calling user AND withdraws all dividends.
+     * @param _token the address of the token contract that the token belongs to.
+     * @param _tokenId the id of the token to unstake.
+     */
     unstakeAndClaimRewards: {
       (
         _token: string,
         _tokenId: number | BN | string,
-        _user: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
         _token: string,
         _tokenId: number | BN | string,
-        _user: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
         _token: string,
         _tokenId: number | BN | string,
-        _user: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
         _token: string,
         _tokenId: number | BN | string,
-        _user: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
 
+    /**
+     * reverts if called on an invalid token address.
+     * Gets the total amount of tokens staked for the given user in the given contract.
+     * @param _token the address of the contract whose staked tokens we are skimming.
+     * @param _user the user whose stakes are being counted.
+     */
     totalStakedFor(
-      _addr: string,
+      _user: string,
       _token: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<BN>;
 
+    /**
+     * Gets the total amount staked for a given token address.
+     * @param _token the address to get the amount staked from.
+     */
     totalStaked(
       _token: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<BN>;
 
-    token(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-    supportsHistory(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
+    /**
+     * reverts if called on an invalid token address.
+     * Gets all of the token ids that a user has staked from a given contract.
+     * @param _token the address of the token contract being analyzed.
+     * @param _user the user whose token ids are being analyzed.
+     */
+    stakedTokenIds(
+      _user: string,
+      _token: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<BN[]>;
   };
 
   getPastEvents(event: string): Promise<EventData[]>;

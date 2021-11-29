@@ -125,10 +125,6 @@ export interface IStakingInterfaceInstance extends Truffle.ContractInstance {
     txDetails?: Truffle.TransactionDetails
   ): Promise<BN>;
 
-  token(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-  supportsHistory(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
-
   methods: {
     stake: {
       (
@@ -213,10 +209,6 @@ export interface IStakingInterfaceInstance extends Truffle.ContractInstance {
       token: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<BN>;
-
-    token(txDetails?: Truffle.TransactionDetails): Promise<string>;
-
-    supportsHistory(txDetails?: Truffle.TransactionDetails): Promise<boolean>;
   };
 
   getPastEvents(event: string): Promise<EventData[]>;
