@@ -6,10 +6,9 @@ import "@openzeppelin/contracts/interfaces/IERC721.sol";
 import "./interfaces/ICollegeCredit.sol";
 import "./CollegeCredit.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./Interfaces/IStakingInterface.sol";
 
-contract IMDStaking is IStakingInterface, Ownable, ReentrancyGuard {
+contract IMDStaking is IStakingInterface, Ownable {
     struct StakedToken {
         uint256 stakeTimestamp;
         address owner;
