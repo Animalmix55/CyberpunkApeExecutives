@@ -95,7 +95,8 @@ contract('IMDStaking', (accounts) => {
     );
 
     // stake
-    await imdStakingInstance.stake(stakableNFT.address, 1);
+    const trans = await imdStakingInstance.stake(stakableNFT.address, 1);
+    console.log('Gas cost to stake 1:', trans.receipt.gasUsed);
     const stakedTokens = await imdStakingInstance.stakedTokenIds(accounts[0], stakableNFT.address);
 
     assert.equal(stakedTokens.length, 1);
@@ -174,7 +175,8 @@ contract('IMDStaking', (accounts) => {
     );
 
     assert.equal((await stakableNFT.balanceOf(accounts[0])).toNumber(), 0);
-    await imdStakingInstance.unstake(stakableNFT.address, 1);
+    const trans = await imdStakingInstance.unstake(stakableNFT.address, 1);
+    console.log('Gas cost to unstake 1:', trans.receipt.gasUsed);
     assert.equal((await stakableNFT.balanceOf(accounts[0])).toNumber(), 1);
 
     const stakedTokens = await imdStakingInstance.stakedTokenIds(accounts[0], stakableNFT.address);
@@ -193,17 +195,17 @@ contract('IMDStaking', (accounts) => {
     await stakableNFT.setApprovalForAll(imdStakingInstance.address, true);
     await imdStakingInstance.stake(stakableNFT.address, 1);
 
-    let dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    let dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), '0');
 
     // let nearly a week pass
     await advanceTime(ONEWEEK.toNumber() - 100);
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), '0');
 
     // finish the week
     await advanceTime(200);
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), minYield.toString());
 
     let lastDividend = minYield;
@@ -211,7 +213,7 @@ contract('IMDStaking', (accounts) => {
     let expectedDividend = lastDividend.add(minYield.add(lastStep.add(step)));
     while (true) {
       await advanceTime(ONEWEEK.toNumber());
-      const actualDividend = await imdStakingInstance.dividendOf(accounts[0]);
+      const actualDividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
       assert.equal(actualDividend.toString(), expectedDividend.toString());
 
       lastStep = actualDividend.sub(lastDividend).sub(minYield);
@@ -223,13 +225,13 @@ contract('IMDStaking', (accounts) => {
 
     // final increment
     await advanceTime(ONEWEEK.toNumber());
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), lastDividend.add(maxYield).toString());
     lastDividend = dividend;
 
     // ensure doesn't go over
     await advanceTime(ONEWEEK.toNumber());
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), lastDividend.add(maxYield).toString());
   });
 
@@ -247,17 +249,17 @@ contract('IMDStaking', (accounts) => {
     await imdStakingInstance.stake(stakableNFT.address, 1);
     await imdStakingInstance.stake(stakableNFT.address, 2);
 
-    let dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    let dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), '0');
 
     // let nearly a week pass
     await advanceTime(ONEWEEK.toNumber() - 100);
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), '0');
 
     // finish the week
     await advanceTime(200);
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), minYield.mul(new BN(2)).toString());
 
     let lastDividend = dividend;
@@ -265,7 +267,7 @@ contract('IMDStaking', (accounts) => {
     let expectedDividend = lastDividend.add(minYield.add(lastStep.add(step)).mul(new BN(2)));
     while (true) {
       await advanceTime(ONEWEEK.toNumber());
-      const actualDividend = await imdStakingInstance.dividendOf(accounts[0]);
+      const actualDividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
       assert.equal(actualDividend.toString(), expectedDividend.toString());
 
       lastStep = actualDividend.sub(lastDividend).div(new BN(2)).sub(minYield);
@@ -277,13 +279,13 @@ contract('IMDStaking', (accounts) => {
 
     // final increment
     await advanceTime(ONEWEEK.toNumber());
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), lastDividend.add(maxYield.mul(new BN(2))).toString());
     lastDividend = dividend;
 
     // ensure doesn't go over
     await advanceTime(ONEWEEK.toNumber());
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), lastDividend.add(maxYield.mul(new BN(2))).toString());
   });
 
@@ -304,44 +306,56 @@ contract('IMDStaking', (accounts) => {
     await imdStakingInstance.stake(stakableNFT.address, 1);
     await imdStakingInstance.stake(stakableNFT2.address, 1);
 
-    let dividend = await imdStakingInstance.dividendOf(accounts[0]);
-    assert.equal(dividend.toString(), '0');
+    let dividend1 = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
+    let dividend2 = await imdStakingInstance.dividendOf(accounts[0], stakableNFT2.address);
+    assert.equal(dividend1.toString(), '0');
+    assert.equal(dividend2.toString(), '0');
 
     // let nearly a week pass
     await advanceTime(ONEWEEK.toNumber() - 100);
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
-    assert.equal(dividend.toString(), '0');
+    dividend1 = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
+    dividend2 = await imdStakingInstance.dividendOf(accounts[0], stakableNFT2.address);
+    assert.equal(dividend1.toString(), '0');
+    assert.equal(dividend2.toString(), '0');
 
     // finish the week
     await advanceTime(200);
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
-    assert.equal(dividend.toString(), minYield.mul(new BN(2)).toString());
+    dividend1 = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
+    dividend2 = await imdStakingInstance.dividendOf(accounts[0], stakableNFT2.address);
+    assert.equal(dividend1.toString(), minYield.toString());
+    assert.equal(dividend2.toString(), minYield.toString());
 
-    let lastDividend = dividend;
+    let lastDividend = minYield;
     let lastStep = new BN(0);
-    let expectedDividend = lastDividend.add(minYield.add(lastStep.add(step)).mul(new BN(2)));
+    let expectedDividend = lastDividend.add(minYield.add(lastStep.add(step)));
     while (true) {
       await advanceTime(ONEWEEK.toNumber());
-      const actualDividend = await imdStakingInstance.dividendOf(accounts[0]);
-      assert.equal(actualDividend.toString(), expectedDividend.toString());
+      const actualDividend1 = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
+      const actualDividend2 = await imdStakingInstance.dividendOf(accounts[0], stakableNFT2.address);
+      assert.equal(actualDividend1.toString(), expectedDividend.toString());
+      assert.equal(actualDividend2.toString(), expectedDividend.toString());
 
-      lastStep = actualDividend.sub(lastDividend).div(new BN(2)).sub(minYield);
-      lastDividend = actualDividend;
+      lastStep = actualDividend1.sub(lastDividend).sub(minYield);
+      lastDividend = actualDividend1;
 
       if (minYield.add(lastStep.add(step)).gt(maxYield)) break;
-      expectedDividend = lastDividend.add(minYield.add(lastStep.add(step)).mul(new BN(2)));
+      expectedDividend = lastDividend.add(minYield.add(lastStep.add(step)));
     }
 
     // final increment
     await advanceTime(ONEWEEK.toNumber());
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
-    assert.equal(dividend.toString(), lastDividend.add(maxYield.mul(new BN(2))).toString());
-    lastDividend = dividend;
+    dividend1 = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
+    dividend2 = await imdStakingInstance.dividendOf(accounts[0], stakableNFT2.address);
+    assert.equal(dividend1.toString(), lastDividend.add(maxYield).toString());
+    assert.equal(dividend2.toString(), lastDividend.add(maxYield).toString());
+    lastDividend = dividend1;
 
     // ensure doesn't go over
     await advanceTime(ONEWEEK.toNumber());
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
-    assert.equal(dividend.toString(), lastDividend.add(maxYield.mul(new BN(2))).toString());
+    dividend1 = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
+    dividend2 = await imdStakingInstance.dividendOf(accounts[0], stakableNFT2.address);
+    assert.equal(dividend1.toString(), lastDividend.add(maxYield).toString());
+    assert.equal(dividend2.toString(), lastDividend.add(maxYield).toString());
   });
 
   it('checks dividend when multiple staked at different times', async () => {
@@ -357,28 +371,28 @@ contract('IMDStaking', (accounts) => {
     await stakableNFT.setApprovalForAll(imdStakingInstance.address, true);
     await imdStakingInstance.stake(stakableNFT.address, 1);
 
-    let dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    let dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), '0');
 
     // let over a week pass
     await advanceTime(ONEWEEK.toNumber() + 100)
 
     // token 1 - 1 week, token 2 - 0 weeks
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), minYield.toString());
     await imdStakingInstance.stake(stakableNFT.address, 2);
 
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), minYield.toString());
 
     await advanceTime(ONEWEEK.toNumber());
     // token 1 - 2 weeks, token 2 - 1 week
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), minYield.mul(new BN(2)).add(minYield.add(step)).toString());
 
     await advanceTime(ONEWEEK.toNumber());
     // token 1 - 3 weeks, token 2 - 2 weeks
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), 
       minYield.mul(new BN(2)) // 2 at min yield
         .add(minYield.add(step).mul(new BN(2))) // 2 at week 2 yield
@@ -388,7 +402,7 @@ contract('IMDStaking', (accounts) => {
 
     await advanceTime(ONEWEEK.toNumber());
     // token 1 - 4 weeks, token 2 - 3 weeks
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), 
       minYield.mul(new BN(2)) // 2 at min yield
         .add(minYield.add(step).mul(new BN(2))) // 2 at week 2 yield
@@ -399,7 +413,7 @@ contract('IMDStaking', (accounts) => {
 
     await advanceTime(ONEWEEK.toNumber());
     // token 1 - 5 weeks, token 2 - 4 weeks
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), 
       minYield.mul(new BN(2)) // 2 at min yield
         .add(minYield.add(step).mul(new BN(2))) // 2 at week 2 yield
@@ -411,7 +425,7 @@ contract('IMDStaking', (accounts) => {
 
     await advanceTime(ONEWEEK.toNumber());
     // token 1 - 6 weeks, token 2 - 5 weeks
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), 
       minYield.mul(new BN(2)) // 2 at min yield
         .add(minYield.add(step).mul(new BN(2))) // 2 at week 2 yield
@@ -423,7 +437,7 @@ contract('IMDStaking', (accounts) => {
 
     await advanceTime(ONEWEEK.toNumber());
     // token 1 - 7 weeks, token 2 - 6 weeks
-    dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     assert.equal(dividend.toString(), 
       minYield.mul(new BN(2)) // 2 at min yield
         .add(minYield.add(step).mul(new BN(2))) // 2 at week 2 yield
@@ -453,14 +467,15 @@ contract('IMDStaking', (accounts) => {
     await advanceTime(ONEWEEK.toNumber() * 10 + 100);
     assert.equal((await rewardToken.balanceOf(accounts[0])).toString(), '0');
 
-    const dividend = await imdStakingInstance.dividendOf(accounts[0]);
-    await imdStakingInstance.claimRewards();
+    const dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
+    const trans = await imdStakingInstance.claimRewards(stakableNFT.address);
+    console.log('Gas cost withdraw dividend:', trans.receipt.gasUsed);
 
     assert.equal((await rewardToken.balanceOf(accounts[0])).toString(), dividend.toString());
-    assert.equal((await imdStakingInstance.dividendOf(accounts[0])).toString(), '0');
+    assert.equal((await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address)).toString(), '0', stakableNFT.address);
 
     await advanceTime(ONEWEEK.toNumber());
-    assert.equal((await imdStakingInstance.dividendOf(accounts[0])).toString(), maxYield.mul(new BN(2)).toString());
+    assert.equal((await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address)).toString(), maxYield.mul(new BN(2)).toString(), stakableNFT.address);
   });
 
   it('withdraws stake', async () => {
@@ -479,15 +494,15 @@ contract('IMDStaking', (accounts) => {
 
     await advanceTime(ONEWEEK.toNumber() * 10 + 100);
 
-    const dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    const dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     await imdStakingInstance.unstake(stakableNFT.address, 2);
     await imdStakingInstance.unstake(stakableNFT.address, 1);
 
-    assert.equal((await imdStakingInstance.dividendOf(accounts[0])).toString(), dividend.toString());
+    assert.equal((await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address)).toString(), dividend.toString(), stakableNFT.address);
     assert.equal((await imdStakingInstance.stakedTokenIds(accounts[0], stakableNFT.address)).length, 0);
 
     await advanceTime(ONEWEEK.toNumber());
-    assert.equal((await imdStakingInstance.dividendOf(accounts[0])).toString(), dividend.toString());
+    assert.equal((await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address)).toString(), dividend.toString(), stakableNFT.address);
   });
 
   it('withdraws stake and dividend', async () => {
@@ -507,16 +522,17 @@ contract('IMDStaking', (accounts) => {
 
     await advanceTime(ONEWEEK.toNumber() * 10 + 100);
 
-    const dividend = await imdStakingInstance.dividendOf(accounts[0]);
+    const dividend = await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address);
     await imdStakingInstance.unstake(stakableNFT.address, 2);
 
     // fails for bad token owner
     await truffleAssert.reverts(
       imdStakingInstance.unstakeAndClaimRewards(stakableNFT.address, 1, { from: accounts[1] })
     );
-    await imdStakingInstance.unstakeAndClaimRewards(stakableNFT.address, 1);
+    const trans = await imdStakingInstance.unstakeAndClaimRewards(stakableNFT.address, 1);
+    console.log('Gas cost withdraw dividend and unstake 1:', trans.receipt.gasUsed);
 
-    assert.equal((await imdStakingInstance.dividendOf(accounts[0])).toString(), '0');
+    assert.equal((await imdStakingInstance.dividendOf(accounts[0], stakableNFT.address)).toString(), '0', stakableNFT.address);
     assert.equal((await imdStakingInstance.stakedTokenIds(accounts[0], stakableNFT.address)).length, 0);
     assert.equal((await rewardToken.balanceOf(accounts[0])).toString(), dividend.toString());
   });

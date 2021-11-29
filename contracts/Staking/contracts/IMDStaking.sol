@@ -3,50 +3,66 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/interfaces/IERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/ICollegeCredit.sol";
 import "./CollegeCredit.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "./Interfaces/IStakingInterface.sol";
 
-contract IMDStaking is IStakingInterface, Ownable {
+contract IMDStaking is Ownable {
     struct StakedToken {
         uint256 stakeTimestamp;
         address owner;
     }
 
     struct StakableTokenAttributes {
+        /**
+         * The minimum yield per period.
+         */
         uint256 minYield;
+        /**
+         * The maximum yield per period.
+         */
         uint256 maxYield;
+        /**
+         * The amount that yield increases per period.
+         */
         uint256 step;
+        /**
+         * The amount of time needed to earn 1 yield.
+         */
         uint256 yieldPeriod;
+        /**
+         * A mapping from token ids to information about that token's staking.
+         */
         mapping(uint256 => StakedToken) stakedTokens;
+        /**
+         * A mapping of modifiers to rewards for each staker's
+         * address.
+         */
+        mapping(address => int256) rewardModifier;
+        /**
+         * An array of token ids that are staked.
+         * @dev may contain 0 values which should be filtered.
+         */
         uint256[] stakedTokenIds;
     }
 
     /**
-     * A mapping of modifiers to rewards for each staker's
-     * address.
+     * The reward token (college credit) to be issued to stakers.
      */
-    mapping(address => int256) rewardModifier;
+    ICollegeCredit public rewardToken;
 
     /**
      * A mapping of token addresses to staking configurations.
      */
     mapping(address => StakableTokenAttributes) public stakableTokenAttributes;
+
     /**
      * An array of stakable ERC721 token addresses.
      */
     address[] stakableTokens;
 
     /**
-     * The reward token (college credit) to be issued
-     * to stakers.
-     */
-    ICollegeCredit public rewardToken;
-
-    /**
-     * The constructor for the staking contract, builds the initial
-     * reward token and stakable token.
+     * The constructor for the staking contract, builds the initial reward token and stakable token.
      * @param _token the first stakable token address.
      * @param _minYield the minimum yield for the stakable token.
      * @param _maxYield the maximum yield for the stakable token.
@@ -61,12 +77,13 @@ contract IMDStaking is IStakingInterface, Ownable {
         uint256 _yieldPeriod
     ) {
         _addStakableToken(_token, _minYield, _maxYield, _step, _yieldPeriod);
+
         rewardToken = new CollegeCredit();
     }
 
     /**
      * Mints the reward token to an account.
-     * @dev owner only
+     * @dev owner only.
      * @param _recipient the recipient of the minted tokens.
      * @param _amount the amount of tokens to mint.
      */
@@ -83,8 +100,8 @@ contract IMDStaking is IStakingInterface, Ownable {
      * @param _minYield the minimum yield for the stakable token.
      * @param _maxYield the maximum yield for the stakable token.
      * @param _step the amount yield increases per yield period.
-     * @param _yieldPeriod the length (in seconds) of a yield period (the amount of period after which a yield is calculated)
-     * @dev owner only, doesn't allow adding already staked tokens
+     * @param _yieldPeriod the length (in seconds) of a yield period (the amount of period after which a yield is calculated).
+     * @dev owner only, doesn't allow adding already staked tokens.
      */
     function addStakableToken(
         address _token,
@@ -105,6 +122,7 @@ contract IMDStaking is IStakingInterface, Ownable {
      *      the address must be a stakable token.
      */
     function stake(address _token, uint256 _tokenId) external {
+        require(_isStakable(_token), "Not stakable");
         _stakeFor(msg.sender, _token, _tokenId);
     }
 
@@ -121,6 +139,7 @@ contract IMDStaking is IStakingInterface, Ownable {
         address _token,
         uint256 _tokenId
     ) external {
+        require(_isStakable(_token), "Not stakable");
         _stakeFor(_user, _token, _tokenId);
     }
 
@@ -131,6 +150,7 @@ contract IMDStaking is IStakingInterface, Ownable {
      * @dev reverts if the token is not owned by the caller.
      */
     function unstake(address _token, uint256 _tokenId) external {
+        require(_isStakable(_token), "Not stakable");
         require(
             stakableTokenAttributes[_token].stakedTokens[_tokenId].owner ==
                 msg.sender,
@@ -141,17 +161,25 @@ contract IMDStaking is IStakingInterface, Ownable {
 
     /**
      * Claims the rewards for the caller.
+     * @param _token the token for which we are claiming rewards.
      */
-    function claimRewards() external {
-        _withdrawRewards(msg.sender);
+    function claimRewards(address _token) external {
+        require(_isStakable(_token), "Not stakable");
+        _withdrawRewards(msg.sender, _token);
     }
 
     /**
      * Gets the College Credit dividend of the provided user.
      * @param _user the user whose dividend we are checking.
+     * @param _token the token in which we are checking.
      */
-    function dividendOf(address _user) external view returns (uint256) {
-        return _dividendOf(_user);
+    function dividendOf(address _user, address _token)
+        external
+        view
+        returns (uint256)
+    {
+        require(_isStakable(_token), "Not stakable");
+        return _dividendOf(_user, _token);
     }
 
     /**
@@ -160,16 +188,14 @@ contract IMDStaking is IStakingInterface, Ownable {
      * @param _tokenId the id of the token to unstake.
      * @dev reverts if the token is not owned by the caller.
      */
-    function unstakeAndClaimRewards(
-        address _token,
-        uint256 _tokenId
-    ) external {
+    function unstakeAndClaimRewards(address _token, uint256 _tokenId) external {
+        require(_isStakable(_token), "Not stakable");
         require(
             stakableTokenAttributes[_token].stakedTokens[_tokenId].owner ==
                 msg.sender,
             "Not owner"
         );
-        _withdrawRewards(msg.sender);
+        _withdrawRewards(msg.sender, _token);
         _unstake(_token, _tokenId);
     }
 
@@ -193,6 +219,7 @@ contract IMDStaking is IStakingInterface, Ownable {
      * @param _token the address to get the amount staked from.
      */
     function totalStaked(address _token) external view returns (uint256) {
+        require(_isStakable(_token), "Not stakable");
         return _totalStaked(_token);
     }
 
@@ -220,8 +247,13 @@ contract IMDStaking is IStakingInterface, Ownable {
      */
     function _totalStaked(address _token) internal view returns (uint256) {
         uint256 result = 0;
-        for (uint256 i = 0; i < stakableTokenAttributes[_token].stakedTokenIds.length; i++) {
-            if (stakableTokenAttributes[_token].stakedTokenIds[i] != 0) result++;
+        for (
+            uint256 i = 0;
+            i < stakableTokenAttributes[_token].stakedTokenIds.length;
+            i++
+        ) {
+            if (stakableTokenAttributes[_token].stakedTokenIds[i] != 0)
+                result++;
         }
 
         return result;
@@ -229,6 +261,7 @@ contract IMDStaking is IStakingInterface, Ownable {
 
     /**
      * @return if the given token address is stakable.
+     * @param _token the address to a token to query for stakability.
      * @dev does not check if is ERC721, that is up to the user.
      */
     function _isStakable(address _token) internal view returns (bool) {
@@ -241,7 +274,8 @@ contract IMDStaking is IStakingInterface, Ownable {
      * @param _minYield the minimum yield for the stakable token.
      * @param _maxYield the maximum yield for the stakable token.
      * @param _step the amount yield increases per yield period.
-     * @param _yieldPeriod the length (in seconds) of a yield period (the amount of period after which a yield is calculated)
+     * @param _yieldPeriod the length (in seconds) of a yield period (the amount of period after which a yield is calculated).
+     * @dev checks constraints to ensure _isStakable works as well as other logic. Does not check if is already stakable.
      */
     function _addStakableToken(
         address _token,
@@ -250,6 +284,10 @@ contract IMDStaking is IStakingInterface, Ownable {
         uint256 _step,
         uint256 _yieldPeriod
     ) internal {
+        require(_maxYield > 0, "Invalid max");
+        require(_minYield > 0, "Invalid min");
+        require(_yieldPeriod > 1 minutes, "Invalid period");
+
         stakableTokenAttributes[_token].maxYield = _maxYield;
         stakableTokenAttributes[_token].minYield = _minYield;
         stakableTokenAttributes[_token].step = _step;
@@ -271,7 +309,6 @@ contract IMDStaking is IStakingInterface, Ownable {
         address _token,
         uint256 _tokenId
     ) internal {
-        require(_isStakable(_token), "Not stakable");
         IERC721(_token).transferFrom(_user, address(this), _tokenId);
 
         stakableTokenAttributes[_token]
@@ -286,13 +323,12 @@ contract IMDStaking is IStakingInterface, Ownable {
      * @param _tokenAttributes the attributes of the token provided.
      * @param _timestamp the timestamp at which the token was staked.
      * @return the dividend owed for that specific token.
-     * @dev reverts if the timestamp is 0.
      */
     function _tokenDividend(
         StakableTokenAttributes storage _tokenAttributes,
         uint256 _timestamp
     ) internal view returns (uint256) {
-        require(_timestamp != 0, "Not staked");
+        if (_timestamp == 0) return 0;
 
         uint256 periods = (block.timestamp - _timestamp) /
             _tokenAttributes.yieldPeriod;
@@ -392,39 +428,48 @@ contract IMDStaking is IStakingInterface, Ownable {
     /**
      * Gets the College Credit dividend of the provided user.
      * @param _user the user whose dividend we are checking.
+     * @param _token the token whose dividends we are checking.
      */
-    function _dividendOf(address _user) internal view returns (uint256) {
+    function _dividendOf(address _user, address _token)
+        internal
+        view
+        returns (uint256)
+    {
         uint256 dividend = 0;
+        uint256 tokenIdIndex = 0;
 
-        uint256 tokenIndex = 0;
-        for (tokenIndex; tokenIndex < stakableTokens.length; tokenIndex++) {
-            uint256 tokenIdIndex = 0;
-            for (
-                tokenIdIndex;
-                tokenIdIndex <
-                stakableTokenAttributes[stakableTokens[tokenIndex]]
-                    .stakedTokenIds
-                    .length;
-                tokenIdIndex++
-            ) {
-                StakedToken memory stakedToken = stakableTokenAttributes[
-                    stakableTokens[tokenIndex]
-                ].stakedTokens[
-                        stakableTokenAttributes[stakableTokens[tokenIndex]]
-                            .stakedTokenIds[tokenIdIndex]
-                    ];
+        for (
+            tokenIdIndex;
+            tokenIdIndex <
+            stakableTokenAttributes[_token].stakedTokenIds.length;
+            tokenIdIndex++
+        ) {
+            if (
+                stakableTokenAttributes[_token]
+                    .stakedTokens[
+                        stakableTokenAttributes[_token].stakedTokenIds[
+                            tokenIdIndex
+                        ]
+                    ]
+                    .owner != _user
+            ) continue;
 
-                if (stakedToken.owner != _user) continue;
-                dividend += _tokenDividend(
-                    stakableTokenAttributes[stakableTokens[tokenIndex]],
-                    stakedToken.stakeTimestamp
-                );
-            }
+            dividend += _tokenDividend(
+                stakableTokenAttributes[_token],
+                stakableTokenAttributes[_token]
+                    .stakedTokens[
+                        stakableTokenAttributes[_token].stakedTokenIds[
+                            tokenIdIndex
+                        ]
+                    ]
+                    .stakeTimestamp
+            );
         }
 
-        int256 resultantDividend = int256(dividend) + rewardModifier[_user];
+        int256 resultantDividend = int256(dividend) +
+            stakableTokenAttributes[_token].rewardModifier[_user];
+        
         require(resultantDividend >= 0, "Underflow");
-
         return uint256(resultantDividend);
     }
 
@@ -447,7 +492,10 @@ contract IMDStaking is IStakingInterface, Ownable {
                 .stakeTimestamp
         );
 
-        rewardModifier[owner] += int256(dividend);
+        stakableTokenAttributes[_token].rewardModifier[owner] += int256(
+            dividend
+        );
+
         delete stakableTokenAttributes[_token].stakedTokens[_tokenId];
 
         for (
@@ -466,12 +514,15 @@ contract IMDStaking is IStakingInterface, Ownable {
     /**
      * Claims the dividend for the user.
      * @param _user the user whose rewards are being withdrawn.
-     * @dev does not check is the user has permission to withdraw.
+     * @param _token the token from which rewards are being withdrawn.
+     * @dev does not check is the user has permission to withdraw. Reverts on zero dividend.
      */
-    function _withdrawRewards(address _user) internal {
-        uint256 dividend = _dividendOf(_user);
+    function _withdrawRewards(address _user, address _token) internal {
+        uint256 dividend = _dividendOf(_user, _token);
         require(dividend > 0, "Zero dividend");
-        rewardModifier[_user] -= int256(dividend);
+        stakableTokenAttributes[_token].rewardModifier[_user] -= int256(
+            dividend
+        );
 
         rewardToken.mint(_user, dividend);
     }

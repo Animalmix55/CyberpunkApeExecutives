@@ -110,7 +110,7 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
   };
 
   /**
-   * owner only
+   * owner only.
    * Mints the reward token to an account.
    * @param _amount the amount of tokens to mint.
    * @param _recipient the recipient of the minted tokens.
@@ -139,13 +139,13 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
   };
 
   /**
-   * owner only, doesn't allow adding already staked tokens
+   * owner only, doesn't allow adding already staked tokens.
    * Adds a new token that can be staked in the contract.
    * @param _maxYield the maximum yield for the stakable token.
    * @param _minYield the minimum yield for the stakable token.
    * @param _step the amount yield increases per yield period.
    * @param _token the first stakable token address.
-   * @param _yieldPeriod the length (in seconds) of a yield period (the amount of period after which a yield is calculated)
+   * @param _yieldPeriod the length (in seconds) of a yield period (the amount of period after which a yield is calculated).
    */
   addStakableToken: {
     (
@@ -276,22 +276,31 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
 
   /**
    * Claims the rewards for the caller.
+   * @param _token the token for which we are claiming rewards.
    */
   claimRewards: {
-    (txDetails?: Truffle.TransactionDetails): Promise<
+    (_token: string, txDetails?: Truffle.TransactionDetails): Promise<
       Truffle.TransactionResponse<AllEvents>
     >;
-    call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-    sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-    estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+    call(_token: string, txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(
+      _token: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      _token: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
   };
 
   /**
    * Gets the College Credit dividend of the provided user.
+   * @param _token the token in which we are checking.
    * @param _user the user whose dividend we are checking.
    */
   dividendOf(
     _user: string,
+    _token: string,
     txDetails?: Truffle.TransactionDetails
   ): Promise<BN>;
 
@@ -410,7 +419,7 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
     };
 
     /**
-     * owner only
+     * owner only.
      * Mints the reward token to an account.
      * @param _amount the amount of tokens to mint.
      * @param _recipient the recipient of the minted tokens.
@@ -439,13 +448,13 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
     };
 
     /**
-     * owner only, doesn't allow adding already staked tokens
+     * owner only, doesn't allow adding already staked tokens.
      * Adds a new token that can be staked in the contract.
      * @param _maxYield the maximum yield for the stakable token.
      * @param _minYield the minimum yield for the stakable token.
      * @param _step the amount yield increases per yield period.
      * @param _token the first stakable token address.
-     * @param _yieldPeriod the length (in seconds) of a yield period (the amount of period after which a yield is calculated)
+     * @param _yieldPeriod the length (in seconds) of a yield period (the amount of period after which a yield is calculated).
      */
     addStakableToken: {
       (
@@ -576,22 +585,34 @@ export interface IMDStakingInstance extends Truffle.ContractInstance {
 
     /**
      * Claims the rewards for the caller.
+     * @param _token the token for which we are claiming rewards.
      */
     claimRewards: {
-      (txDetails?: Truffle.TransactionDetails): Promise<
+      (_token: string, txDetails?: Truffle.TransactionDetails): Promise<
         Truffle.TransactionResponse<AllEvents>
       >;
-      call(txDetails?: Truffle.TransactionDetails): Promise<void>;
-      sendTransaction(txDetails?: Truffle.TransactionDetails): Promise<string>;
-      estimateGas(txDetails?: Truffle.TransactionDetails): Promise<number>;
+      call(
+        _token: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        _token: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        _token: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
     };
 
     /**
      * Gets the College Credit dividend of the provided user.
+     * @param _token the token in which we are checking.
      * @param _user the user whose dividend we are checking.
      */
     dividendOf(
       _user: string,
+      _token: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<BN>;
 

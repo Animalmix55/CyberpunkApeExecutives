@@ -203,7 +203,7 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"allowance(address,address)\":{\"details\":\"Returns the remaining number of tokens that `spender` will be allowed to spend on behalf of `owner` through {transferFrom}. This is zero by default. This value changes when {approve} or {transferFrom} are called.\"},\"approve(address,uint256)\":{\"details\":\"Sets `amount` as the allowance of `spender` over the caller's tokens. Returns a boolean value indicating whether the operation succeeded. IMPORTANT: Beware that changing an allowance with this method brings the risk that someone may use both the old and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729 Emits an {Approval} event.\"},\"balanceOf(address)\":{\"details\":\"Returns the amount of tokens owned by `account`.\"},\"totalSupply()\":{\"details\":\"Returns the amount of tokens in existence.\"},\"transfer(address,uint256)\":{\"details\":\"Moves `amount` tokens from the caller's account to `recipient`. Returns a boolean value indicating whether the operation succeeded. Emits a {Transfer} event.\"},\"transferFrom(address,address,uint256)\":{\"details\":\"Moves `amount` tokens from `sender` to `recipient` using the allowance mechanism. `amount` is then deducted from the caller's allowance. Returns a boolean value indicating whether the operation succeeded. Emits a {Transfer} event.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/interfaces/ICollegeCredit.sol\":\"ICollegeCredit\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x027b891937d20ccf213fdb9c31531574256de774bda99d3a70ecef6e1913ed2a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://087318b21c528119f649899f5b5580566dd8d7b0303d4904bd0e8580c3545f14\",\"dweb:/ipfs/Qmbn5Mj7aUn8hJuQ8VrQjjEXRsXyJKykgnjR9p4C3nfLtL\"]},\"project:/contracts/interfaces/ICollegeCredit.sol\":{\"keccak256\":\"0x26d6a0da9d8f13217dde103f9a9403efad86b4b20e2cf3052e9ba68feddbcdbd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://202fefabd6c433b0ef65d7a3b5b1fd0dc7838d8dd232e50d3654e25eb5d81dbc\",\"dweb:/ipfs/QmPAPzczBFWqQ3D8yvqyz7qx9swu8N7dYSvT6KcYev3kV9\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"mint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"allowance(address,address)\":{\"details\":\"Returns the remaining number of tokens that `spender` will be allowed to spend on behalf of `owner` through {transferFrom}. This is zero by default. This value changes when {approve} or {transferFrom} are called.\"},\"approve(address,uint256)\":{\"details\":\"Sets `amount` as the allowance of `spender` over the caller's tokens. Returns a boolean value indicating whether the operation succeeded. IMPORTANT: Beware that changing an allowance with this method brings the risk that someone may use both the old and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729 Emits an {Approval} event.\"},\"balanceOf(address)\":{\"details\":\"Returns the amount of tokens owned by `account`.\"},\"totalSupply()\":{\"details\":\"Returns the amount of tokens in existence.\"},\"transfer(address,uint256)\":{\"details\":\"Moves `amount` tokens from the caller's account to `recipient`. Returns a boolean value indicating whether the operation succeeded. Emits a {Transfer} event.\"},\"transferFrom(address,address,uint256)\":{\"details\":\"Moves `amount` tokens from `sender` to `recipient` using the allowance mechanism. `amount` is then deducted from the caller's allowance. Returns a boolean value indicating whether the operation succeeded. Emits a {Transfer} event.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Interfaces/ICollegeCredit.sol\":\"ICollegeCredit\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x027b891937d20ccf213fdb9c31531574256de774bda99d3a70ecef6e1913ed2a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://087318b21c528119f649899f5b5580566dd8d7b0303d4904bd0e8580c3545f14\",\"dweb:/ipfs/Qmbn5Mj7aUn8hJuQ8VrQjjEXRsXyJKykgnjR9p4C3nfLtL\"]},\"project:/contracts/Interfaces/ICollegeCredit.sol\":{\"keccak256\":\"0x26d6a0da9d8f13217dde103f9a9403efad86b4b20e2cf3052e9ba68feddbcdbd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://202fefabd6c433b0ef65d7a3b5b1fd0dc7838d8dd232e50d3654e25eb5d81dbc\",\"dweb:/ipfs/QmPAPzczBFWqQ3D8yvqyz7qx9swu8N7dYSvT6KcYev3kV9\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
@@ -212,23 +212,23 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.8.7;\n// SPDX-License-Identifier: MIT\n\nimport \"@openzeppelin/contracts/token/ERC20/IERC20.sol\";\n\ninterface ICollegeCredit is IERC20 {\n    function mint(address recipient, uint256 amount) external;\n}",
-  "sourcePath": "C:\\Users\\Cory\\source\\repos\\CyberpunkApeExecutives\\contracts\\Staking\\contracts\\interfaces\\ICollegeCredit.sol",
+  "sourcePath": "C:\\Users\\Cory\\source\\repos\\CyberpunkApeExecutives\\contracts\\Staking\\contracts\\Interfaces\\ICollegeCredit.sol",
   "ast": {
-    "absolutePath": "project:/contracts/interfaces/ICollegeCredit.sol",
+    "absolutePath": "project:/contracts/Interfaces/ICollegeCredit.sol",
     "exportedSymbols": {
       "ICollegeCredit": [
-        3440
+        3364
       ],
       "IERC20": [
-        770
+        730
       ]
     },
-    "id": 3441,
+    "id": 3365,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3429,
+        "id": 3353,
         "literals": [
           "solidity",
           "^",
@@ -236,17 +236,17 @@
           ".7"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:21"
+        "src": "0:23:16"
       },
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
         "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "id": 3430,
+        "id": 3354,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 3441,
-        "sourceUnit": 771,
-        "src": "57:56:21",
+        "scope": 3365,
+        "sourceUnit": 731,
+        "src": "57:56:16",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -255,52 +255,52 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 3431,
+              "id": 3355,
               "name": "IERC20",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 770,
-              "src": "143:6:21"
+              "referencedDeclaration": 730,
+              "src": "143:6:16"
             },
-            "id": 3432,
+            "id": 3356,
             "nodeType": "InheritanceSpecifier",
-            "src": "143:6:21"
+            "src": "143:6:16"
           }
         ],
         "canonicalName": "ICollegeCredit",
         "contractDependencies": [],
         "contractKind": "interface",
         "fullyImplemented": false,
-        "id": 3440,
+        "id": 3364,
         "linearizedBaseContracts": [
-          3440,
-          770
+          3364,
+          730
         ],
         "name": "ICollegeCredit",
-        "nameLocation": "125:14:21",
+        "nameLocation": "125:14:16",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "functionSelector": "40c10f19",
-            "id": 3439,
+            "id": 3363,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "mint",
-            "nameLocation": "165:4:21",
+            "nameLocation": "165:4:16",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3437,
+              "id": 3361,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3434,
+                  "id": 3358,
                   "mutability": "mutable",
                   "name": "recipient",
-                  "nameLocation": "178:9:21",
+                  "nameLocation": "178:9:16",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3439,
-                  "src": "170:17:21",
+                  "scope": 3363,
+                  "src": "170:17:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -308,10 +308,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3433,
+                    "id": 3357,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "170:7:21",
+                    "src": "170:7:16",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -322,13 +322,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 3436,
+                  "id": 3360,
                   "mutability": "mutable",
                   "name": "amount",
-                  "nameLocation": "197:6:21",
+                  "nameLocation": "197:6:16",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3439,
-                  "src": "189:14:21",
+                  "scope": 3363,
+                  "src": "189:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -336,10 +336,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3435,
+                    "id": 3359,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "189:7:21",
+                    "src": "189:7:16",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -348,44 +348,44 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "169:35:21"
+              "src": "169:35:16"
             },
             "returnParameters": {
-              "id": 3438,
+              "id": 3362,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "213:0:21"
+              "src": "213:0:16"
             },
-            "scope": 3440,
-            "src": "156:58:21",
+            "scope": 3364,
+            "src": "156:58:16",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 3441,
-        "src": "115:101:21",
+        "scope": 3365,
+        "src": "115:101:16",
         "usedErrors": []
       }
     ],
-    "src": "0:216:21"
+    "src": "0:216:16"
   },
   "legacyAST": {
-    "absolutePath": "project:/contracts/interfaces/ICollegeCredit.sol",
+    "absolutePath": "project:/contracts/Interfaces/ICollegeCredit.sol",
     "exportedSymbols": {
       "ICollegeCredit": [
-        3440
+        3364
       ],
       "IERC20": [
-        770
+        730
       ]
     },
-    "id": 3441,
+    "id": 3365,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3429,
+        "id": 3353,
         "literals": [
           "solidity",
           "^",
@@ -393,17 +393,17 @@
           ".7"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:21"
+        "src": "0:23:16"
       },
       {
         "absolutePath": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
         "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "id": 3430,
+        "id": 3354,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 3441,
-        "sourceUnit": 771,
-        "src": "57:56:21",
+        "scope": 3365,
+        "sourceUnit": 731,
+        "src": "57:56:16",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -412,52 +412,52 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 3431,
+              "id": 3355,
               "name": "IERC20",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 770,
-              "src": "143:6:21"
+              "referencedDeclaration": 730,
+              "src": "143:6:16"
             },
-            "id": 3432,
+            "id": 3356,
             "nodeType": "InheritanceSpecifier",
-            "src": "143:6:21"
+            "src": "143:6:16"
           }
         ],
         "canonicalName": "ICollegeCredit",
         "contractDependencies": [],
         "contractKind": "interface",
         "fullyImplemented": false,
-        "id": 3440,
+        "id": 3364,
         "linearizedBaseContracts": [
-          3440,
-          770
+          3364,
+          730
         ],
         "name": "ICollegeCredit",
-        "nameLocation": "125:14:21",
+        "nameLocation": "125:14:16",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "functionSelector": "40c10f19",
-            "id": 3439,
+            "id": 3363,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "mint",
-            "nameLocation": "165:4:21",
+            "nameLocation": "165:4:16",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3437,
+              "id": 3361,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3434,
+                  "id": 3358,
                   "mutability": "mutable",
                   "name": "recipient",
-                  "nameLocation": "178:9:21",
+                  "nameLocation": "178:9:16",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3439,
-                  "src": "170:17:21",
+                  "scope": 3363,
+                  "src": "170:17:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -465,10 +465,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3433,
+                    "id": 3357,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "170:7:21",
+                    "src": "170:7:16",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -479,13 +479,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 3436,
+                  "id": 3360,
                   "mutability": "mutable",
                   "name": "amount",
-                  "nameLocation": "197:6:21",
+                  "nameLocation": "197:6:16",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3439,
-                  "src": "189:14:21",
+                  "scope": 3363,
+                  "src": "189:14:16",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -493,10 +493,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3435,
+                    "id": 3359,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "189:7:21",
+                    "src": "189:7:16",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -505,27 +505,27 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "169:35:21"
+              "src": "169:35:16"
             },
             "returnParameters": {
-              "id": 3438,
+              "id": 3362,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "213:0:21"
+              "src": "213:0:16"
             },
-            "scope": 3440,
-            "src": "156:58:21",
+            "scope": 3364,
+            "src": "156:58:16",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 3441,
-        "src": "115:101:21",
+        "scope": 3365,
+        "src": "115:101:16",
         "usedErrors": []
       }
     ],
-    "src": "0:216:21"
+    "src": "0:216:16"
   },
   "compiler": {
     "name": "solc",
@@ -533,7 +533,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-11-29T02:16:29.872Z",
+  "updatedAt": "2021-11-29T03:35:52.471Z",
   "devdoc": {
     "kind": "dev",
     "methods": {
