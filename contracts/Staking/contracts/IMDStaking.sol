@@ -324,7 +324,7 @@ contract IMDStaking is Ownable {
     }
 
     /**
-     * Stakes a given token id from a given contract.
+     * Stakes the given token ids from a given contract.
      * @param _user the user from which to transfer the token.
      * @param _token the address of the stakable token.
      * @param _tokenIds the ids of the tokens to stake.
@@ -446,7 +446,7 @@ contract IMDStaking is Ownable {
 
     /**
      * Gets the token before the given token id owned by the user.
-     * @param _user the user whose last stake is being found.
+     * @param _user the user staked tokens are being traversed.
      * @param _token the address of the contract whose staked tokens we are skimming.
      * @param _tokenId the id of the token whose precedent we are looking for
      * @dev does not check if the token address is stakable. throws if not found
