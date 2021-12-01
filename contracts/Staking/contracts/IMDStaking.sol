@@ -10,6 +10,7 @@ import "./CollegeCredit.sol";
 contract IMDStaking is Ownable {
     struct StakedToken {
         uint256 stakeTimestamp;
+        uint256 nextToken;
         address owner;
     }
 
@@ -35,15 +36,14 @@ contract IMDStaking is Ownable {
          */
         mapping(uint256 => StakedToken) stakedTokens;
         /**
+         * A mapping from the user's address to their root staked token
+         */
+        mapping(address => uint256) firstStaked;
+        /**
          * A mapping of modifiers to rewards for each staker's
          * address.
          */
         mapping(address => int256) rewardModifier;
-        /**
-         * An array of token ids that are staked.
-         * @dev may contain 0 values which should be filtered.
-         */
-        uint256[] stakedTokenIds;
     }
 
     /**
@@ -55,11 +55,6 @@ contract IMDStaking is Ownable {
      * A mapping of token addresses to staking configurations.
      */
     mapping(address => StakableTokenAttributes) public stakableTokenAttributes;
-
-    /**
-     * An array of stakable ERC721 token addresses.
-     */
-    address[] stakableTokens;
 
     /**
      * The constructor for the staking contract, builds the initial reward token and stakable token.
@@ -123,7 +118,11 @@ contract IMDStaking is Ownable {
      */
     function stake(address _token, uint256 _tokenId) external {
         require(_isStakable(_token), "Not stakable");
-        _stakeFor(msg.sender, _token, _tokenId);
+
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = _tokenId;
+
+        _bulkStakeFor(msg.sender, _token, tokenIds);
     }
 
     /**
@@ -135,9 +134,7 @@ contract IMDStaking is Ownable {
      */
     function stakeMany(address _token, uint256[] calldata _tokenIds) external {
         require(_isStakable(_token), "Not stakable");
-        for (uint256 i = 0; i < _tokenIds.length; i++) {
-            _stakeFor(msg.sender, _token, _tokenIds[i]);
-        }
+        _bulkStakeFor(msg.sender, _token, _tokenIds);
     }
 
     /**
@@ -224,16 +221,19 @@ contract IMDStaking is Ownable {
      * @param _tokenIds the ids of the tokens to unstake.
      * @dev reverts if the tokens are not owned by the caller.
      */
-    function unstakeManyAndClaimRewards(address _token, uint256[] calldata _tokenIds) external {
+    function unstakeManyAndClaimRewards(
+        address _token,
+        uint256[] calldata _tokenIds
+    ) external {
         require(_isStakable(_token), "Not stakable");
         for (uint256 i = 0; i < _tokenIds.length; i++) {
             require(
-                stakableTokenAttributes[_token].stakedTokens[_tokenIds[i]].owner ==
-                        msg.sender,
-                    "Not owner"
+                stakableTokenAttributes[_token]
+                    .stakedTokens[_tokenIds[i]]
+                    .owner == msg.sender,
+                "Not owner"
             );
             _unstake(_token, _tokenIds[i]);
-
         }
         _withdrawRewards(msg.sender, _token);
     }
@@ -285,17 +285,7 @@ contract IMDStaking is Ownable {
      * @param _token the address to get the amount staked from.
      */
     function _totalStaked(address _token) internal view returns (uint256) {
-        uint256 result = 0;
-        for (
-            uint256 i = 0;
-            i < stakableTokenAttributes[_token].stakedTokenIds.length;
-            i++
-        ) {
-            if (stakableTokenAttributes[_token].stakedTokenIds[i] != 0)
-                result++;
-        }
-
-        return result;
+        return IERC721(_token).balanceOf(address(this));
     }
 
     /**
@@ -331,30 +321,40 @@ contract IMDStaking is Ownable {
         stakableTokenAttributes[_token].minYield = _minYield;
         stakableTokenAttributes[_token].step = _step;
         stakableTokenAttributes[_token].yieldPeriod = _yieldPeriod;
-
-        stakableTokens.push(_token);
     }
 
     /**
      * Stakes a given token id from a given contract.
      * @param _user the user from which to transfer the token.
      * @param _token the address of the stakable token.
-     * @param _tokenId the id of the token to stake.
+     * @param _tokenIds the ids of the tokens to stake.
      * @dev the contract must be approved to transfer that token first.
      *      the address must be a stakable token.
      */
-    function _stakeFor(
+    function _bulkStakeFor(
         address _user,
         address _token,
-        uint256 _tokenId
+        uint256[] memory _tokenIds
     ) internal {
-        IERC721(_token).transferFrom(_user, address(this), _tokenId);
+        uint256 lastStaked = _lastStaked(_user, _token);
 
-        stakableTokenAttributes[_token]
-            .stakedTokens[_tokenId]
-            .stakeTimestamp = block.timestamp;
-        stakableTokenAttributes[_token].stakedTokens[_tokenId].owner = _user;
-        stakableTokenAttributes[_token].stakedTokenIds.push(_tokenId);
+        for (uint256 i = 0; i < _tokenIds.length; i++) {
+            IERC721(_token).transferFrom(_user, address(this), _tokenIds[i]);
+
+            StakedToken memory token;
+            token.owner = _user;
+            token.stakeTimestamp = block.timestamp;
+
+            if (lastStaked == 0)
+                stakableTokenAttributes[_token].firstStaked[_user] = _tokenIds[i];
+            else
+                stakableTokenAttributes[_token]
+                    .stakedTokens[lastStaked]
+                    .nextToken = _tokenIds[i];
+
+            lastStaked = _tokenIds[i];
+            stakableTokenAttributes[_token].stakedTokens[_tokenIds[i]] = token;
+        }
     }
 
     /**
@@ -405,22 +405,71 @@ contract IMDStaking is Ownable {
     {
         uint256 tokenCount = 0;
 
-        uint256 tokenIdIndex = 0;
-        for (
-            tokenIdIndex;
-            tokenIdIndex <
-            stakableTokenAttributes[_token].stakedTokenIds.length;
-            tokenIdIndex++
-        ) {
-            StakedToken memory stakedToken = stakableTokenAttributes[_token]
-                .stakedTokens[
-                    stakableTokenAttributes[_token].stakedTokenIds[tokenIdIndex]
-                ];
+        uint256 nextToken = stakableTokenAttributes[_token].firstStaked[_user];
+        if (nextToken == 0) return 0;
 
-            if (stakedToken.owner == _user) tokenCount++;
+        while (nextToken != 0) {
+            tokenCount++;
+            nextToken = stakableTokenAttributes[_token]
+                .stakedTokens[nextToken]
+                .nextToken;
         }
 
         return tokenCount;
+    }
+
+    /**
+     * Gets the last token ID staked by the user.
+     * @param _user the user whose last stake is being found.
+     * @param _token the address of the contract whose staked tokens we are skimming.
+     * @dev does not check if the token address is stakable.
+     */
+    function _lastStaked(address _user, address _token)
+        internal
+        view
+        returns (uint256)
+    {
+        uint256 nextToken = stakableTokenAttributes[_token].firstStaked[_user];
+        if (nextToken == 0) return 0;
+
+        while (
+            stakableTokenAttributes[_token].stakedTokens[nextToken].nextToken !=
+            0
+        ) {
+            nextToken = stakableTokenAttributes[_token]
+                .stakedTokens[nextToken]
+                .nextToken;
+        }
+
+        return nextToken;
+    }
+
+    /**
+     * Gets the token before the given token id owned by the user.
+     * @param _user the user whose last stake is being found.
+     * @param _token the address of the contract whose staked tokens we are skimming.
+     * @param _tokenId the id of the token whose precedent we are looking for
+     * @dev does not check if the token address is stakable. throws if not found
+     */
+    function _tokenBefore(
+        address _user,
+        address _token,
+        uint256 _tokenId
+    ) internal view returns (uint256) {
+        uint256 nextToken = stakableTokenAttributes[_token].firstStaked[_user];
+        require(nextToken != 0, "None staked");
+
+        if (nextToken == _tokenId) return 0;
+
+        while (nextToken != 0) {
+            uint256 next = stakableTokenAttributes[_token]
+                .stakedTokens[nextToken]
+                .nextToken;
+            if (next == _tokenId) return nextToken;
+            nextToken = next;
+        }
+
+        revert("Token not found");
     }
 
     /**
@@ -438,27 +487,16 @@ contract IMDStaking is Ownable {
         uint256 numStaked = _totalStaked(_user, _token);
         uint256[] memory tokenIds = new uint256[](numStaked);
 
-        uint256 numFound = 0;
-        uint256 tokenIdIndex = 0;
-        for (
-            tokenIdIndex;
-            tokenIdIndex <
-            stakableTokenAttributes[_token].stakedTokenIds.length;
-            tokenIdIndex++
-        ) {
-            if (
-                stakableTokenAttributes[_token]
-                    .stakedTokens[
-                        stakableTokenAttributes[_token].stakedTokenIds[
-                            tokenIdIndex
-                        ]
-                    ]
-                    .owner == _user
-            ) {
-                tokenIds[numFound] = stakableTokenAttributes[_token]
-                    .stakedTokenIds[tokenIdIndex];
-                numFound++;
-            }
+        if (numStaked == 0) return tokenIds;
+        uint256 nextToken = stakableTokenAttributes[_token].firstStaked[_user];
+
+        uint256 index = 0;
+        while (nextToken != 0) {
+            tokenIds[index] = nextToken;
+            nextToken = stakableTokenAttributes[_token]
+                .stakedTokens[nextToken]
+                .nextToken;
+            index++;
         }
 
         return tokenIds;
@@ -475,24 +513,19 @@ contract IMDStaking is Ownable {
         returns (uint256)
     {
         uint256 dividend = 0;
-        uint256 tokenIdIndex = 0;
+        uint256 nextToken = stakableTokenAttributes[_token].firstStaked[_user];
 
-        for (
-            tokenIdIndex;
-            tokenIdIndex <
-            stakableTokenAttributes[_token].stakedTokenIds.length;
-            tokenIdIndex++
-        ) {
-            StakedToken memory stakedToken = stakableTokenAttributes[_token]
-                .stakedTokens[
-                    stakableTokenAttributes[_token].stakedTokenIds[tokenIdIndex]
-                ];
-
-            if (stakedToken.owner != _user) continue;
+        while (nextToken != 0) {
             dividend += _tokenDividend(
                 stakableTokenAttributes[_token],
-                stakedToken.stakeTimestamp
+                stakableTokenAttributes[_token]
+                    .stakedTokens[nextToken]
+                    .stakeTimestamp
             );
+
+            nextToken = stakableTokenAttributes[_token]
+                .stakedTokens[nextToken]
+                .nextToken;
         }
 
         int256 resultantDividend = int256(dividend) +
@@ -525,17 +558,22 @@ contract IMDStaking is Ownable {
             dividend
         );
 
-        delete stakableTokenAttributes[_token].stakedTokens[_tokenId];
+        // remove link in chain
+        uint256 tokenBefore = _tokenBefore(owner, _token, _tokenId);
+        if (tokenBefore == 0)
+            stakableTokenAttributes[_token].firstStaked[
+                owner
+            ] = stakableTokenAttributes[_token]
+                .stakedTokens[_tokenId]
+                .nextToken;
+        else
+            stakableTokenAttributes[_token]
+                .stakedTokens[tokenBefore]
+                .nextToken = stakableTokenAttributes[_token]
+                .stakedTokens[_tokenId]
+                .nextToken;
 
-        for (
-            uint256 i = 0;
-            i < stakableTokenAttributes[_token].stakedTokenIds.length;
-            i++
-        ) {
-            if (stakableTokenAttributes[_token].stakedTokenIds[i] == _tokenId) {
-                delete stakableTokenAttributes[_token].stakedTokenIds[i];
-            }
-        }
+        delete stakableTokenAttributes[_token].stakedTokens[_tokenId];
 
         IERC721(_token).safeTransferFrom(address(this), owner, _tokenId);
     }

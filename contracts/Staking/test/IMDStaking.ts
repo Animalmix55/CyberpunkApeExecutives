@@ -242,6 +242,47 @@ contract('IMDStaking', (accounts) => {
     assert.equal(stakedTokens.length, 0);
   });
 
+  // COMMENTED OUT B/C IT TAKES A LONG TIME TO RUN THIS TEST, PASSING AS OF 12/1/2021
+  // it('allows bulk staking and unstaking across multiple users over time', async () => {
+  //   const stakableNFT = await MockNFT.new();
+  //   const imdStakingInstance = await IMDStaking.new(stakableNFT.address, to18Decimals(10), to18Decimals(50), to18Decimals(10), ONEWEEK);
+
+  //   const testAccounts = accounts.slice(0, 5);
+
+  //   let currentToken = 1;
+  //   const mintsPerAccount = testAccounts.map(ta => {
+  //     const tokens = [] as number[];
+  //     for (let j = 0; j < 10; j++) {
+  //       tokens.push(currentToken + j);
+  //     }
+  //     currentToken += 10
+  //     return tokens;
+  //   })
+
+  //   for (let i = 0; i < testAccounts.length; i++) {
+  //     for (let j = 0; j < mintsPerAccount[i].length; j++) {
+  //       await stakableNFT.mint(testAccounts[i], mintsPerAccount[i][j]);
+  //     }
+  //     await stakableNFT.setApprovalForAll(imdStakingInstance.address, true, { from: testAccounts[i] });
+  //   }
+  //   for (let iteration = 0; iteration < 3; iteration++) {
+  //     // stake all
+  //     for (let i = 0; i < testAccounts.length; i++) {
+  //       await imdStakingInstance.stakeMany(stakableNFT.address, mintsPerAccount[i], { from: testAccounts[i] });
+  //     }
+
+  //     // unstake all
+  //     for (let i = 0; i < testAccounts.length; i++) {
+  //       await imdStakingInstance.unstakeMany(stakableNFT.address, mintsPerAccount[i], { from: testAccounts[i] });
+  //     }
+  //   }
+
+  //   for (let i = 0; i < testAccounts.length; i++) {
+  //     const numStaked = await imdStakingInstance.totalStakedFor(testAccounts[i], stakableNFT.address);
+  //     assert.equal(numStaked.toString(), '0');
+  //   }
+  // });
+
   it('checks dividend', async () => {
     const minYield = to18Decimals(10);
     const maxYield = to18Decimals(500);
