@@ -1,25 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
-import { RooTroop } from '../models/RooTroop';
-import TargetMint from '../models/TargetMint';
 
 export interface TimeFrame {
     start: number;
     end: number;
 }
 
-export const getContractAddress = async (
-    api: string,
-    token?: string
-): Promise<string> => {
-    const url = `${api}/contract.php`;
-    const result = await axios.post(url, { token });
-
-    return String(result.data);
-};
-
 export const getMintCost = async (
     sale: 'free' | 'presale' | 'public',
-    contract?: RooTroop
+    contract?: any
 ): Promise<number> => {
     if (!contract) return 0;
 
@@ -39,7 +28,7 @@ export const getMintCost = async (
 };
 
 export const getPublicTransactionMax = async (
-    contract?: RooTroop
+    contract?: any
 ): Promise<number> => {
     if (!contract) return 0;
 
@@ -89,7 +78,7 @@ export const getMintSignature = async (
     api: string,
     sessionToken: string,
     quantity: number,
-    targetMint: TargetMint
+    targetMint: any
 ): Promise<{ signature: string; nonce: number }> => {
     const url = `${api}/mint.php`;
     const result = await axios.post(url, {

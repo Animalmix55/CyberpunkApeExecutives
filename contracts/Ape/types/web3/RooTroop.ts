@@ -86,6 +86,22 @@ export interface RooTroop extends BaseContract {
     balanceOf(owner: string): NonPayableTransactionObject<string>;
 
     /**
+     * The free mint
+     */
+    freeMint(): NonPayableTransactionObject<{
+      mintPrice: string;
+      startDate: string;
+      endDate: string;
+      totalMinted: string;
+      maxMinted: string;
+      0: string;
+      1: string;
+      2: string;
+      3: string;
+      4: string;
+    }>;
+
+    /**
      * See {IERC721-getApproved}.
      */
     getApproved(
@@ -120,6 +136,34 @@ export interface RooTroop extends BaseContract {
     ownerOf(tokenId: number | string | BN): NonPayableTransactionObject<string>;
 
     /**
+     * An exclusive mint for members granted presale from influencers
+     */
+    presaleMint(): NonPayableTransactionObject<{
+      mintPrice: string;
+      startDate: string;
+      endDate: string;
+      totalMinted: string;
+      maxMinted: string;
+      0: string;
+      1: string;
+      2: string;
+      3: string;
+      4: string;
+    }>;
+
+    /**
+     * The public mint for everybody.
+     */
+    publicMint(): NonPayableTransactionObject<{
+      mintPrice: string;
+      startDate: string;
+      maxPerTransaction: string;
+      0: string;
+      1: string;
+      2: string;
+    }>;
+
+    /**
      * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
      */
     renounceOwnership(): NonPayableTransactionObject<void>;
@@ -150,8 +194,6 @@ export interface RooTroop extends BaseContract {
       operator: string,
       approved: boolean
     ): NonPayableTransactionObject<void>;
-
-    supply(): NonPayableTransactionObject<string>;
 
     /**
      * See {IERC165-supportsInterface}.
@@ -209,42 +251,6 @@ export interface RooTroop extends BaseContract {
     }>;
 
     /**
-     * Gets all of the data related to the free mint.
-     */
-    getFreeMint(): NonPayableTransactionObject<{
-      startDate: string;
-      endDate: string;
-      0: string;
-      1: string;
-    }>;
-
-    /**
-     * Gets all of the data related to the presale mint.
-     */
-    getPresaleMint(): NonPayableTransactionObject<{
-      startDate: string;
-      endDate: string;
-      mintPrice: string;
-      0: string;
-      1: string;
-      2: string;
-    }>;
-
-    /**
-     * Gets all of the data related to the presale mint.
-     */
-    getPublicMint(): NonPayableTransactionObject<{
-      startDate: string;
-      endDate: string;
-      mintPrice: string;
-      maxPerTransaction: string;
-      0: string;
-      1: string;
-      2: string;
-      3: string;
-    }>;
-
-    /**
      * Updates the presale mint's characteristics
      * @param endDate - the end date for that mint in UNIX seconds
      * @param mintPrice - the cost for that mint in WEI
@@ -253,7 +259,8 @@ export interface RooTroop extends BaseContract {
     updatePresaleMint(
       mintPrice: number | string | BN,
       startDate: number | string | BN,
-      endDate: number | string | BN
+      endDate: number | string | BN,
+      maxMinted: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     /**
@@ -263,12 +270,12 @@ export interface RooTroop extends BaseContract {
      */
     updateFreeMint(
       startDate: number | string | BN,
-      endDate: number | string | BN
+      endDate: number | string | BN,
+      maxMinted: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     /**
      * Updates the public mint's characteristics
-     * @param endDate - the end date for that mint in UNIX seconds
      * @param maxPerTransaction - the maximum amount allowed in a wallet to mint in the public mint
      * @param mintPrice - the cost for that mint in WEI
      * @param startDate - the start date for that mint in UNIX seconds
@@ -276,8 +283,7 @@ export interface RooTroop extends BaseContract {
     updatePublicMint(
       mintPrice: number | string | BN,
       maxPerTransaction: number | string | BN,
-      startDate: number | string | BN,
-      endDate: number | string | BN
+      startDate: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     getPremintHash(

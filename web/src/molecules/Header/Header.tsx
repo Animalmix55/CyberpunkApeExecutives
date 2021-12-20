@@ -11,6 +11,7 @@ import useMobile from '../../hooks/useMobile';
 import MetaMaskButton from '../../atoms/MetamaskButton';
 import { useCyberpunkApesContext } from '../../contexts/CyberpunkApesContext';
 import FollowingEye from '../../atoms/FollowingEye';
+import { Page } from '../../routing/ApeRouter';
 
 export const Header = (): JSX.Element => {
     const history = useHistory();
@@ -153,17 +154,40 @@ export const Header = (): JSX.Element => {
                 >
                     Our Team
                 </Button>
+                <Button
+                    className={
+                        location.pathname === Page.Staking
+                            ? css({
+                                  color: theme.fontColors.hovered.primary.getCSSColor(
+                                      1
+                                  ),
+                              })
+                            : undefined
+                    }
+                    style={buttonStyle}
+                    buttonType={ButtonType.clear}
+                    key="staking_button"
+                    onClick={(): void => history.push(Page.Staking)}
+                >
+                    Staking
+                </Button>
             </>
         ),
         [
-            home,
+            home.selected,
+            home.onClick,
             css,
             theme.fontColors.hovered.primary,
             buttonStyle,
-            project,
-            roadmap,
-            team,
+            project.selected,
+            project.onClick,
+            roadmap.selected,
+            roadmap.onClick,
+            team.selected,
+            team.onClick,
+            location.pathname,
             goHomeBefore,
+            history,
         ]
     );
 

@@ -14,7 +14,9 @@ import { TransactionContextProvider } from './contexts/TransactionContext';
 import 'react-toastify/dist/ReactToastify.css';
 import { Chain } from './hooks/useWeb3';
 import './styles/global.css';
-import Main from './pages/Main';
+import ApeRouter from './routing/ApeRouter';
+import Header from './molecules/Header/Header';
+import Footer from './sections/Footer';
 
 initializeIcons();
 
@@ -31,7 +33,11 @@ const Root = (): JSX.Element => {
                                 <CyberpunkApesContextProvider
                                     value={{
                                         api: 'http://localhost',
+                                        etherscanUrl: '',
                                         chainId: Chain.Test,
+                                        stakingContractAddress:
+                                            '0x36c86BC320115bC0A6563AC86239EAd47E6bed68',
+                                        tokenContractAddress: '',
                                         discordUrl:
                                             'https://discord.gg/UUaSqahHZw',
                                         twitterUrl:
@@ -40,8 +46,10 @@ const Root = (): JSX.Element => {
                                 >
                                     <ContractContextProvider>
                                         <>
+                                            <Header />
                                             <ToastContainer />
-                                            <Main />
+                                            <ApeRouter />
+                                            <Footer />
                                         </>
                                     </ContractContextProvider>
                                 </CyberpunkApesContextProvider>

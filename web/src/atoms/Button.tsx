@@ -63,12 +63,12 @@ const getButtonColors = (
     }
 };
 
-export const Button = (
-    props: React.DetailedHTMLProps<
-        React.ButtonHTMLAttributes<HTMLButtonElement>,
-        HTMLButtonElement
-    > & { buttonType: ButtonType }
-): JSX.Element => {
+export type ButtonProps = React.DetailedHTMLProps<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+> & { buttonType: ButtonType };
+
+export const Button = (props: ButtonProps): JSX.Element => {
     const { buttonType } = props;
     const theme = useThemeContext();
     const [css] = useStyletron();

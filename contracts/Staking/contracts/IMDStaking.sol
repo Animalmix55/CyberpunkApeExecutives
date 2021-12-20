@@ -315,7 +315,7 @@ contract IMDStaking is Ownable {
     ) internal {
         require(_maxYield > 0, "Invalid max");
         require(_minYield > 0, "Invalid min");
-        require(_yieldPeriod > 1 minutes, "Invalid period");
+        require(_yieldPeriod >= 1 minutes, "Invalid period");
 
         stakableTokenAttributes[_token].maxYield = _maxYield;
         stakableTokenAttributes[_token].minYield = _minYield;
