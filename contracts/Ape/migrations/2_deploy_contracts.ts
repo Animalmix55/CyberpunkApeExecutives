@@ -13,6 +13,6 @@ module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
   
     deployer.deploy(SignerContract);
     deployer.link(SignerContract, CyberpunkApeExecutivesContract);
-    deployer.deploy(CyberpunkApeExecutivesContract, 5500, 1000, 10, new BN('42000000000000000'), signer.address, now + 90, later, now + 200);
+    deployer.deploy(CyberpunkApeExecutivesContract, 5500, 1000, 10, new BN('42000000000000000'), signer.address, now + 90, later, later);
   }
 }

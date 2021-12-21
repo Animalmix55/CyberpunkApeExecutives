@@ -66,7 +66,7 @@ export const TransactionButton = <
                 trans.on('transactionHash', setHash);
             },
             [
-                contract.methods,
+                contract,
                 etherscanUrl,
                 hash,
                 method,

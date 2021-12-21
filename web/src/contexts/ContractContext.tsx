@@ -1,11 +1,13 @@
 import React from 'react';
-import abi from '../assets/stakingAbi.json';
+import stakingAbi from '../assets/stakingAbi.json';
+import tokenAbi from '../assets/tokenAbi.json';
 import { IMDStaking } from '../models/IMDStaking';
+import { CyberpunkApeExecutives } from '../models/CyberpunkApeExecutives';
 import { useCyberpunkApesContext } from './CyberpunkApesContext';
 import useWeb3 from './Web3Context';
 
 export interface ContractContextType {
-    tokenContract?: undefined;
+    tokenContract?: CyberpunkApeExecutives;
     stakingContract?: IMDStaking;
 }
 
@@ -20,23 +22,33 @@ export const ContractContextProvider = ({
     children: React.ReactChild;
 }): JSX.Element => {
     const { web3 } = useWeb3();
-    const { stakingContractAddress } = useCyberpunkApesContext();
+    const { stakingContractAddress, tokenContractAddress } =
+        useCyberpunkApesContext();
 
     const stakingContract = React.useMemo(() => {
         if (!stakingContractAddress) return undefined;
         if (!web3) return undefined;
 
         const staking = new web3.eth.Contract(
-            abi as never,
+            stakingAbi as never,
             stakingContractAddress
         ) as unknown as IMDStaking;
         return staking;
     }, [stakingContractAddress, web3]);
 
+    const tokenContract = React.useMemo(() => {
+        if (!tokenContractAddress) return undefined;
+        if (!web3) return undefined;
+
+        const token = new web3.eth.Contract(
+            tokenAbi as never,
+            tokenContractAddress
+        ) as unknown as CyberpunkApeExecutives;
+        return token;
+    }, [tokenContractAddress, web3]);
+
     return (
-        <ContractContext.Provider
-            value={{ stakingContract, tokenContract: undefined }}
-        >
+        <ContractContext.Provider value={{ stakingContract, tokenContract }}>
             {children}
         </ContractContext.Provider>
     );

@@ -14,6 +14,6 @@ module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
     const network = config.network;
     const yieldPeriod = network === 'test' ? 60 : 60 * 60 * 24 * 7;
 
-    deployer.deploy(IMDStaking, web3.eth.accounts.create().address, to18Decimals(10), to18Decimals(50), to18Decimals(10), yieldPeriod);
+    deployer.deploy(IMDStaking, '0xA5216Fc347269aF60B0d6237d647743c6456520A', to18Decimals(10), to18Decimals(50), to18Decimals(10), yieldPeriod);
   }
 }

@@ -81,6 +81,7 @@ export const TokenDisplay = (props: Props): JSX.Element => {
                         display: 'flex',
                         justifyContent: 'center',
                         marginTop: '10px',
+                        color: theme.fontColors.normal.primary.getCSSColor(1),
                     })}
                 >
                     {meta && meta?.name}

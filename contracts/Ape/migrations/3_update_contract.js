@@ -1,0 +1,1 @@
+module.exports = require("./3_update_contract.ts")(artifacts, web3);

@@ -17,6 +17,7 @@ import './styles/global.css';
 import ApeRouter from './routing/ApeRouter';
 import Header from './molecules/Header/Header';
 import Footer from './sections/Footer';
+import { Web3ContextProvider } from './contexts/Web3Context';
 
 initializeIcons();
 
@@ -24,41 +25,44 @@ const styletron = new Client();
 
 const Root = (): JSX.Element => {
     return (
-        <ScrollingProvider>
-            <TransactionContextProvider>
-                <Provider value={styletron}>
-                    <ThemeContextProvider value={defaultTheme}>
-                        <SessionContextProvider>
-                            <HashRouter>
-                                <CyberpunkApesContextProvider
-                                    value={{
-                                        api: 'http://localhost',
-                                        etherscanUrl: '',
-                                        chainId: Chain.Test,
-                                        stakingContractAddress:
-                                            '0x36c86BC320115bC0A6563AC86239EAd47E6bed68',
-                                        tokenContractAddress: '',
-                                        discordUrl:
-                                            'https://discord.gg/UUaSqahHZw',
-                                        twitterUrl:
-                                            'https://twitter.com/ApeExecutives',
-                                    }}
-                                >
-                                    <ContractContextProvider>
-                                        <>
-                                            <Header />
-                                            <ToastContainer />
-                                            <ApeRouter />
-                                            <Footer />
-                                        </>
-                                    </ContractContextProvider>
-                                </CyberpunkApesContextProvider>
-                            </HashRouter>
-                        </SessionContextProvider>
-                    </ThemeContextProvider>
-                </Provider>
-            </TransactionContextProvider>
-        </ScrollingProvider>
+        <Web3ContextProvider>
+            <ScrollingProvider>
+                <TransactionContextProvider>
+                    <Provider value={styletron}>
+                        <ThemeContextProvider value={defaultTheme}>
+                            <SessionContextProvider>
+                                <HashRouter>
+                                    <CyberpunkApesContextProvider
+                                        value={{
+                                            api: 'http://localhost',
+                                            etherscanUrl: '',
+                                            chainId: Chain.Test,
+                                            stakingContractAddress:
+                                                '0x1731fCB9F541560Bf2c0bd0Ac28f1fF44eC0fAd2',
+                                            tokenContractAddress:
+                                                '0xA5216Fc347269aF60B0d6237d647743c6456520A',
+                                            discordUrl:
+                                                'https://discord.gg/UUaSqahHZw',
+                                            twitterUrl:
+                                                'https://twitter.com/ApeExecutives',
+                                        }}
+                                    >
+                                        <ContractContextProvider>
+                                            <>
+                                                <Header />
+                                                <ToastContainer position="bottom-left" />
+                                                <ApeRouter />
+                                                <Footer />
+                                            </>
+                                        </ContractContextProvider>
+                                    </CyberpunkApesContextProvider>
+                                </HashRouter>
+                            </SessionContextProvider>
+                        </ThemeContextProvider>
+                    </Provider>
+                </TransactionContextProvider>
+            </ScrollingProvider>
+        </Web3ContextProvider>
     );
 };
 

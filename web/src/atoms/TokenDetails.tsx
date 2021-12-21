@@ -33,7 +33,7 @@ const MetaCell = (props: MetaCellProps): JSX.Element => {
                 className={css({
                     margin: '0px 0px 10px 0px',
                     textAlign: 'center',
-                    color: theme.fontColors.normal.primary.getCSSColor(1),
+                    color: theme.fontColors.normal.secondary.getCSSColor(1),
                 })}
             >
                 {trait}
