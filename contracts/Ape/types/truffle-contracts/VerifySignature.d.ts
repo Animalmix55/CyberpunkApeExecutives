@@ -16,7 +16,6 @@ export interface VerifySignatureInstance extends Truffle.ContractInstance {
   getMessageHash(
     _minter: string,
     _quantity: number | BN | string,
-    _mintId: number | BN | string,
     _nonce: number | BN | string,
     txDetails?: Truffle.TransactionDetails
   ): Promise<string>;
@@ -30,7 +29,6 @@ export interface VerifySignatureInstance extends Truffle.ContractInstance {
     _signer: string,
     _minter: string,
     _quantity: number | BN | string,
-    _mintId: number | BN | string,
     _nonce: number | BN | string,
     signature: string,
     txDetails?: Truffle.TransactionDetails
@@ -51,7 +49,6 @@ export interface VerifySignatureInstance extends Truffle.ContractInstance {
     getMessageHash(
       _minter: string,
       _quantity: number | BN | string,
-      _mintId: number | BN | string,
       _nonce: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
@@ -65,7 +62,6 @@ export interface VerifySignatureInstance extends Truffle.ContractInstance {
       _signer: string,
       _minter: string,
       _quantity: number | BN | string,
-      _mintId: number | BN | string,
       _nonce: number | BN | string,
       signature: string,
       txDetails?: Truffle.TransactionDetails

@@ -11,7 +11,6 @@ import { IERC721MetadataContract } from "./IERC721Metadata";
 import { IERC721ReceiverContract } from "./IERC721Receiver";
 import { MigrationsContract } from "./Migrations";
 import { OwnableContract } from "./Ownable";
-import { RooTroopContract } from "./RooTroop";
 import { VerifySignatureContract } from "./VerifySignature";
 
 declare global {
@@ -26,7 +25,6 @@ declare global {
       require(name: "IERC721Receiver"): IERC721ReceiverContract;
       require(name: "Migrations"): MigrationsContract;
       require(name: "Ownable"): OwnableContract;
-      require(name: "RooTroop"): RooTroopContract;
       require(name: "VerifySignature"): VerifySignatureContract;
     }
   }
@@ -50,7 +48,6 @@ export {
 } from "./IERC721Receiver";
 export { MigrationsContract, MigrationsInstance } from "./Migrations";
 export { OwnableContract, OwnableInstance } from "./Ownable";
-export { RooTroopContract, RooTroopInstance } from "./RooTroop";
 export {
   VerifySignatureContract,
   VerifySignatureInstance,

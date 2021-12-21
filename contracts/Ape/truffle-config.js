@@ -5,8 +5,8 @@ require("dotenv").config();
 
 const PrivateKeyProvider = require("truffle-privatekey-provider");
 
-const ropstenProvider = new PrivateKeyProvider(process.env.ropsten_private, 'https://ropsten.infura.io/v3/6457ef867ef342bd8a903bb150924e91')
-const rinkebyProvider = new PrivateKeyProvider(process.env.rinkeby_private, 'https://rinkeby.infura.io/v3/6457ef867ef342bd8a903bb150924e91')
+// const ropstenProvider = new PrivateKeyProvider(process.env.ropsten_private, 'https://ropsten.infura.io/v3/6457ef867ef342bd8a903bb150924e91')
+// const rinkebyProvider = new PrivateKeyProvider(process.env.rinkeby_private, 'https://rinkeby.infura.io/v3/6457ef867ef342bd8a903bb150924e91')
 
 module.exports = {
   // Uncommenting the defaults below 
@@ -28,16 +28,16 @@ module.exports = {
      gasPrice: 100000000000,
      network_id: "*",
    },
-   ropsten: {
-     provider: ropstenProvider,
-     network_id: 3,
-     gasPrice: 10000000000 // 10 gwei
-   },
-   rinkeby: {
-     provider: rinkebyProvider,
-     network_id: 4,
-     gasPrice: 10000000000 // 10 gwei
-   }
+  //  ropsten: {
+  //    provider: ropstenProvider,
+  //    network_id: 3,
+  //    gasPrice: 10000000000 // 10 gwei
+  //  },
+  //  rinkeby: {
+  //    provider: rinkebyProvider,
+  //    network_id: 4,
+  //    gasPrice: 10000000000 // 10 gwei
+  //  }
   },
   compilers: {
     solc: {

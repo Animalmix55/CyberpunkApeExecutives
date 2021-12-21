@@ -9,13 +9,10 @@ export interface CyberpunkApeExecutivesContract
   extends Truffle.Contract<CyberpunkApeExecutivesInstance> {
   "new"(
     maxSupply: number | BN | string,
-    maxFree: number | BN | string,
     maxPresale: number | BN | string,
     publicTransactionMax: number | BN | string,
     mintPrice: number | BN | string,
     signer: string,
-    freeMintStart: number | BN | string,
-    freeMintEnd: number | BN | string,
     presaleMintStart: number | BN | string,
     presaleMintEnd: number | BN | string,
     publicMintStart: number | BN | string,
@@ -131,13 +128,6 @@ export interface CyberpunkApeExecutivesInstance
   balanceOf(owner: string, txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   /**
-   * The free mint
-   */
-  freeMint(
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<{ 0: BN; 1: BN; 2: BN; 3: BN; 4: BN }>;
-
-  /**
    * See {IERC721-getApproved}.
    */
   getApproved(
@@ -180,7 +170,7 @@ export interface CyberpunkApeExecutivesInstance
   ): Promise<string>;
 
   /**
-   * An exclusive mint for members granted presale from influencers
+   * An exclusive mint for members granted presale
    */
   presaleMint(
     txDetails?: Truffle.TransactionDetails
@@ -348,10 +338,10 @@ export interface CyberpunkApeExecutivesInstance
     ): Promise<number>;
   };
 
-  getWhitelistMints(
+  getPresaleMints(
     user: string,
     txDetails?: Truffle.TransactionDetails
-  ): Promise<{ 0: BN; 1: BN }>;
+  ): Promise<BN>;
 
   /**
    * Updates the presale mint's characteristics
@@ -383,38 +373,6 @@ export interface CyberpunkApeExecutivesInstance
     ): Promise<string>;
     estimateGas(
       mintPrice: number | BN | string,
-      startDate: number | BN | string,
-      endDate: number | BN | string,
-      maxMinted: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<number>;
-  };
-
-  /**
-   * Updates the free mint's characteristics
-   * @param endDate - the end date for that mint in UNIX seconds
-   * @param startDate - the start date for that mint in UNIX seconds
-   */
-  updateFreeMint: {
-    (
-      startDate: number | BN | string,
-      endDate: number | BN | string,
-      maxMinted: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<Truffle.TransactionResponse<AllEvents>>;
-    call(
-      startDate: number | BN | string,
-      endDate: number | BN | string,
-      maxMinted: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<void>;
-    sendTransaction(
-      startDate: number | BN | string,
-      endDate: number | BN | string,
-      maxMinted: number | BN | string,
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<string>;
-    estimateGas(
       startDate: number | BN | string,
       endDate: number | BN | string,
       maxMinted: number | BN | string,
@@ -458,14 +416,12 @@ export interface CyberpunkApeExecutivesInstance
   getPremintHash(
     minter: string,
     quantity: number | BN | string,
-    mintId: number | BN | string,
     nonce: number | BN | string,
     txDetails?: Truffle.TransactionDetails
   ): Promise<string>;
 
   /**
    * Mints in the premint stage by using a signed transaction from a centralized whitelist. The message signer is expected to only sign messages when they fall within the whitelist specifications.
-   * @param mintId - 0 for free mint, 1 for presale mint
    * @param nonce - a random nonce which indicates that a signed transaction hasn't already been used.
    * @param quantity - the number to mint
    * @param signature - the signature given by the centralized whitelist authority, signed by                    the account specified as mintSigner.
@@ -473,28 +429,24 @@ export interface CyberpunkApeExecutivesInstance
   premint: {
     (
       quantity: number | BN | string,
-      mintId: number | BN | string,
       nonce: number | BN | string,
       signature: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
       quantity: number | BN | string,
-      mintId: number | BN | string,
       nonce: number | BN | string,
       signature: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
       quantity: number | BN | string,
-      mintId: number | BN | string,
       nonce: number | BN | string,
       signature: string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
       quantity: number | BN | string,
-      mintId: number | BN | string,
       nonce: number | BN | string,
       signature: string,
       txDetails?: Truffle.TransactionDetails
@@ -583,13 +535,6 @@ export interface CyberpunkApeExecutivesInstance
     ): Promise<BN>;
 
     /**
-     * The free mint
-     */
-    freeMint(
-      txDetails?: Truffle.TransactionDetails
-    ): Promise<{ 0: BN; 1: BN; 2: BN; 3: BN; 4: BN }>;
-
-    /**
      * See {IERC721-getApproved}.
      */
     getApproved(
@@ -632,7 +577,7 @@ export interface CyberpunkApeExecutivesInstance
     ): Promise<string>;
 
     /**
-     * An exclusive mint for members granted presale from influencers
+     * An exclusive mint for members granted presale
      */
     presaleMint(
       txDetails?: Truffle.TransactionDetails
@@ -800,10 +745,10 @@ export interface CyberpunkApeExecutivesInstance
       ): Promise<number>;
     };
 
-    getWhitelistMints(
+    getPresaleMints(
       user: string,
       txDetails?: Truffle.TransactionDetails
-    ): Promise<{ 0: BN; 1: BN }>;
+    ): Promise<BN>;
 
     /**
      * Updates the presale mint's characteristics
@@ -835,38 +780,6 @@ export interface CyberpunkApeExecutivesInstance
       ): Promise<string>;
       estimateGas(
         mintPrice: number | BN | string,
-        startDate: number | BN | string,
-        endDate: number | BN | string,
-        maxMinted: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<number>;
-    };
-
-    /**
-     * Updates the free mint's characteristics
-     * @param endDate - the end date for that mint in UNIX seconds
-     * @param startDate - the start date for that mint in UNIX seconds
-     */
-    updateFreeMint: {
-      (
-        startDate: number | BN | string,
-        endDate: number | BN | string,
-        maxMinted: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<Truffle.TransactionResponse<AllEvents>>;
-      call(
-        startDate: number | BN | string,
-        endDate: number | BN | string,
-        maxMinted: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<void>;
-      sendTransaction(
-        startDate: number | BN | string,
-        endDate: number | BN | string,
-        maxMinted: number | BN | string,
-        txDetails?: Truffle.TransactionDetails
-      ): Promise<string>;
-      estimateGas(
         startDate: number | BN | string,
         endDate: number | BN | string,
         maxMinted: number | BN | string,
@@ -910,14 +823,12 @@ export interface CyberpunkApeExecutivesInstance
     getPremintHash(
       minter: string,
       quantity: number | BN | string,
-      mintId: number | BN | string,
       nonce: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
 
     /**
      * Mints in the premint stage by using a signed transaction from a centralized whitelist. The message signer is expected to only sign messages when they fall within the whitelist specifications.
-     * @param mintId - 0 for free mint, 1 for presale mint
      * @param nonce - a random nonce which indicates that a signed transaction hasn't already been used.
      * @param quantity - the number to mint
      * @param signature - the signature given by the centralized whitelist authority, signed by                    the account specified as mintSigner.
@@ -925,28 +836,24 @@ export interface CyberpunkApeExecutivesInstance
     premint: {
       (
         quantity: number | BN | string,
-        mintId: number | BN | string,
         nonce: number | BN | string,
         signature: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
         quantity: number | BN | string,
-        mintId: number | BN | string,
         nonce: number | BN | string,
         signature: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
         quantity: number | BN | string,
-        mintId: number | BN | string,
         nonce: number | BN | string,
         signature: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
         quantity: number | BN | string,
-        mintId: number | BN | string,
         nonce: number | BN | string,
         signature: string,
         txDetails?: Truffle.TransactionDetails
