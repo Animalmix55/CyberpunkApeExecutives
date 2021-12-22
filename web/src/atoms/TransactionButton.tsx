@@ -102,7 +102,7 @@ export const TransactionButton = <
 
     return (
         <Button
-            {...props}
+            {...{ ...props, ref: undefined }}
             disabled={disabled || (pending && !hash)}
             onClick={onClick}
         >

@@ -63,67 +63,79 @@ const getButtonColors = (
     }
 };
 
-export type ButtonProps = React.DetailedHTMLProps<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
+export type ButtonProps = Omit<
+    React.DetailedHTMLProps<
+        React.ButtonHTMLAttributes<HTMLButtonElement>,
+        HTMLButtonElement
+    >,
+    'ref'
 > & { buttonType: ButtonType };
 
-export const Button = (props: ButtonProps): JSX.Element => {
-    const { buttonType } = props;
-    const theme = useThemeContext();
-    const [css] = useStyletron();
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+    (props: ButtonProps, ref): JSX.Element => {
+        const { buttonType } = props;
+        const theme = useThemeContext();
+        const [css] = useStyletron();
 
-    const {
-        hovered,
-        normal,
-        textColor,
-        borderColor,
-        hoveredBorderColor,
-        hoveredTextColor,
-        disabledColor,
-    } = React.useMemo(
-        () => getButtonColors(buttonType, theme),
-        [buttonType, theme]
-    );
+        const {
+            hovered,
+            normal,
+            textColor,
+            borderColor,
+            hoveredBorderColor,
+            hoveredTextColor,
+            disabledColor,
+        } = React.useMemo(
+            () => getButtonColors(buttonType, theme),
+            [buttonType, theme]
+        );
 
-    return (
-        <button
-            {...props}
-            className={ClassNameBuilder(
-                props.className,
-                css({
-                    [MOBILE]: {
-                        width: '100%',
-                    },
-                    borderColor: borderColor?.getCSSColor(1) || 'transparent',
-                    borderWidth: borderColor ? '2px' : undefined,
-                    color: textColor?.getCSSColor(1) || undefined,
-                    borderStyle: 'solid',
-                    backgroundColor: normal?.getCSSColor(1) || 'transparent',
-                    cursor: 'pointer',
-                    fontSize: '120%',
-                    fontFamily: theme.fontFamily,
-                    fontWeight: 'bold',
-                    ':hover:not(:disabled)': {
-                        backgroundColor:
-                            hovered?.getCSSColor(1) || 'transparent',
+        return (
+            <button
+                ref={ref}
+                {...props}
+                className={ClassNameBuilder(
+                    props.className,
+                    css({
+                        [MOBILE]: {
+                            width: '100%',
+                        },
                         borderColor:
-                            hoveredBorderColor?.getCSSColor(1) || 'transparent',
-                        color:
-                            hoveredTextColor?.getCSSColor(1) || 'transparent',
-                    },
-                    ':disabled': {
+                            borderColor?.getCSSColor(1) || 'transparent',
+                        borderWidth: borderColor ? '2px' : undefined,
+                        color: textColor?.getCSSColor(1) || undefined,
+                        borderStyle: 'solid',
                         backgroundColor:
-                            disabledColor?.getCSSColor(1) || 'transparent',
-                        borderColor:
-                            disabledColor?.getCSSColor(1) || 'transparent',
-                        color: textColor?.getCSSColor(0.7) || 'transparent',
-                        cursor: 'not-allowed',
-                    },
-                })
-            )}
-        />
-    );
-};
+                            normal?.getCSSColor(1) || 'transparent',
+                        cursor: 'pointer',
+                        fontSize: '120%',
+                        fontFamily: theme.fontFamily,
+                        fontWeight: 'bold',
+                        ':hover:not(:disabled)': {
+                            backgroundColor:
+                                hovered?.getCSSColor(1) || 'transparent',
+                            borderColor:
+                                hoveredBorderColor?.getCSSColor(1) ||
+                                'transparent',
+                            color:
+                                hoveredTextColor?.getCSSColor(1) ||
+                                'transparent',
+                        },
+                        ':disabled': {
+                            backgroundColor:
+                                disabledColor?.getCSSColor(1) || 'transparent',
+                            borderColor:
+                                disabledColor?.getCSSColor(1) || 'transparent',
+                            color: textColor?.getCSSColor(0.7) || 'transparent',
+                            cursor: 'not-allowed',
+                        },
+                    })
+                )}
+            />
+        );
+    }
+);
+
+Button.displayName = 'Button';
 
 export default Button;

@@ -38,7 +38,7 @@ const Root = (): JSX.Element => {
                                             etherscanUrl: '',
                                             chainId: Chain.Test,
                                             stakingContractAddress:
-                                                '0x1731fCB9F541560Bf2c0bd0Ac28f1fF44eC0fAd2',
+                                                '0xCf4DcabEC7CABe26b5f5E2B32a9514D303B07187',
                                             tokenContractAddress:
                                                 '0xA5216Fc347269aF60B0d6237d647743c6456520A',
                                             discordUrl:

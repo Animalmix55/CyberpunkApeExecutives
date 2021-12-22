@@ -3,6 +3,7 @@ import React from 'react';
 import { useStyletron } from 'styletron-react';
 import TokenDisplay from '../atoms/TokenDisplay';
 import { useContractContext } from '../contexts/ContractContext';
+import { useThemeContext } from '../contexts/ThemeContext';
 import useHeldTokens from '../hooks/useHeldTokens';
 import { IERC721Metadata } from '../models/IERC721Metadata';
 import ClassNameBuilder from '../utilties/ClassNameBuilder';
@@ -42,6 +43,7 @@ export const TokenGrid = (props: Props): JSX.Element => {
     );
 
     const [css] = useStyletron();
+    const theme = useThemeContext();
 
     const items = React.useMemo(
         () =>
@@ -79,6 +81,27 @@ export const TokenGrid = (props: Props): JSX.Element => {
             )}
         >
             {items}
+            {items.length === 0 && (
+                <div
+                    className={css({
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    })}
+                >
+                    <h1
+                        className={css({
+                            color: theme.fontColors.normal.secondary.getCSSColor(
+                                1
+                            ),
+                        })}
+                    >
+                        No Tokens to Display
+                    </h1>
+                </div>
+            )}
         </div>
     );
 };
