@@ -86,9 +86,9 @@ export const DividendWidget = (props: Props): JSX.Element => {
                             <div>
                                 Staking 1 token today will yield{' '}
                                 {roundAndDisplay(minYield)} $CREDIT after{' '}
-                                {FormatTimeOffset(yieldPeriod)} $CREDIT. After{' '}
-                                an additional {FormatTimeOffset(yieldPeriod)},{' '}
-                                that token will yield another{' '}
+                                {FormatTimeOffset(yieldPeriod)}. After an{' '}
+                                additional {FormatTimeOffset(yieldPeriod)}, that{' '}
+                                token will yield another{' '}
                                 {roundAndDisplay(minYield.add(step))} $CREDIT (
                                 {roundAndDisplay(step)} $CREDIT more than the{' '}
                                 previous yield). This increase will continue{' '}

@@ -11,9 +11,9 @@ module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
   return async (
     deployer: Truffle.Deployer,
   ) => {
-    const network = config.network;
-    const yieldPeriod = network === 'test' ? 60 : 60 * 60 * 24 * 7;
+    // const network = config.network;
+    // const yieldPeriod = network === 'test' ? 60 : 60 * 60 * 24 * 7;
 
-    deployer.deploy(IMDStaking, '0xA5216Fc347269aF60B0d6237d647743c6456520A', to18Decimals(10), to18Decimals(50), to18Decimals(10), yieldPeriod);
+    deployer.deploy(IMDStaking, '0xf0a40BC72091e29f56bb658a33391EB1D7d02973', to18Decimals(10), to18Decimals(50), to18Decimals(10), 60);
   }
 }

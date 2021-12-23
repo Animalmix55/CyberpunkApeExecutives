@@ -21,11 +21,39 @@ export interface EventOptions {
   topics?: string[];
 }
 
+export type ClaimDividend = ContractEventLog<{
+  user: string;
+  token: string;
+  amount: string;
+  0: string;
+  1: string;
+  2: string;
+}>;
 export type OwnershipTransferred = ContractEventLog<{
   previousOwner: string;
   newOwner: string;
   0: string;
   1: string;
+}>;
+export type Staked = ContractEventLog<{
+  user: string;
+  token: string;
+  tokenIds: string[];
+  timestamp: string;
+  0: string;
+  1: string;
+  2: string[];
+  3: string;
+}>;
+export type Unstaked = ContractEventLog<{
+  user: string;
+  token: string;
+  tokenIds: string[];
+  timestamp: string;
+  0: string;
+  1: string;
+  2: string[];
+  3: string;
 }>;
 
 export interface IMDStaking extends BaseContract {
@@ -209,14 +237,33 @@ export interface IMDStaking extends BaseContract {
     ): NonPayableTransactionObject<string[]>;
   };
   events: {
+    ClaimDividend(cb?: Callback<ClaimDividend>): EventEmitter;
+    ClaimDividend(
+      options?: EventOptions,
+      cb?: Callback<ClaimDividend>
+    ): EventEmitter;
+
     OwnershipTransferred(cb?: Callback<OwnershipTransferred>): EventEmitter;
     OwnershipTransferred(
       options?: EventOptions,
       cb?: Callback<OwnershipTransferred>
     ): EventEmitter;
 
+    Staked(cb?: Callback<Staked>): EventEmitter;
+    Staked(options?: EventOptions, cb?: Callback<Staked>): EventEmitter;
+
+    Unstaked(cb?: Callback<Unstaked>): EventEmitter;
+    Unstaked(options?: EventOptions, cb?: Callback<Unstaked>): EventEmitter;
+
     allEvents(options?: EventOptions, cb?: Callback<EventLog>): EventEmitter;
   };
+
+  once(event: "ClaimDividend", cb: Callback<ClaimDividend>): void;
+  once(
+    event: "ClaimDividend",
+    options: EventOptions,
+    cb: Callback<ClaimDividend>
+  ): void;
 
   once(event: "OwnershipTransferred", cb: Callback<OwnershipTransferred>): void;
   once(
@@ -224,4 +271,10 @@ export interface IMDStaking extends BaseContract {
     options: EventOptions,
     cb: Callback<OwnershipTransferred>
   ): void;
+
+  once(event: "Staked", cb: Callback<Staked>): void;
+  once(event: "Staked", options: EventOptions, cb: Callback<Staked>): void;
+
+  once(event: "Unstaked", cb: Callback<Unstaked>): void;
+  once(event: "Unstaked", options: EventOptions, cb: Callback<Unstaked>): void;
 }

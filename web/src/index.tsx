@@ -35,12 +35,13 @@ const Root = (): JSX.Element => {
                                     <CyberpunkApesContextProvider
                                         value={{
                                             api: 'http://localhost',
-                                            etherscanUrl: '',
-                                            chainId: Chain.Test,
+                                            etherscanUrl:
+                                                'https://ropsten.etherscan.io',
+                                            chainId: Chain.Ropsten,
                                             stakingContractAddress:
-                                                '0xCf4DcabEC7CABe26b5f5E2B32a9514D303B07187',
+                                                '0x14B0896e0f5ed8C2E2d44b2D29fda94Fbf9A320D',
                                             tokenContractAddress:
-                                                '0xA5216Fc347269aF60B0d6237d647743c6456520A',
+                                                '0xf0a40BC72091e29f56bb658a33391EB1D7d02973',
                                             discordUrl:
                                                 'https://discord.gg/UUaSqahHZw',
                                             twitterUrl:

@@ -3,9 +3,8 @@ require("ts-node").register({
 });
 require("dotenv").config();
 
-// const PrivateKeyProvider = require("truffle-privatekey-provider");
-
-// const ropstenProvider = new PrivateKeyProvider(process.env.ropsten_private, 'https://ropsten.infura.io/v3/6457ef867ef342bd8a903bb150924e91')
+const PrivateKeyProvider = require("truffle-privatekey-provider");
+const ropstenProvider = new PrivateKeyProvider(process.env.ropsten_private, 'https://ropsten.infura.io/v3/6457ef867ef342bd8a903bb150924e91')
 
 module.exports = {
   // Uncommenting the defaults below 
@@ -26,11 +25,11 @@ module.exports = {
      gasPrice: 100000000000,
      network_id: "*",
    },
-  //  ropsten: {
-  //    provider: ropstenProvider,
-  //    network_id: 3,
-  //    gasPrice: 10000000000 // 10 gwei
-  //  }
+   ropsten: {
+     provider: ropstenProvider,
+     network_id: 3,
+     gasPrice: 10000000000 // 10 gwei
+   }
   },
   compilers: {
     solc: {
@@ -41,6 +40,12 @@ module.exports = {
       }
     },
   },
+  plugins: [
+    'truffle-plugin-verify'
+  ],
+  api_keys: {
+    etherscan: '4QBZ6FA5BK2BBW78ZSN1GZRGCPIGX63VAN'
+  }
   //
   // Truffle DB is currently disabled by default; to enable it, change enabled:
   // false to enabled: true. The default storage location can also be
