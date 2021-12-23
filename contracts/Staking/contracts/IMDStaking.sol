@@ -8,6 +8,10 @@ import "./interfaces/ICollegeCredit.sol";
 import "./CollegeCredit.sol";
 
 contract IMDStaking is Ownable {
+    event Staked(address indexed user, address indexed token, uint256[] tokenIds, uint256 timestamp);
+    event Unstaked(address indexed user, address indexed token, uint256[] tokenIds, uint256 timestamp);
+    event ClaimDividend(address indexed user, address indexed token, uint256 amount);
+
     struct StakedToken {
         uint256 stakeTimestamp;
         uint256 nextToken;
@@ -123,6 +127,7 @@ contract IMDStaking is Ownable {
         tokenIds[0] = _tokenId;
 
         _bulkStakeFor(msg.sender, _token, tokenIds);
+        emit Staked(msg.sender, _token, tokenIds, block.timestamp);
     }
 
     /**
@@ -135,6 +140,8 @@ contract IMDStaking is Ownable {
     function stakeMany(address _token, uint256[] calldata _tokenIds) external {
         require(_isStakable(_token), "Not stakable");
         _bulkStakeFor(msg.sender, _token, _tokenIds);
+
+        emit Staked(msg.sender, _token, _tokenIds, block.timestamp);
     }
 
     /**
@@ -150,7 +157,12 @@ contract IMDStaking is Ownable {
                 msg.sender,
             "Not owner"
         );
+
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = _tokenId;
+
         _unstake(_token, _tokenId);
+        emit Unstaked(msg.sender, _token, tokenIds, block.timestamp);
     }
 
     /**
@@ -173,6 +185,8 @@ contract IMDStaking is Ownable {
 
             _unstake(_token, _tokenIds[i]);
         }
+
+        emit Unstaked(msg.sender, _token, _tokenIds, block.timestamp);
     }
 
     /**
@@ -181,7 +195,9 @@ contract IMDStaking is Ownable {
      */
     function claimRewards(address _token) external {
         require(_isStakable(_token), "Not stakable");
-        _withdrawRewards(msg.sender, _token);
+        uint256 dividend = _withdrawRewards(msg.sender, _token);
+
+        emit ClaimDividend(msg.sender, _token, dividend);
     }
 
     /**
@@ -211,8 +227,14 @@ contract IMDStaking is Ownable {
                 msg.sender,
             "Not owner"
         );
-        _withdrawRewards(msg.sender, _token);
+        uint256 dividend = _withdrawRewards(msg.sender, _token);
         _unstake(_token, _tokenId);
+
+        uint256[] memory tokenIds = new uint256[](1);
+        tokenIds[0] = _tokenId;
+
+        emit ClaimDividend(msg.sender, _token, dividend);
+        emit Unstaked(msg.sender, _token, tokenIds, block.timestamp);
     }
 
     /**
@@ -235,7 +257,10 @@ contract IMDStaking is Ownable {
             );
             _unstake(_token, _tokenIds[i]);
         }
-        _withdrawRewards(msg.sender, _token);
+        uint256 dividend = _withdrawRewards(msg.sender, _token);
+
+        emit ClaimDividend(msg.sender, _token, dividend);
+        emit Unstaked(msg.sender, _token, _tokenIds, block.timestamp);
     }
 
     /**
@@ -583,8 +608,9 @@ contract IMDStaking is Ownable {
      * @param _user the user whose rewards are being withdrawn.
      * @param _token the token from which rewards are being withdrawn.
      * @dev does not check is the user has permission to withdraw. Reverts on zero dividend.
+     * @return dividend
      */
-    function _withdrawRewards(address _user, address _token) internal {
+    function _withdrawRewards(address _user, address _token) internal returns (uint256) {
         uint256 dividend = _dividendOf(_user, _token);
         require(dividend > 0, "Zero dividend");
 
@@ -593,5 +619,6 @@ contract IMDStaking is Ownable {
         );
 
         rewardToken.mint(_user, dividend);
+        return dividend;
     }
 }

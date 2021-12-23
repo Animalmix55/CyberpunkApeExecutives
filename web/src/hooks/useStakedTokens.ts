@@ -1,69 +1,22 @@
 import React from 'react';
-import { IERC721Metadata } from '../models/IERC721Metadata';
 import useWeb3 from '../contexts/Web3Context';
-import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
+import { IMDStaking } from '../models/IMDStaking';
 
 export const useStakedTokens = (
-    contract?: IERC721Metadata
+    stakingContract?: IMDStaking,
+    tokenAddress?: string
 ): { update: () => void; ids: number[] } => {
-    const { stakingContractAddress } = useCyberpunkApesContext();
-
-    const [transfersIn, setTransfersIn] = React.useState<
-        Record<string, number>
-    >({});
-    const [transfersOut, setTransfersOut] = React.useState<
-        Record<string, number>
-    >({});
-
-    const ids = React.useMemo<number[]>((): number[] => {
-        const ownedIds: number[] = [];
-
-        Object.keys(transfersIn).forEach((tokenId) => {
-            if ((transfersOut[tokenId] || 0) > transfersIn[tokenId]) return;
-            ownedIds.push(Number(tokenId));
-        });
-
-        return ownedIds;
-    }, [transfersIn, transfersOut]);
     const { accounts } = useWeb3();
+    const [ids, setIds] = React.useState<number[]>([]);
 
     const update = React.useCallback(() => {
-        if (!contract) return;
-        setTransfersIn({});
-        setTransfersOut({});
+        if (!stakingContract || !tokenAddress || !accounts[0]) return;
 
-        contract.events.Transfer(
-            {
-                filter: { to: stakingContractAddress, from: accounts[0] },
-                fromBlock: 0,
-            },
-            (_, res) => {
-                const { returnValues, blockNumber } = res;
-                const { tokenId } = returnValues;
-
-                setTransfersIn((ti) => ({
-                    ...ti,
-                    [tokenId]: blockNumber,
-                }));
-            }
-        );
-
-        contract.events.Transfer(
-            {
-                filter: { from: stakingContractAddress, to: accounts[0] },
-                fromBlock: 0,
-            },
-            (_, res) => {
-                const { returnValues, blockNumber } = res;
-                const { tokenId } = returnValues;
-
-                setTransfersOut((ti) => ({
-                    ...ti,
-                    [tokenId]: blockNumber,
-                }));
-            }
-        );
-    }, [accounts, contract, stakingContractAddress]);
+        stakingContract.methods
+            .stakedTokenIds(accounts[0], tokenAddress)
+            .call()
+            .then((v) => setIds(v.map(Number)));
+    }, [accounts, stakingContract, tokenAddress]);
 
     React.useEffect(update, [update]);
 

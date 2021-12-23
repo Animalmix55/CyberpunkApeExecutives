@@ -87,30 +87,66 @@ export const ClaimDividendButton = (props: Props): JSX.Element => {
                             }}
                         >
                             <TooltipHost content="You can save gas by unstaking and claiming rewards in a single transaction">
-                                <TransactionButton
-                                    contract={stakingContract}
-                                    method="unstakeManyAndClaimRewards"
-                                    params={[tokenContractAddress, unstakeIds]}
-                                    disabled={
-                                        !tokenContractAddress ||
-                                        dividend.compareTo(ZERO) === 0
-                                    }
-                                    tx={{ from: accounts[0] }}
-                                    buttonType={ButtonType.clear}
-                                    onTransact={(t): Promise<void> =>
-                                        t.then(() => {
-                                            reload();
-                                            setOpen(false);
-                                        })
-                                    }
-                                    className={css({
-                                        paddingLeft: '20px',
-                                        paddingRight: '20px',
-                                        minHeight: '60px',
-                                    })}
-                                >
-                                    Claim Dividend and Unstake
-                                </TransactionButton>
+                                <>
+                                    {unstakeIds.length === 1 && (
+                                        <TransactionButton
+                                            contract={stakingContract}
+                                            method="unstakeAndClaimRewards"
+                                            params={[
+                                                tokenContractAddress,
+                                                unstakeIds[0],
+                                            ]}
+                                            disabled={
+                                                !tokenContractAddress ||
+                                                dividend.compareTo(ZERO) === 0
+                                            }
+                                            tx={{ from: accounts[0] }}
+                                            buttonType={ButtonType.clear}
+                                            onTransact={(t): Promise<void> =>
+                                                t.then(() => {
+                                                    reload();
+                                                    setOpen(false);
+                                                })
+                                            }
+                                            className={css({
+                                                paddingLeft: '20px',
+                                                paddingRight: '20px',
+                                                minHeight: '60px',
+                                            })}
+                                        >
+                                            Claim Dividend and Unstake
+                                        </TransactionButton>
+                                    )}
+                                    {unstakeIds.length > 1 && (
+                                        <TransactionButton
+                                            contract={stakingContract}
+                                            method="unstakeManyAndClaimRewards"
+                                            params={[
+                                                tokenContractAddress,
+                                                unstakeIds,
+                                            ]}
+                                            disabled={
+                                                !tokenContractAddress ||
+                                                dividend.compareTo(ZERO) === 0
+                                            }
+                                            tx={{ from: accounts[0] }}
+                                            buttonType={ButtonType.clear}
+                                            onTransact={(t): Promise<void> =>
+                                                t.then(() => {
+                                                    reload();
+                                                    setOpen(false);
+                                                })
+                                            }
+                                            className={css({
+                                                paddingLeft: '20px',
+                                                paddingRight: '20px',
+                                                minHeight: '60px',
+                                            })}
+                                        >
+                                            Claim Dividend and Unstake
+                                        </TransactionButton>
+                                    )}
+                                </>
                             </TooltipHost>
                         </Callout>
                     )}

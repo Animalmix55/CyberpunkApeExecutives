@@ -8,12 +8,16 @@ import useStakedTokens from '../hooks/useStakedTokens';
 import { MetamaskModal } from '../molecules/MetamaskModal';
 import TokenGrid from '../molecules/TokenGrid';
 import { MOBILE } from '../utilties/MediaQueries';
+import { useThemeContext } from '../contexts/ThemeContext';
+import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
 
 export const Staking = (): JSX.Element => {
     const [selectedTokens, setSelectedTokens] = React.useState<number[]>([]);
-    const { tokenContract } = useContractContext();
+    const { tokenContract, stakingContract } = useContractContext();
+    const { tokenContractAddress } = useCyberpunkApesContext();
     const [stakingMode, setStakingMode] = React.useState<Mode>('Stake');
     const { accounts } = useWeb3();
+    const theme = useThemeContext();
 
     React.useEffect(() => {
         setSelectedTokens([]);
@@ -21,7 +25,10 @@ export const Staking = (): JSX.Element => {
 
     const [css] = useStyletron();
     const { ids: heldIds } = useHeldTokens(tokenContract);
-    const { ids: stakedIds } = useStakedTokens(tokenContract);
+    const { ids: stakedIds } = useStakedTokens(
+        stakingContract,
+        tokenContractAddress
+    );
 
     if (!accounts[0]) return <MetamaskModal />;
 
@@ -40,6 +47,14 @@ export const Staking = (): JSX.Element => {
                 setMode={setStakingMode}
                 mode={stakingMode}
             />
+            <h1
+                className={css({
+                    marginLeft: '30px',
+                    color: theme.fontColors.normal.secondary.getCSSColor(1),
+                })}
+            >
+                {stakingMode}
+            </h1>
             <TokenGrid
                 className={css({
                     display: stakingMode === 'Stake' ? 'flex' : 'none',
