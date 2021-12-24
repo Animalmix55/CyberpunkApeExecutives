@@ -19,6 +19,7 @@ export const BaseWidget = ({
                 className,
                 css({
                     display: 'flex',
+                    justifyContent: 'center',
                     flexDirection: 'column',
                     alignItems: 'center',
                     border: `1px solid ${theme.fontColors.normal.primary.getCSSColor(

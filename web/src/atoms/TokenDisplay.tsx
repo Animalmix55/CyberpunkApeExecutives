@@ -5,6 +5,7 @@ import { useThemeContext } from '../contexts/ThemeContext';
 import useTokenDetails from '../hooks/useTokenDetails';
 import { IERC721Metadata } from '../models/IERC721Metadata';
 import ClassNameBuilder from '../utilties/ClassNameBuilder';
+import { MOBILE } from '../utilties/MediaQueries';
 import TokenDetails from './TokenDetails';
 import { TooltipHost } from './Tooltip';
 
@@ -34,7 +35,7 @@ export const TokenDisplay = (props: Props): JSX.Element => {
                 className={ClassNameBuilder(
                     className,
                     css({
-                        width: '100px',
+                        width: '300px',
                         padding: '10px',
                         backgroundColor:
                             theme.lighterBackgroundColor.getCSSColor(
@@ -47,6 +48,9 @@ export const TokenDisplay = (props: Props): JSX.Element => {
                         }),
                         ':hover': {
                             boxShadow: '0px 0px 5px #fff',
+                        },
+                        [MOBILE]: {
+                            width: 'auto',
                         },
                     })
                 )}
@@ -66,7 +70,7 @@ export const TokenDisplay = (props: Props): JSX.Element => {
                 {!meta && (
                     <div
                         className={css({
-                            height: '100px',
+                            height: '300px',
                             width: '100%',
                             display: 'flex',
                             justifyContent: 'center',

@@ -1,4 +1,8 @@
-import { Icon, TooltipHost as FUITooltipHost } from '@fluentui/react';
+import {
+    Icon,
+    TooltipDelay,
+    TooltipHost as FUITooltipHost,
+} from '@fluentui/react';
 import React from 'react';
 import { useThemeContext } from '../contexts/ThemeContext';
 
@@ -19,6 +23,7 @@ export const TooltipHost = ({
     const theme = useThemeContext();
     return (
         <FUITooltipHost
+            delay={TooltipDelay.long}
             hostClassName={className}
             styles={{
                 root: {

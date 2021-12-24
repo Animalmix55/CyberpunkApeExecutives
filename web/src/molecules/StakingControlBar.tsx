@@ -182,10 +182,10 @@ export const StakingControlBar = (props: Props): JSX.Element => {
                 <div
                     className={css({
                         display: 'flex',
-                        alignItems: 'stretch',
-                        minHeight: '70px',
+                        alignItems: 'center',
                         marginLeft: '10px',
                         flexGrow: 1,
+                        flexWrap: 'wrap',
                     })}
                 >
                     <Button
@@ -195,7 +195,7 @@ export const StakingControlBar = (props: Props): JSX.Element => {
                                 m === 'Stake' ? 'Unstake' : 'Stake'
                             )
                         }
-                        className={css({ marginLeft: 'auto' })}
+                        className={css({ marginLeft: 'auto', height: '70px' })}
                     >
                         <Icon iconName="Switch" />
                     </Button>
@@ -205,6 +205,7 @@ export const StakingControlBar = (props: Props): JSX.Element => {
                             borderRadius: '10px',
                             paddingLeft: '20px',
                             paddingRight: '20px',
+                            height: '70px',
                             margin: '10px',
                         })}
                         tokenContractAddress={tokenContractAddress}
@@ -220,6 +221,7 @@ export const StakingControlBar = (props: Props): JSX.Element => {
                             margin: '10px',
                             borderRadius: '10px',
                             overflow: 'hidden',
+                            height: '70px',
                         })}
                         unstakeIds={mode === 'Unstake' && selectedIds}
                     />

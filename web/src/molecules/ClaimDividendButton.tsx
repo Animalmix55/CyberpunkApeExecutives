@@ -10,6 +10,7 @@ import TransactionButton from '../atoms/TransactionButton';
 import ClassNameBuilder from '../utilties/ClassNameBuilder';
 import { useThemeContext } from '../contexts/ThemeContext';
 import { TooltipHost } from '../atoms/Tooltip';
+import { MOBILE } from '../utilties/MediaQueries';
 
 interface Props {
     className?: string;
@@ -30,7 +31,12 @@ export const ClaimDividendButton = (props: Props): JSX.Element => {
     const targetRef = React.useRef<HTMLButtonElement>(null);
 
     return (
-        <div className={ClassNameBuilder(css({ display: 'flex' }), className)}>
+        <div
+            className={ClassNameBuilder(
+                css({ display: 'flex', [MOBILE]: { flexGrow: 1 } }),
+                className
+            )}
+        >
             <TransactionButton
                 contract={stakingContract}
                 method="claimRewards"
@@ -43,6 +49,7 @@ export const ClaimDividendButton = (props: Props): JSX.Element => {
                 className={css({
                     paddingLeft: '20px',
                     paddingRight: '20px',
+                    flexGrow: 1,
                 })}
                 onTransact={(t): Promise<void> => t.then(reload)}
             >

@@ -17,6 +17,7 @@ export const ApeRouter = (): JSX.Element => {
             className={css({
                 backgroundColor: 'black',
                 minHeight: '100vh',
+                overflow: 'hidden',
             })}
         >
             <Switch>
