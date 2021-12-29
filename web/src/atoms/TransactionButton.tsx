@@ -63,9 +63,10 @@ export const TransactionButton = <
                 } catch (error) {
                     setPending(false);
                     toast(
-                        typeof error === 'object'
+                        (typeof error === 'object'
                             ? error.message
-                            : String(error).split('{')[0],
+                            : String(error)
+                        ).split('{')[0],
                         { type: 'error' }
                     );
                     return;

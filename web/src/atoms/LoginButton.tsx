@@ -1,5 +1,6 @@
 import React from 'react';
 import { toast } from 'react-toastify';
+import { useStyletron } from 'styletron-react';
 import { getLoginSignableMessage, getSessionToken } from '../api/Requests';
 import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
 import { useSessionContext } from '../contexts/SessionContext';
@@ -42,10 +43,17 @@ export const LoginButton = (): JSX.Element => {
             );
     }, [accounts, api, setToken, web3]);
 
+    const [css] = useStyletron();
+
     return (
         <Button
             buttonType={ButtonType.primary}
             type="button"
+            className={css({
+                height: '90px',
+                borderRadius: '10px',
+                minWidth: '200px',
+            })}
             onClick={onClick}
             disabled={!web3 || !!sessionToken || !accounts[0]}
         >
