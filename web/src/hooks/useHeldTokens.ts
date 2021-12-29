@@ -26,8 +26,8 @@ export const useHeldTokens = (
 
     const update = React.useCallback(() => {
         if (!contract) return;
-        setTransfersIn({});
-        setTransfersOut({});
+        let firstIn = true;
+        let firstOut = true;
 
         contract.events.Transfer(
             { filter: { to: accounts[0] }, fromBlock: 0 },
@@ -35,10 +35,15 @@ export const useHeldTokens = (
                 const { returnValues, blockNumber } = res;
                 const { tokenId } = returnValues;
 
-                setTransfersIn((ti) => ({
-                    ...ti,
-                    [tokenId]: blockNumber,
-                }));
+                setTransfersIn((ti) => {
+                    const data = {
+                        ...(!firstIn && ti),
+                        [tokenId]: blockNumber,
+                    };
+
+                    firstIn = false;
+                    return data;
+                });
             }
         );
 
@@ -48,10 +53,15 @@ export const useHeldTokens = (
                 const { returnValues, blockNumber } = res;
                 const { tokenId } = returnValues;
 
-                setTransfersOut((ti) => ({
-                    ...ti,
-                    [tokenId]: blockNumber,
-                }));
+                setTransfersOut((ti) => {
+                    const data = {
+                        ...(!firstOut && ti),
+                        [tokenId]: blockNumber,
+                    };
+
+                    firstOut = false;
+                    return data;
+                });
             }
         );
     }, [accounts, contract]);
