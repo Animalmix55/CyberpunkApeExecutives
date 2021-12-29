@@ -38,7 +38,12 @@ export const Header = (): JSX.Element => {
     const [css] = useStyletron();
     const [scrollTop, setScrollTop] = React.useState(0);
     const isMobile = useMobile();
-    const { discordUrl, twitterUrl } = useCyberpunkApesContext();
+    const {
+        discordUrl,
+        twitterUrl,
+        tokenContractAddress,
+        stakingContractAddress,
+    } = useCyberpunkApesContext();
 
     const [isOpen, setOpen] = React.useState(false);
 
@@ -138,52 +143,58 @@ export const Header = (): JSX.Element => {
                 >
                     Our Team
                 </Button>
-                <Button
-                    style={{
-                        ...buttonStyle,
-                        color:
-                            pathname === Page.Mint
-                                ? theme.fontColors.hovered.primary.getCSSColor(
-                                      1
-                                  )
-                                : undefined,
-                    }}
-                    buttonType={ButtonType.clear}
-                    key="mint_button"
-                    onClick={(): void => history.push(Page.Mint)}
-                >
-                    Mint
-                </Button>
-                <Button
-                    style={{
-                        ...buttonStyle,
-                        color:
-                            pathname === Page.Staking
-                                ? theme.fontColors.hovered.primary.getCSSColor(
-                                      1
-                                  )
-                                : undefined,
-                    }}
-                    buttonType={ButtonType.clear}
-                    key="staking_button"
-                    onClick={(): void => history.push(Page.Staking)}
-                >
-                    Staking
-                </Button>
+                {tokenContractAddress && (
+                    <Button
+                        style={{
+                            ...buttonStyle,
+                            color:
+                                pathname === Page.Mint
+                                    ? theme.fontColors.hovered.primary.getCSSColor(
+                                          1
+                                      )
+                                    : undefined,
+                        }}
+                        buttonType={ButtonType.clear}
+                        key="mint_button"
+                        onClick={(): void => history.push(Page.Mint)}
+                    >
+                        Mint
+                    </Button>
+                )}
+                {stakingContractAddress && (
+                    <Button
+                        style={{
+                            ...buttonStyle,
+                            color:
+                                pathname === Page.Staking
+                                    ? theme.fontColors.hovered.primary.getCSSColor(
+                                          1
+                                      )
+                                    : undefined,
+                        }}
+                        buttonType={ButtonType.clear}
+                        key="staking_button"
+                        onClick={(): void => history.push(Page.Staking)}
+                    >
+                        Staking
+                    </Button>
+                )}
             </>
         ),
         [
+            buttonStyle,
             home.selected,
             home.onClick,
             theme.fontColors.hovered.primary,
-            buttonStyle,
             project.selected,
             project.onClick,
             roadmap.selected,
             roadmap.onClick,
             team.selected,
             team.onClick,
+            tokenContractAddress,
             pathname,
+            stakingContractAddress,
             goHomeBefore,
             history,
         ]
