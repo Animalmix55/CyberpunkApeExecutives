@@ -15,11 +15,11 @@ import { Page } from '../../routing/ApeRouter';
 
 export const Header = (): JSX.Element => {
     const history = useHistory();
-    const location = useLocation();
+    const { pathname } = useLocation();
 
     const goHomeBefore = React.useCallback(
         (callback: () => void): void => {
-            if (location.pathname !== '/') {
+            if (pathname !== '/') {
                 history.push('/');
                 const u = history.listen(() => {
                     callback();
@@ -27,7 +27,7 @@ export const Header = (): JSX.Element => {
                 });
             } else callback();
         },
-        [history, location.pathname]
+        [history, pathname]
     );
 
     const home = useScrollSection('Landing');
@@ -87,16 +87,12 @@ export const Header = (): JSX.Element => {
         () => (
             <>
                 <Button
-                    className={
-                        home.selected
-                            ? css({
-                                  color: theme.fontColors.hovered.primary.getCSSColor(
-                                      1
-                                  ),
-                              })
-                            : undefined
-                    }
-                    style={buttonStyle}
+                    style={{
+                        ...buttonStyle,
+                        color: home.selected
+                            ? theme.fontColors.hovered.primary.getCSSColor(1)
+                            : undefined,
+                    }}
                     buttonType={ButtonType.clear}
                     key="home_button"
                     onClick={(): void => goHomeBefore(home.onClick)}
@@ -104,16 +100,12 @@ export const Header = (): JSX.Element => {
                     Home
                 </Button>
                 <Button
-                    className={
-                        project.selected
-                            ? css({
-                                  color: theme.fontColors.hovered.primary.getCSSColor(
-                                      1
-                                  ),
-                              })
-                            : undefined
-                    }
-                    style={buttonStyle}
+                    style={{
+                        ...buttonStyle,
+                        color: project.selected
+                            ? theme.fontColors.hovered.primary.getCSSColor(1)
+                            : undefined,
+                    }}
                     buttonType={ButtonType.clear}
                     key="project_button"
                     onClick={(): void => goHomeBefore(project.onClick)}
@@ -121,16 +113,12 @@ export const Header = (): JSX.Element => {
                     The Project
                 </Button>
                 <Button
-                    className={
-                        roadmap.selected
-                            ? css({
-                                  color: theme.fontColors.hovered.primary.getCSSColor(
-                                      1
-                                  ),
-                              })
-                            : undefined
-                    }
-                    style={buttonStyle}
+                    style={{
+                        ...buttonStyle,
+                        color: roadmap.selected
+                            ? theme.fontColors.hovered.primary.getCSSColor(1)
+                            : undefined,
+                    }}
                     buttonType={ButtonType.clear}
                     key="roadmap_button"
                     onClick={(): void => goHomeBefore(roadmap.onClick)}
@@ -138,16 +126,12 @@ export const Header = (): JSX.Element => {
                     Roadmap
                 </Button>
                 <Button
-                    className={
-                        team.selected
-                            ? css({
-                                  color: theme.fontColors.hovered.primary.getCSSColor(
-                                      1
-                                  ),
-                              })
-                            : undefined
-                    }
-                    style={buttonStyle}
+                    style={{
+                        ...buttonStyle,
+                        color: team.selected
+                            ? theme.fontColors.hovered.primary.getCSSColor(1)
+                            : undefined,
+                    }}
                     buttonType={ButtonType.clear}
                     key="team_button"
                     onClick={(): void => goHomeBefore(team.onClick)}
@@ -155,16 +139,15 @@ export const Header = (): JSX.Element => {
                     Our Team
                 </Button>
                 <Button
-                    className={
-                        location.pathname === Page.Mint
-                            ? css({
-                                  color: theme.fontColors.hovered.primary.getCSSColor(
+                    style={{
+                        ...buttonStyle,
+                        color:
+                            pathname === Page.Mint
+                                ? theme.fontColors.hovered.primary.getCSSColor(
                                       1
-                                  ),
-                              })
-                            : undefined
-                    }
-                    style={buttonStyle}
+                                  )
+                                : undefined,
+                    }}
                     buttonType={ButtonType.clear}
                     key="mint_button"
                     onClick={(): void => history.push(Page.Mint)}
@@ -172,16 +155,15 @@ export const Header = (): JSX.Element => {
                     Mint
                 </Button>
                 <Button
-                    className={
-                        location.pathname === Page.Staking
-                            ? css({
-                                  color: theme.fontColors.hovered.primary.getCSSColor(
+                    style={{
+                        ...buttonStyle,
+                        color:
+                            pathname === Page.Staking
+                                ? theme.fontColors.hovered.primary.getCSSColor(
                                       1
-                                  ),
-                              })
-                            : undefined
-                    }
-                    style={buttonStyle}
+                                  )
+                                : undefined,
+                    }}
                     buttonType={ButtonType.clear}
                     key="staking_button"
                     onClick={(): void => history.push(Page.Staking)}
@@ -193,7 +175,6 @@ export const Header = (): JSX.Element => {
         [
             home.selected,
             home.onClick,
-            css,
             theme.fontColors.hovered.primary,
             buttonStyle,
             project.selected,
@@ -202,7 +183,7 @@ export const Header = (): JSX.Element => {
             roadmap.onClick,
             team.selected,
             team.onClick,
-            location.pathname,
+            pathname,
             goHomeBefore,
             history,
         ]

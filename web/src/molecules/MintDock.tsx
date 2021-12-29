@@ -192,6 +192,7 @@ export const SaleModule = (props: SaleModuleProps): JSX.Element => {
                             className={css({
                                 marginTop: '10px',
                                 height: '90px',
+                                borderRadius: '10px',
                             })}
                             sale={target}
                             amount={amount}
