@@ -72,7 +72,7 @@
         $nonce = getLastNonce($address) + 1; // GET NONCE BEFORE COUNTS
         $alreadyMinted = whitelistMints($address);
 
-        $presaleWhitelistCount = presaleCount($address) - $alreadyMinted['presale'];
+        $presaleWhitelistCount = presaleCount($address) - $alreadyMinted;
         if ($presaleWhitelistCount < $quantity) {
             http_response_code(401);
             echo "Cannot mint more than allowed, max $presaleWhitelistCount";

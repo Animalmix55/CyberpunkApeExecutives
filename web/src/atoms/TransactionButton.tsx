@@ -7,11 +7,17 @@ import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
 import { BaseContract, NonPayableTx, PayableTx } from '../models/types';
 import Button, { ButtonProps } from './Button';
 
-interface Props<T extends BaseContract, M extends keyof T['methods']>
-    extends ButtonProps {
+export interface TransactionButtonProps<
+    T extends BaseContract,
+    M extends keyof T['methods']
+> extends ButtonProps {
     contract: T;
     method: M;
-    params: Parameters<T['methods'][M]>;
+    params:
+        | Parameters<T['methods'][M]>
+        | ((
+              props: Omit<TransactionButtonProps<T, M>, 'params'>
+          ) => Promise<Parameters<T['methods'][M]>>);
     onTransact?: (val: PromiEvent<TransactionReceipt>) => void;
     tx?: NonPayableTx | PayableTx;
 }
@@ -20,7 +26,7 @@ export const TransactionButton = <
     T extends BaseContract,
     M extends keyof T['methods']
 >(
-    props: Props<T, M>
+    props: TransactionButtonProps<T, M>
 ): JSX.Element => {
     const {
         contract,
@@ -43,18 +49,29 @@ export const TransactionButton = <
                     window.open(`${etherscanUrl}/tx/${hash}`, '_blank');
                     return;
                 }
+                setPending(true);
 
                 onClickProp?.(e);
 
+                const functionParams =
+                    typeof params === 'function' ? await params(props) : params;
+
                 try {
-                    await contract.methods[method](...params).estimateGas(tx);
+                    await contract.methods[method](
+                        ...functionParams
+                    ).estimateGas(tx);
                 } catch (error) {
-                    toast(String(error).split('{')[0], { type: 'error' });
+                    setPending(false);
+                    toast(
+                        typeof error === 'object'
+                            ? error.message
+                            : String(error).split('{')[0],
+                        { type: 'error' }
+                    );
                     return;
                 }
-                setPending(true);
 
-                const trans = contract.methods[method](...params).send(
+                const trans = contract.methods[method](...functionParams).send(
                     tx
                 ) as PromiEvent<TransactionReceipt>;
 
@@ -74,6 +91,7 @@ export const TransactionButton = <
                 onTransact,
                 params,
                 pending,
+                props,
                 tx,
             ]
         );
@@ -103,7 +121,7 @@ export const TransactionButton = <
     return (
         <Button
             {...{ ...props, ref: undefined }}
-            disabled={disabled || (pending && !hash)}
+            disabled={(disabled && !(pending && hash)) || (pending && !hash)}
             onClick={onClick}
         >
             {children}

@@ -156,6 +156,23 @@ export const Header = (): JSX.Element => {
                 </Button>
                 <Button
                     className={
+                        location.pathname === Page.Mint
+                            ? css({
+                                  color: theme.fontColors.hovered.primary.getCSSColor(
+                                      1
+                                  ),
+                              })
+                            : undefined
+                    }
+                    style={buttonStyle}
+                    buttonType={ButtonType.clear}
+                    key="mint_button"
+                    onClick={(): void => history.push(Page.Mint)}
+                >
+                    Mint
+                </Button>
+                <Button
+                    className={
                         location.pathname === Page.Staking
                             ? css({
                                   color: theme.fontColors.hovered.primary.getCSSColor(

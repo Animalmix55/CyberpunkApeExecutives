@@ -37,19 +37,6 @@ export const getPublicTransactionMax = async (
     );
 };
 
-export const getContractDates = async (
-    api: string
-): Promise<{
-    presale: TimeFrame;
-    free: TimeFrame;
-    public: TimeFrame;
-}> => {
-    const url = `${api}/contract.php`;
-    const result = await axios.get(url);
-
-    return result.data as never;
-};
-
 export const getLoginSignableMessage = async (
     api: string,
     address: string
@@ -77,13 +64,11 @@ export const getSessionToken = async (
 export const getMintSignature = async (
     api: string,
     sessionToken: string,
-    quantity: number,
-    targetMint: any
+    quantity: number
 ): Promise<{ signature: string; nonce: number }> => {
     const url = `${api}/mint.php`;
     const result = await axios.post(url, {
         quantity,
-        mintId: targetMint,
         token: sessionToken,
     });
 
@@ -93,9 +78,9 @@ export const getMintSignature = async (
 export const getWhitelist = async (
     api: string,
     address: string
-): Promise<{ presale: number; free: number }> => {
+): Promise<number> => {
     const url = `${api}/whitelist.php?address=${address}`;
     const result = await axios.get(url);
 
-    return result.data as never;
+    return Number(result.data);
 };

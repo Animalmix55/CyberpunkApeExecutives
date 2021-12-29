@@ -50,7 +50,7 @@
         $contract = getApeContract();
         $result = array();
 
-        $result = 0;
+        $result = -1;
 
         $contractAddress = getSecret('ape_contract_address');
         if ($contractAddress == false) die('Missing address');

@@ -10,6 +10,7 @@ import TokenGrid from '../molecules/TokenGrid';
 import { MOBILE } from '../utilties/MediaQueries';
 import { useThemeContext } from '../contexts/ThemeContext';
 import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
+import { InvalidChainModal } from '../molecules/InvalidChainModal';
 
 export const Staking = (): JSX.Element => {
     const [selectedTokens, setSelectedTokens] = React.useState<number[]>([]);
@@ -41,6 +42,7 @@ export const Staking = (): JSX.Element => {
                 },
             })}
         >
+            <InvalidChainModal />
             <StakingControlBar
                 setSelectedIds={setSelectedTokens}
                 selectedIds={selectedTokens}
