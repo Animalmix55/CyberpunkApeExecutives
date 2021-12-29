@@ -1,0 +1,12 @@
+{
+    "name": "rootroop/api",
+    "description": "The official PHP API for RooTroop's NFT mint",
+    "type": "project",
+    "require": {
+        "firebase/php-jwt": "^5.5",
+        "sc0vu/web3.php": "^0.1.4",
+        "simplito/elliptic-php": "dev-master",
+        "johnathanmiller/secure-env-php": "dev-master"
+    },
+    "minimum-stability": "dev"
+}
