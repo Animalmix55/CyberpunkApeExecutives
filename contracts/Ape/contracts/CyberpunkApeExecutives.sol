@@ -279,7 +279,7 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
      * @param amount - the amount to withdraw, much be <= contract balance.
      */
     function withdraw(uint256 amount) external onlyOwner {
-        require(address(this).balance <= amount, "Invalid amt");
+        require(address(this).balance >= amount, "Invalid amt");
 
         (bool success, ) = msg.sender.call{value: amount}("");
         require(success, "Trans failed");

@@ -177,7 +177,7 @@ contract('CyberpunkApeExecutives', (accounts) => {
     const signerAccount = web3.eth.accounts.create();
 
     // limit 3
-    const cyberpunkApeExecutivesInstance = await CyberpunkApeExecutives.new(5500, 1000, 10, 3, signerAccount.address, later, later, now, { from: accounts[0] });
+    const cyberpunkApeExecutivesInstance = await CyberpunkApeExecutives.new(5500, 1000, 10, 3, signerAccount.address, now, later, later, { from: accounts[0] });
 
     const trans: MintTransaction = {
       minter: accounts[1],
