@@ -116,6 +116,16 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
     }
 
     /**
+     * Sets the signer for presale transactions
+     *
+     * @param signer - the new signer's address
+     */
+    function setSigner(address signer) public onlyOwner {
+        mintSigner = signer;
+    }
+
+
+    /**
      * Burns the provided token id if you own it.
      * Reduces the supply by 1.
      *

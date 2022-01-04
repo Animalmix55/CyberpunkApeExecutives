@@ -316,6 +316,25 @@ export interface CyberpunkApeExecutivesInstance
   };
 
   /**
+   * Sets the signer for presale transactions
+   * @param signer - the new signer's address
+   */
+  setSigner: {
+    (signer: string, txDetails?: Truffle.TransactionDetails): Promise<
+      Truffle.TransactionResponse<AllEvents>
+    >;
+    call(signer: string, txDetails?: Truffle.TransactionDetails): Promise<void>;
+    sendTransaction(
+      signer: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      signer: string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  /**
    * Burns the provided token id if you own it. Reduces the supply by 1.
    * @param tokenId - the ID of the token to be burned.
    */
@@ -718,6 +737,28 @@ export interface CyberpunkApeExecutivesInstance
       ): Promise<string>;
       estimateGas(
         uri: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    /**
+     * Sets the signer for presale transactions
+     * @param signer - the new signer's address
+     */
+    setSigner: {
+      (signer: string, txDetails?: Truffle.TransactionDetails): Promise<
+        Truffle.TransactionResponse<AllEvents>
+      >;
+      call(
+        signer: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        signer: string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        signer: string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

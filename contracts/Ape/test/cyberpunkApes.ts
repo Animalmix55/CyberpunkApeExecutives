@@ -170,6 +170,33 @@ contract('CyberpunkApeExecutives', (accounts) => {
     assert.equal((await cyberpunkApeExecutivesInstance.getPresaleMints(accounts[1])).toNumber(), 3);
   });
 
+  it('mints presale with new signer', async () => {
+    const now = Math.floor(new Date().valueOf() / 1000);
+    const later = Math.floor(new Date(2030, 10).valueOf() / 1000);
+
+    const signerAccount1 = web3.eth.accounts.create();
+    const signerAccount2 = web3.eth.accounts.create();
+    const cyberpunkApeExecutivesInstance = await CyberpunkApeExecutives.new(5500, 1000, 10, 3, signerAccount1.address, now, later, now, { from: accounts[0] });
+
+    await truffleAssert.fails(
+      cyberpunkApeExecutivesInstance.setSigner(signerAccount2.address, { from: accounts[1] }) // wrong user
+    )
+    await cyberpunkApeExecutivesInstance.setSigner(signerAccount2.address);
+
+    const trans: MintTransaction = {
+      minter: accounts[1],
+      quantity: 3,
+      nonce: 1,
+    };
+
+    const hash = await cyberpunkApeExecutivesInstance.getPremintHash(trans.minter, trans.quantity, trans.nonce);
+    const { signature } = signerAccount2.sign(hash);
+
+    await cyberpunkApeExecutivesInstance.premint(trans.quantity, trans.nonce, signature, { from: accounts[1], value: '9' });
+    assert.equal((await cyberpunkApeExecutivesInstance.balanceOf(accounts[1])).toNumber(), trans.quantity, "Mint failed");
+    assert.equal((await cyberpunkApeExecutivesInstance.getPresaleMints(accounts[1])).toNumber(), 3);
+  });
+
   it('cannot mint more presale than limit', async () => {
     const now = Math.floor(new Date().valueOf() / 1000);
     const later = Math.floor(new Date(2030, 10).valueOf() / 1000);
