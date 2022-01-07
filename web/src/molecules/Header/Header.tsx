@@ -20,11 +20,11 @@ export const Header = (): JSX.Element => {
     const goHomeBefore = React.useCallback(
         (callback: () => void): void => {
             if (pathname !== '/') {
-                history.push('/');
                 const u = history.listen(() => {
-                    callback();
+                    setTimeout(callback, 500);
                     u();
                 });
+                history.push('/');
             } else callback();
         },
         [history, pathname]

@@ -5,7 +5,6 @@
     use Elliptic\EC;
     
     require_once __DIR__ . '/../utils/secrets.php';
-    require_once __DIR__ . '/../utils/jwt.php';
     require_once __DIR__ . '/../utils/apeContract.php';
     require_once __DIR__ . '/../utils/whitelist.php';
     
@@ -34,8 +33,8 @@
                     $json = file_get_contents('php://input');
                     $data = json_decode($json);
         
-                    if(isset($data->quantity) && isset($data->token)) {
-                        return getMintCredentials($data->quantity, $data->token);
+                    if(isset($data->quantity) && isset($data->address)) {
+                        return getMintCredentials($data->quantity, $data->address);
                     }
                     break;
                 case 'OPTIONS':
@@ -53,19 +52,10 @@
         }
     }
 
-    function getMintCredentials(int $quantity, string $token) {
+    function getMintCredentials(int $quantity, string $address) {
         if ($quantity <= 0) {
             echo "Invalid quantity";
             http_response_code(500);
-            return;
-        }
-
-        $address = "";
-        try {
-            $address = validateLoginToken($token);
-        } catch (Exception $e) {
-            echo "Invalid credentials";
-            http_response_code(401);
             return;
         }
 

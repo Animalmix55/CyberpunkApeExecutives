@@ -11,7 +11,6 @@ import {
     CyberpunkApesContextProvider,
     CyberpunkApesContextType,
 } from './contexts/CyberpunkApesContext';
-import { SessionContextProvider } from './contexts/SessionContext';
 import { defaultTheme, ThemeContextProvider } from './contexts/ThemeContext';
 import { TransactionContextProvider } from './contexts/TransactionContext';
 import 'react-toastify/dist/ReactToastify.css';
@@ -42,30 +41,28 @@ const Root = (): JSX.Element => {
                 <TransactionContextProvider>
                     <Provider value={styletron}>
                         <ThemeContextProvider value={defaultTheme}>
-                            <SessionContextProvider>
-                                <HashRouter>
-                                    <CyberpunkApesContextProvider
-                                        value={{
-                                            api,
-                                            etherscanUrl,
-                                            chainId,
-                                            stakingContractAddress,
-                                            tokenContractAddress,
-                                            discordUrl,
-                                            twitterUrl,
-                                        }}
-                                    >
-                                        <ContractContextProvider>
-                                            <>
-                                                <Header />
-                                                <ToastContainer position="bottom-left" />
-                                                <ApeRouter />
-                                                <Footer />
-                                            </>
-                                        </ContractContextProvider>
-                                    </CyberpunkApesContextProvider>
-                                </HashRouter>
-                            </SessionContextProvider>
+                            <HashRouter>
+                                <CyberpunkApesContextProvider
+                                    value={{
+                                        api,
+                                        etherscanUrl,
+                                        chainId,
+                                        stakingContractAddress,
+                                        tokenContractAddress,
+                                        discordUrl,
+                                        twitterUrl,
+                                    }}
+                                >
+                                    <ContractContextProvider>
+                                        <>
+                                            <Header />
+                                            <ToastContainer position="bottom-left" />
+                                            <ApeRouter />
+                                            <Footer />
+                                        </>
+                                    </ContractContextProvider>
+                                </CyberpunkApesContextProvider>
+                            </HashRouter>
                         </ThemeContextProvider>
                     </Provider>
                 </TransactionContextProvider>

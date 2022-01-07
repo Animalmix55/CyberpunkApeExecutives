@@ -2,9 +2,7 @@ import { MessageBar, MessageBarType, Slider } from '@fluentui/react';
 import React from 'react';
 import { useStyletron } from 'styletron-react';
 import { PromiEvent, TransactionReceipt } from 'web3-core';
-import LoginButton from '../atoms/LoginButton';
 import MintButton from '../atoms/MintButton';
-import { useSessionContext } from '../contexts/SessionContext';
 import { useThemeContext } from '../contexts/ThemeContext';
 import useCurrentTime from '../hooks/useCurrentTime';
 import useMintDetails from '../hooks/useMintDetails';
@@ -22,53 +20,6 @@ interface SaleModuleProps {
     onTransact?: (trans: PromiEvent<TransactionReceipt>) => void;
     refreshCounts: () => void;
 }
-
-export const LoginPrompt = (): JSX.Element => {
-    const [css] = useStyletron();
-    const { presale } = useWhitelistCounts();
-    const theme = useThemeContext();
-
-    return (
-        <div
-            className={css({
-                color: theme.fontColors.normal.primary.getCSSColor(1),
-                margin: '10px',
-                minWidth: '300px',
-                flexBasis: '40%',
-                flexGrow: 1,
-                backgroundColor: theme.lighterBackgroundColor.getCSSColor(0.7),
-                borderRadius: '10px',
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-                padding: '20px',
-                alignSelf: 'stretch',
-                [MOBILE]: {
-                    marginLeft: 'unset !important',
-                    marginRight: 'unset !important',
-                },
-            })}
-        >
-            <h1
-                className={css({
-                    color: theme.fontColors.normal.secondary.getCSSColor(1),
-                })}
-            >
-                Login to View Whitelist Mints
-            </h1>
-            <div className={css({ marginBottom: '10px' })}>
-                You have {presale} presale slots
-            </div>
-            <div
-                className={css({
-                    marginTop: 'auto',
-                })}
-            >
-                <LoginButton />
-            </div>
-        </div>
-    );
-};
 
 export const SaleModule = (props: SaleModuleProps): JSX.Element => {
     const {
@@ -218,7 +169,6 @@ export const MintDock = (): JSX.Element => {
     const { startDate: publicStart, maxPerTransaction: publicMax } =
         useMintDetails('public');
 
-    const { sessionToken } = useSessionContext();
     const [showAlert, setShowAlert] = React.useState<boolean>();
     const [showInfo, setShowInfo] = React.useState<boolean>(true);
     const [disablePreminting, setDisablePreminting] =
@@ -267,27 +217,20 @@ export const MintDock = (): JSX.Element => {
                                 mints begin. But you can if you want to!
                             </MessageBar>
                         ))}
-                    {sessionToken && (
-                        <>
-                            <SaleModule
-                                target="presale"
-                                startDate={presaleStart}
-                                endDate={presaleEnd}
-                                eligibleCount={presaleCount}
-                                disabled={disablePreminting}
-                                refreshCounts={reload}
-                                onTransact={(v): void => {
-                                    setShowAlert(true);
-                                    setDisablePreminting(true);
+                    <SaleModule
+                        target="presale"
+                        startDate={presaleStart}
+                        endDate={presaleEnd}
+                        eligibleCount={presaleCount}
+                        disabled={disablePreminting}
+                        refreshCounts={reload}
+                        onTransact={(v): void => {
+                            setShowAlert(true);
+                            setDisablePreminting(true);
 
-                                    v.finally(() =>
-                                        setDisablePreminting(false)
-                                    );
-                                }}
-                            />
-                        </>
-                    )}
-                    {!sessionToken && <LoginPrompt />}
+                            v.finally(() => setDisablePreminting(false));
+                        }}
+                    />
                 </>
             )}
             <SaleModule

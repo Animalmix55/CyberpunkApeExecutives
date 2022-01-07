@@ -6,7 +6,6 @@ import { TransactionReceipt } from 'web3-eth';
 import { getMintSignature } from '../api/Requests';
 import { useContractContext } from '../contexts/ContractContext';
 import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
-import { useSessionContext } from '../contexts/SessionContext';
 import useWeb3 from '../contexts/Web3Context';
 import useMintDetails from '../hooks/useMintDetails';
 import { CyberpunkApeExecutives } from '../models/CyberpunkApeExecutives';
@@ -38,22 +37,21 @@ export const MintButton = (props: MintButtonProps): JSX.Element => {
     );
 
     const { api } = useCyberpunkApesContext();
-    const { sessionToken } = useSessionContext();
 
     const getPremintParams = React.useCallback(async (): Promise<
         Parameters<CyberpunkApeExecutives['methods']['premint']>
     > => {
         if (!contract) throw new Error('No contract');
-        if (!sessionToken) throw new Error('Not logged in');
+        if (!accounts[0]) throw new Error('Not logged in');
 
         const { signature, nonce } = await getMintSignature(
             api,
-            sessionToken,
-            amount
+            amount,
+            accounts[0]
         );
 
         return [amount, nonce, signature];
-    }, [amount, api, contract, sessionToken]);
+    }, [accounts, amount, api, contract]);
 
     if (sale === 'public') {
         return (
@@ -101,11 +99,7 @@ export const MintButton = (props: MintButtonProps): JSX.Element => {
             type="button"
             onTransact={onTransact}
             disabled={
-                !contract ||
-                !accounts[0] ||
-                price === undefined ||
-                !sessionToken ||
-                disabled
+                !contract || !accounts[0] || price === undefined || disabled
             }
             className={ClassNameBuilder(
                 css({

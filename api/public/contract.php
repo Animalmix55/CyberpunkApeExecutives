@@ -3,7 +3,6 @@
     require_once __DIR__ . '/../utils/secrets.php';
 
     require_once __DIR__ . '/../utils/apeContract.php';
-    require_once __DIR__ . '/../utils/jwt.php';
     require_once __DIR__ . '/../utils/whitelist.php';
 
     function processRequest() {

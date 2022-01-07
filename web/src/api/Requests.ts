@@ -63,13 +63,13 @@ export const getSessionToken = async (
 
 export const getMintSignature = async (
     api: string,
-    sessionToken: string,
-    quantity: number
+    quantity: number,
+    address: string
 ): Promise<{ signature: string; nonce: number }> => {
     const url = `${api}/mint.php`;
     const result = await axios.post(url, {
         quantity,
-        token: sessionToken,
+        address,
     });
 
     return result.data as never;
