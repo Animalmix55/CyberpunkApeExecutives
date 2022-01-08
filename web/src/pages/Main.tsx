@@ -4,7 +4,7 @@ import { Section } from 'react-scroll-section';
 import Description from '../sections/Description';
 import Discord from '../sections/Discord';
 import Landing from '../sections/Landing';
-import Roadmap from '../sections/Roadmap';
+import { OtherCollections } from '../sections/OtherCollections';
 import Team from '../sections/Team';
 
 export const Main = (): JSX.Element => {
@@ -23,8 +23,8 @@ export const Main = (): JSX.Element => {
             <Section id="Project">
                 <Description />
             </Section>
-            <Section id="Roadmap">
-                <Roadmap />
+            <Section id="OtherCollections">
+                <OtherCollections />
             </Section>
             <Section id="Team">
                 <Team />

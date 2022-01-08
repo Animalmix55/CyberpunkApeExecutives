@@ -2,7 +2,7 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { getWhitelist } from '../api/Requests';
 import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
-import useWeb3 from './useWeb3';
+import useWeb3 from '../contexts/Web3Context';
 
 interface Output {
     presale: number;

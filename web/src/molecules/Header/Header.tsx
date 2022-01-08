@@ -8,7 +8,6 @@ import Button, { ButtonType } from '../../atoms/Button';
 import { ClassNameBuilder } from '../../utilties/ClassNameBuilder';
 import { useThemeContext } from '../../contexts/ThemeContext';
 import useMobile from '../../hooks/useMobile';
-import MetaMaskButton from '../../atoms/MetamaskButton';
 import { useCyberpunkApesContext } from '../../contexts/CyberpunkApesContext';
 import FollowingEye from '../../atoms/FollowingEye';
 import { Page } from '../../routing/ApeRouter';
@@ -32,7 +31,7 @@ export const Header = (): JSX.Element => {
 
     const home = useScrollSection('Landing');
     const project = useScrollSection('Project');
-    const roadmap = useScrollSection('Roadmap');
+    const otherCollections = useScrollSection('OtherCollections');
     const team = useScrollSection('Team');
 
     const [css] = useStyletron();
@@ -120,15 +119,15 @@ export const Header = (): JSX.Element => {
                 <Button
                     style={{
                         ...buttonStyle,
-                        color: roadmap.selected
+                        color: otherCollections.selected
                             ? theme.fontColors.hovered.primary.getCSSColor(1)
                             : undefined,
                     }}
                     buttonType={ButtonType.clear}
-                    key="roadmap_button"
-                    onClick={(): void => goHomeBefore(roadmap.onClick)}
+                    key="otherCollections_button"
+                    onClick={(): void => goHomeBefore(otherCollections.onClick)}
                 >
-                    Roadmap
+                    Previous Collections
                 </Button>
                 <Button
                     style={{
@@ -188,8 +187,8 @@ export const Header = (): JSX.Element => {
             theme.fontColors.hovered.primary,
             project.selected,
             project.onClick,
-            roadmap.selected,
-            roadmap.onClick,
+            otherCollections.selected,
+            otherCollections.onClick,
             team.selected,
             team.onClick,
             tokenContractAddress,
@@ -334,10 +333,6 @@ export const Header = (): JSX.Element => {
                     flexDirection: 'column',
                 })}
             >
-                <MetaMaskButton
-                    style={buttonStyle}
-                    className={ClassNameBuilder(css({ height: '80px' }))}
-                />
                 {buttons}
                 <div
                     className={css({

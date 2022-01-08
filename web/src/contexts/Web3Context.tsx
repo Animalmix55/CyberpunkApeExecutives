@@ -1,9 +1,7 @@
 import MetaMaskOnboarding from '@metamask/onboarding';
 import React from 'react';
 import Web3 from 'web3';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare let window: { ethereum: any; location: Location };
+import detectEthereumProvider from '@metamask/detect-provider';
 
 export enum Chain {
     Mainnet = 1,
@@ -14,15 +12,18 @@ export enum Chain {
 
 export interface Web3ContextType {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    provider?: React.MutableRefObject<any>;
+    provider?: any;
     accounts: string[];
     chainId?: number;
     web3?: Web3;
-    reload: () => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    reload: () => Promise<any>;
+    login: () => Promise<string[]>;
 }
 
 const Web3Context = React.createContext<Web3ContextType>({
-    reload: () => '',
+    reload: () => Promise.resolve(undefined),
+    login: () => Promise.resolve([]),
     accounts: [],
 });
 
@@ -35,27 +36,38 @@ export const Web3ContextProvider = ({
 }): JSX.Element => {
     const [accounts, setAccounts] = React.useState<string[]>([]);
     const [chainId, setChainId] = React.useState<Chain>();
-    const [web3, setWeb3] = React.useState<Web3>();
-    const provider = React.useRef(window.ethereum);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [provider, _setProvider] = React.useState<any>();
+    const web3 = React.useMemo(() => new Web3(provider as never), [provider]);
+    const onboarding = React.useRef<MetaMaskOnboarding>();
 
     React.useEffect(() => {
-        if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-            if (window.ethereum.isConnected) setWeb3(new Web3(window.ethereum));
-
-            const onConnected = (): void => setWeb3(new Web3(window.ethereum));
-            const onDisconnected = (): void => setWeb3(undefined);
-
-            window.ethereum.on('connect', onConnected);
-            window.ethereum.on('disconnect', onDisconnected);
-
-            return (): void => {
-                window.ethereum.off('connect', onConnected);
-                window.ethereum.off('disconnect', onDisconnected);
-            };
+        if (!onboarding.current) {
+            onboarding.current = new MetaMaskOnboarding();
         }
-
-        return undefined;
     }, []);
+
+    const login = React.useCallback(async (): Promise<string[]> => {
+        if (MetaMaskOnboarding.isMetaMaskInstalled()) {
+            const promise = provider.request({ method: 'eth_requestAccounts' });
+
+            promise.then(setAccounts);
+            return promise;
+        }
+        onboarding.current.startOnboarding();
+        return Promise.resolve([] as string[]);
+    }, [provider]);
+
+    const reload = React.useCallback(async () => {
+        const provider = await detectEthereumProvider();
+        _setProvider(provider);
+
+        return provider;
+    }, []);
+
+    React.useEffect(() => {
+        reload();
+    }, [reload]);
 
     // eslint-disable-next-line consistent-return
     React.useEffect((): (() => void) | undefined => {
@@ -63,41 +75,19 @@ export const Web3ContextProvider = ({
             setAccounts(newAccounts);
         };
         const handleChainChange = (newChain: string): void => {
-            setChainId((cur) => {
-                if (cur !== undefined && cur !== Number(newChain))
-                    window.location.reload();
-                return Number(newChain);
-            });
+            setChainId(Number(newChain));
         };
 
-        if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-            const { ethereum } = window;
-            ethereum
-                .request({ method: 'eth_requestAccounts' })
-                .then(handleNewAccounts);
-            ethereum.request({ method: 'eth_chainId' }).then(handleChainChange);
-            ethereum.on('chainChanged', handleChainChange);
-            ethereum.on('accountsChanged', handleNewAccounts);
+        if (provider) {
+            provider.request({ method: 'eth_chainId' }).then(handleChainChange);
+            provider.on('chainChanged', handleChainChange);
+            provider.on('accountsChanged', handleNewAccounts);
             return (): void => {
-                ethereum.off('chainChanged', handleChainChange);
-                ethereum.off('accountsChanged', handleNewAccounts);
+                provider.off('chainChanged', handleChainChange);
+                provider.off('accountsChanged', handleNewAccounts);
             };
         }
-    }, []);
-
-    const web3Temp = React.useRef<Web3>();
-    const reload = React.useCallback(() => {
-        setWeb3((val) => {
-            web3Temp.current = val;
-            return undefined;
-        });
-    }, []);
-    React.useEffect(() => {
-        if (!web3 && web3Temp.current) {
-            setWeb3(web3Temp.current);
-            web3Temp.current = undefined;
-        }
-    }, [web3]);
+    }, [provider]);
 
     return (
         <Web3Context.Provider
@@ -107,6 +97,7 @@ export const Web3ContextProvider = ({
                 accounts,
                 chainId,
                 provider,
+                login,
             }}
         >
             {children}

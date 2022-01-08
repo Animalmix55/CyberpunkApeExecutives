@@ -1,12 +1,15 @@
-import { Modal } from '@fluentui/react';
+import { Checkbox, Modal } from '@fluentui/react';
 import React from 'react';
 import { useStyletron } from 'styletron-react';
 import MetaMaskButton from '../atoms/MetamaskButton';
 import { useThemeContext } from '../contexts/ThemeContext';
 import useWeb3 from '../contexts/Web3Context';
+import Terms from '../assets/Cyberpunk Ape Executives Terms of Use - 1.6.22.pdf';
 
 export const MetamaskModalInner = (): JSX.Element => {
     const [css] = useStyletron();
+    const [agreed, setAgreed] = React.useState(false);
+    const theme = useThemeContext();
 
     return (
         <div
@@ -19,7 +22,52 @@ export const MetamaskModalInner = (): JSX.Element => {
             })}
         >
             <h1 className={css({ textAlign: 'center' })}>Connect MetaMask</h1>
-            <MetaMaskButton className={css({ height: '90px' })} />
+            <div className={css({ display: 'flex' })}>
+                <Checkbox
+                    checked={agreed}
+                    styles={{
+                        text: {
+                            color: `${theme.fontColors.normal.primary.getCSSColor(
+                                1
+                            )} !important`,
+                        },
+                        checkbox: {
+                            color: `${theme.fontColors.normal.primary.getCSSColor(
+                                1
+                            )} !important`,
+                        },
+                    }}
+                    onChange={(_, v): void => {
+                        setAgreed(v);
+                    }}
+                />
+                <span
+                    role="checkbox"
+                    aria-checked={agreed}
+                    onClick={(): void => setAgreed((v) => !v)}
+                    tabIndex={0}
+                    onKeyDown={(): void => setAgreed((v) => !v)}
+                    className={css({ cursor: 'pointer', marginBottom: '10px' })}
+                >
+                    By connecting, I agree to the{' '}
+                    <a
+                        href={Terms}
+                        className={css({
+                            color: theme.fontColors.normal.primary.getCSSColor(
+                                1
+                            ),
+                        })}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        terms of service
+                    </a>
+                </span>
+            </div>
+            <MetaMaskButton
+                disabled={!agreed}
+                className={css({ height: '90px' })}
+            />
         </div>
     );
 };

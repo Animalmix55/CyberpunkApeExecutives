@@ -3,8 +3,8 @@ import React from 'react';
 import { useStyletron } from 'styletron-react';
 import jazzicon from '@metamask/jazzicon';
 import MetaMaskLogo from '../assets/MetaMaskLogo.png';
-import useWeb3 from '../hooks/useWeb3';
 import { Button, ButtonType } from './Button';
+import useWeb3 from '../contexts/Web3Context';
 
 const ONBOARD_TEXT = 'Install';
 const CONNECT_TEXT = 'Connect';
@@ -13,16 +13,17 @@ const CONNECTED_TEXT = 'Connected';
 interface Props {
     className?: string;
     style?: React.CSSProperties;
+    disabled?: boolean;
 }
 
 export const MetaMaskButton = (props: Props): JSX.Element => {
-    const { className, style } = props;
+    const { className, style, disabled: disabledProp } = props;
     const [css] = useStyletron();
     const iconRef = React.useRef<HTMLDivElement>(null);
 
     const [buttonText, setButtonText] = React.useState(ONBOARD_TEXT);
     const [isDisabled, setDisabled] = React.useState(false);
-    const { accounts, provider } = useWeb3();
+    const { accounts, login } = useWeb3();
 
     const onboarding = React.useRef<MetaMaskOnboarding>();
 
@@ -44,14 +45,6 @@ export const MetaMaskButton = (props: Props): JSX.Element => {
             }
         }
     }, [accounts]);
-
-    const onClick = (): void => {
-        if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-            provider.request({ method: 'eth_requestAccounts' });
-        } else {
-            onboarding.current.startOnboarding();
-        }
-    };
 
     const child = React.useRef<HTMLElement>();
     React.useEffect(() => {
@@ -77,8 +70,8 @@ export const MetaMaskButton = (props: Props): JSX.Element => {
                 paddingRight: '10px',
             }}
             type="button"
-            disabled={isDisabled}
-            onClick={onClick}
+            disabled={isDisabled || disabledProp}
+            onClick={login}
             className={className}
         >
             <div ref={iconRef} />

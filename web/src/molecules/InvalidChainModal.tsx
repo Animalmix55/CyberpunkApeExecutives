@@ -3,8 +3,7 @@ import React from 'react';
 import { useStyletron } from 'styletron-react';
 import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
 import { useThemeContext } from '../contexts/ThemeContext';
-import useWeb3 from '../contexts/Web3Context';
-import { Chain } from '../hooks/useWeb3';
+import useWeb3, { Chain } from '../contexts/Web3Context';
 
 export const InvalidChainModalInner = ({
     desiredChain,

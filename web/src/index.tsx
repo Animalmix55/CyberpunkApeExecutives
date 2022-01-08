@@ -30,6 +30,8 @@ const {
     tokenContractAddress,
     discordUrl,
     twitterUrl,
+    genesisUrl,
+    bootlegUrl,
 } = { ...window } as unknown as CyberpunkApesContextType;
 
 const styletron = new Client();
@@ -51,6 +53,8 @@ const Root = (): JSX.Element => {
                                         tokenContractAddress,
                                         discordUrl,
                                         twitterUrl,
+                                        genesisUrl,
+                                        bootlegUrl,
                                     }}
                                 >
                                     <ContractContextProvider>

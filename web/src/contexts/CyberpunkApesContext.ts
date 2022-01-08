@@ -1,5 +1,5 @@
 import React from 'react';
-import { Chain } from '../hooks/useWeb3';
+import { Chain } from './Web3Context';
 
 export interface CyberpunkApesContextType {
     api: string;
@@ -9,6 +9,8 @@ export interface CyberpunkApesContextType {
     discordUrl: string;
     twitterUrl: string;
     etherscanUrl: string;
+    genesisUrl: string;
+    bootlegUrl: string;
 }
 
 const CyberpunkApesContext = React.createContext<CyberpunkApesContextType>({
@@ -19,6 +21,8 @@ const CyberpunkApesContext = React.createContext<CyberpunkApesContextType>({
     etherscanUrl: '',
     discordUrl: '',
     twitterUrl: '',
+    genesisUrl: '',
+    bootlegUrl: '',
 });
 
 export const useCyberpunkApesContext = (): CyberpunkApesContextType =>

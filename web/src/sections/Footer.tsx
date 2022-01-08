@@ -3,6 +3,7 @@ import { useStyletron } from 'styletron-react';
 import { SocialIcon } from 'react-social-icons';
 import useMobile from '../hooks/useMobile';
 import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
+import Terms from '../assets/Cyberpunk Ape Executives Terms of Use - 1.6.22.pdf';
 
 export const Footer = (): JSX.Element => {
     const [css] = useStyletron();
@@ -33,7 +34,19 @@ export const Footer = (): JSX.Element => {
                     }),
                 })}
             >
-                © 2021 Cyberpunk Apes. All rights reserved
+                <div>© 2021 Cyberpunk Apes. All rights reserved</div>
+                <div
+                    className={css({
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginTop: '5px',
+                    })}
+                >
+                    <a href={Terms} target="_blank" rel="noreferrer">
+                        Terms of Service
+                    </a>
+                </div>
             </div>
             <div
                 className={css({
