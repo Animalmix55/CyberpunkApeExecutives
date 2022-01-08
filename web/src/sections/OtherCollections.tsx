@@ -60,7 +60,7 @@ export const OtherCollections = (): JSX.Element => {
                         >
                             <Slideshow
                                 imageUrls={genesis}
-                                duration={1000}
+                                duration={3000}
                                 imageClass={css({
                                     width: isMobile ? '100%' : '500px',
                                     height: 'auto',
@@ -103,7 +103,7 @@ export const OtherCollections = (): JSX.Element => {
                         >
                             <Slideshow
                                 imageUrls={bootlegs}
-                                duration={1000}
+                                duration={3000}
                                 imageClass={css({
                                     width: isMobile ? '100%' : '500px',
                                     height: 'auto',
