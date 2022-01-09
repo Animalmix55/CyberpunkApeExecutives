@@ -33,6 +33,7 @@ export const Header = (): JSX.Element => {
     const project = useScrollSection('Project');
     const otherCollections = useScrollSection('OtherCollections');
     const team = useScrollSection('Team');
+    const faq = useScrollSection('FAQ');
 
     const [css] = useStyletron();
     const [scrollTop, setScrollTop] = React.useState(0);
@@ -142,6 +143,19 @@ export const Header = (): JSX.Element => {
                 >
                     Our Team
                 </Button>
+                <Button
+                    style={{
+                        ...buttonStyle,
+                        color: faq.selected
+                            ? theme.fontColors.hovered.primary.getCSSColor(1)
+                            : undefined,
+                    }}
+                    buttonType={ButtonType.clear}
+                    key="faq_button"
+                    onClick={(): void => goHomeBefore(faq.onClick)}
+                >
+                    FAQ
+                </Button>
                 {tokenContractAddress && (
                     <Button
                         style={{
@@ -191,6 +205,8 @@ export const Header = (): JSX.Element => {
             otherCollections.onClick,
             team.selected,
             team.onClick,
+            faq.selected,
+            faq.onClick,
             tokenContractAddress,
             pathname,
             stakingContractAddress,

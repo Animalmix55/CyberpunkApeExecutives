@@ -7,6 +7,7 @@ import Seth from '../assets/Team/Seth Horus.gif';
 import Cash from '../assets/Team/CA$H.gif';
 import Admiral from '../assets/Team/Admiral Tlaloc Rayamantra.gif';
 import Octavian from '../assets/Team/Octavian Saisho The First APE.gif';
+import Cory from '../assets/Team/Cory.gif';
 import useMobile from '../hooks/useMobile';
 
 export const Team = (): JSX.Element => {
@@ -168,6 +169,38 @@ export const Team = (): JSX.Element => {
                                 })}
                             >
                                 CA$H
+                            </h2>
+                        </div>
+                        <div
+                            className={css({
+                                position: 'relative',
+                                margin: isMobile ? '10px' : '20px',
+                                borderRadius: '20px',
+                                overflow: 'hidden',
+                                width: isMobile ? '100%' : undefined,
+                            })}
+                        >
+                            <img
+                                src={Cory}
+                                alt="Cory Cherven"
+                                className={css({
+                                    width: isMobile ? '100%' : '350px',
+                                    height: 'auto',
+                                })}
+                            />
+                            <h2
+                                className={css({
+                                    position: 'absolute',
+                                    bottom: '0px',
+                                    padding: '10px',
+                                    left: '0px',
+                                    textAlign: 'center',
+                                    right: '0px',
+                                    margin: 'auto',
+                                    backgroundColor: 'rgba(0, 0, 0, .4)',
+                                })}
+                            >
+                                Cory Cherven
                             </h2>
                         </div>
                         <div
