@@ -2,10 +2,10 @@ import React from 'react';
 import { useStyletron } from 'styletron-react';
 import { Section } from 'react-scroll-section';
 import Description from '../sections/Description';
-import Discord from '../sections/Discord';
 import Landing from '../sections/Landing';
 import { OtherCollections } from '../sections/OtherCollections';
 import Team from '../sections/Team';
+import FAQSection from '../sections/FAQ';
 
 export const Main = (): JSX.Element => {
     const [css] = useStyletron();
@@ -29,8 +29,8 @@ export const Main = (): JSX.Element => {
             <Section id="Team">
                 <Team />
             </Section>
-            <Section id="Discord">
-                <Discord />
+            <Section id="FAQ">
+                <FAQSection />
             </Section>
         </div>
     );

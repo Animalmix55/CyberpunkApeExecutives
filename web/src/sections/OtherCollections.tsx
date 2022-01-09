@@ -48,7 +48,14 @@ export const OtherCollections = (): JSX.Element => {
                     })}
                 >
                     <h1>Previous Collections</h1>
-                    <div className={css({ display: 'flex' })}>
+                    <div
+                        className={css({
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        })}
+                    >
                         <div
                             className={css({
                                 position: 'relative',

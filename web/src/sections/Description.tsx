@@ -41,6 +41,9 @@ export const Description = (): JSX.Element => {
                             width: '100%',
                             textAlign: 'center',
                             margin: '30px',
+                            [MOBILE]: {
+                                margin: '30px 0px 30px 0px',
+                            },
                         })}
                     >
                         Dear Intrepid NFT-er. We are boned!
@@ -147,6 +150,9 @@ export const Description = (): JSX.Element => {
                             width: '100%',
                             textAlign: 'center',
                             margin: '30px',
+                            [MOBILE]: {
+                                margin: '0px',
+                            },
                         })}
                     >
                         -Sincerely, Isis Sakura
