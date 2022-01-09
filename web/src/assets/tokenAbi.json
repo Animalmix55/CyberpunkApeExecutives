@@ -18,7 +18,7 @@
             },
             {
                 "internalType": "uint256",
-                "name": "mintPrice",
+                "name": "price",
                 "type": "uint256"
             },
             {
@@ -282,6 +282,20 @@
     },
     {
         "inputs": [],
+        "name": "mintPrice",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+    },
+    {
+        "inputs": [],
         "name": "minted",
         "outputs": [
             {
@@ -348,11 +362,6 @@
         "outputs": [
             {
                 "internalType": "uint256",
-                "name": "mintPrice",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
                 "name": "startDate",
                 "type": "uint256"
             },
@@ -380,11 +389,6 @@
         "inputs": [],
         "name": "publicMint",
         "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "mintPrice",
-                "type": "uint256"
-            },
             {
                 "internalType": "uint256",
                 "name": "startDate",
@@ -601,6 +605,19 @@
     {
         "inputs": [
             {
+                "internalType": "address",
+                "name": "signer",
+                "type": "address"
+            }
+        ],
+        "name": "setSigner",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "uint256",
                 "name": "tokenId",
                 "type": "uint256"
@@ -635,11 +652,6 @@
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "mintPrice",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
                 "name": "startDate",
                 "type": "uint256"
             },
@@ -662,11 +674,6 @@
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "mintPrice",
-                "type": "uint256"
-            },
-            {
                 "internalType": "uint16",
                 "name": "maxPerTransaction",
                 "type": "uint16"
@@ -678,6 +685,19 @@
             }
         ],
         "name": "updatePublicMint",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "price",
+                "type": "uint256"
+            }
+        ],
+        "name": "setMintPrice",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -745,6 +765,25 @@
             }
         ],
         "name": "mint",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function",
+        "payable": true
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "internalType": "uint16",
+                "name": "quantity",
+                "type": "uint16"
+            }
+        ],
+        "name": "mintTo",
         "outputs": [],
         "stateMutability": "payable",
         "type": "function",

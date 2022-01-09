@@ -102,6 +102,8 @@ export interface CyberpunkApeExecutives extends BaseContract {
 
     lastMintNonce(arg0: string): NonPayableTransactionObject<string>;
 
+    mintPrice(): NonPayableTransactionObject<string>;
+
     minted(): NonPayableTransactionObject<string>;
 
     /**
@@ -123,7 +125,6 @@ export interface CyberpunkApeExecutives extends BaseContract {
      * An exclusive mint for members granted presale
      */
     presaleMint(): NonPayableTransactionObject<{
-      mintPrice: string;
       startDate: string;
       endDate: string;
       totalMinted: string;
@@ -132,19 +133,16 @@ export interface CyberpunkApeExecutives extends BaseContract {
       1: string;
       2: string;
       3: string;
-      4: string;
     }>;
 
     /**
      * The public mint for everybody.
      */
     publicMint(): NonPayableTransactionObject<{
-      mintPrice: string;
       startDate: string;
       maxPerTransaction: string;
       0: string;
       1: string;
-      2: string;
     }>;
 
     /**
@@ -222,6 +220,12 @@ export interface CyberpunkApeExecutives extends BaseContract {
     setBaseURI(uri: string): NonPayableTransactionObject<void>;
 
     /**
+     * Sets the signer for presale transactions
+     * @param signer - the new signer's address
+     */
+    setSigner(signer: string): NonPayableTransactionObject<void>;
+
+    /**
      * Burns the provided token id if you own it. Reduces the supply by 1.
      * @param tokenId - the ID of the token to be burned.
      */
@@ -232,11 +236,9 @@ export interface CyberpunkApeExecutives extends BaseContract {
     /**
      * Updates the presale mint's characteristics
      * @param endDate - the end date for that mint in UNIX seconds
-     * @param mintPrice - the cost for that mint in WEI
      * @param startDate - the start date for that mint in UNIX seconds
      */
     updatePresaleMint(
-      mintPrice: number | string | BN,
       startDate: number | string | BN,
       endDate: number | string | BN,
       maxMinted: number | string | BN
@@ -245,13 +247,20 @@ export interface CyberpunkApeExecutives extends BaseContract {
     /**
      * Updates the public mint's characteristics
      * @param maxPerTransaction - the maximum amount allowed in a wallet to mint in the public mint
-     * @param mintPrice - the cost for that mint in WEI
      * @param startDate - the start date for that mint in UNIX seconds
      */
     updatePublicMint(
-      mintPrice: number | string | BN,
       maxPerTransaction: number | string | BN,
       startDate: number | string | BN
+    ): NonPayableTransactionObject<void>;
+
+    /**
+     * only for the contract owner
+     * Sets the mint price for whitelist and public mints.
+     * @param price - the cost for the mints in WEI
+     */
+    setMintPrice(
+      price: number | string | BN
     ): NonPayableTransactionObject<void>;
 
     getPremintHash(
@@ -277,6 +286,16 @@ export interface CyberpunkApeExecutives extends BaseContract {
      * @param quantity - the number of tokens to mint
      */
     mint(quantity: number | string | BN): PayableTransactionObject<void>;
+
+    /**
+     * Mints the given quantity of tokens provided it is possible to.This function allows minting in the public sale         or at any time for the owner of the contract.
+     * @param quantity - the number of tokens to mint
+     * @param user - the recipient of the mint
+     */
+    mintTo(
+      user: string,
+      quantity: number | string | BN
+    ): PayableTransactionObject<void>;
 
     /**
      * Withdraws balance from the contract to the owner (sender).

@@ -1,10 +1,7 @@
 import React from 'react';
-import BigDecimal from 'js-big-decimal';
 import { useContractContext } from '../contexts/ContractContext';
-import { BASE, ZERO } from '../utilties/Numbers';
 
 interface PresaleMintDetails {
-    mintPrice: BigDecimal;
     startDate: number;
     endDate: number;
     totalMinted: number;
@@ -12,7 +9,6 @@ interface PresaleMintDetails {
 }
 
 interface PublicDetails {
-    mintPrice: BigDecimal;
     startDate: number;
     maxPerTransaction: number;
 }
@@ -32,7 +28,6 @@ export function useMintDetails(
     const [details, setDetails] = React.useState<
         PresaleMintDetails & PublicDetails
     >({
-        mintPrice: ZERO,
         startDate: Infinity,
         endDate: Infinity,
         totalMinted: 0,
@@ -48,16 +43,9 @@ export function useMintDetails(
                 .presaleMint()
                 .call()
                 .then((fm) => {
-                    const {
-                        mintPrice,
-                        startDate,
-                        endDate,
-                        totalMinted,
-                        maxMinted,
-                    } = fm;
+                    const { startDate, endDate, totalMinted, maxMinted } = fm;
                     setDetails({
                         maxPerTransaction: 0,
-                        mintPrice: new BigDecimal(mintPrice).divide(BASE, 30),
                         startDate: Number(startDate),
                         endDate: Number(endDate),
                         totalMinted: Number(totalMinted),
@@ -72,9 +60,8 @@ export function useMintDetails(
             .publicMint()
             .call()
             .then((fm) => {
-                const { mintPrice, startDate, maxPerTransaction } = fm;
+                const { startDate, maxPerTransaction } = fm;
                 setDetails({
-                    mintPrice: new BigDecimal(mintPrice).divide(BASE, 30),
                     startDate: Number(startDate),
                     maxPerTransaction: Number(maxPerTransaction),
                     endDate: 0,

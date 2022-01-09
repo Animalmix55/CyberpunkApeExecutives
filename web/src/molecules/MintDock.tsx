@@ -204,9 +204,10 @@ export const MintDock = (): JSX.Element => {
                             will succeed.
                         </MessageBar>
                     )}
-                    {(showInfo && presaleStart <= loadTime) ||
-                        publicStart <= loadTime ||
-                        (publicStart <= loadTime && (
+                    {showInfo &&
+                        (presaleStart <= loadTime ||
+                            publicStart <= loadTime ||
+                            publicStart <= loadTime) && (
                             <MessageBar
                                 onDismiss={(): void => setShowInfo(false)}
                                 className={css({ margin: '10px' })}
@@ -214,9 +215,14 @@ export const MintDock = (): JSX.Element => {
                                 messageBarIconProps={{ iconName: 'Warning' }}
                             >
                                 You should not need to refresh the page when
-                                mints begin. But you can if you want to!
+                                mints begin. But you can if you want to!{' '}
+                                <b>
+                                    Be aware that mints may take up to 1-2
+                                    minutes to open after the timer completes
+                                    due to delays in block generation.
+                                </b>
                             </MessageBar>
-                        ))}
+                        )}
                     <SaleModule
                         target="presale"
                         startDate={presaleStart}

@@ -7,7 +7,7 @@ import { getMintSignature } from '../api/Requests';
 import { useContractContext } from '../contexts/ContractContext';
 import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
 import useWeb3 from '../contexts/Web3Context';
-import useMintDetails from '../hooks/useMintDetails';
+import useMintPrice from '../hooks/useMintPrice';
 import { CyberpunkApeExecutives } from '../models/CyberpunkApeExecutives';
 import ClassNameBuilder from '../utilties/ClassNameBuilder';
 import { BASE, roundAndDisplay, ZERO } from '../utilties/Numbers';
@@ -27,8 +27,8 @@ export const MintButton = (props: MintButtonProps): JSX.Element => {
     const { sale, amount, onTransact, className, disabled } = props;
 
     const [css] = useStyletron();
-    const { mintPrice: price } = useMintDetails(sale);
     const { tokenContract: contract } = useContractContext();
+    const price = useMintPrice(contract);
     const { accounts } = useWeb3();
 
     const mintPrice = React.useMemo(
