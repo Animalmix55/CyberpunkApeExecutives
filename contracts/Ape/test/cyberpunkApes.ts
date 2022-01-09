@@ -1,7 +1,6 @@
 const truffleAssert = require('truffle-assertions');
 const CyberpunkApeExecutives = artifacts.require("CyberpunkApeExecutives");
 const Signer = artifacts.require("VerifySignature");
-const Reenterer = artifacts.require("Reenterer");
 
 export {};
 
@@ -313,19 +312,6 @@ contract('CyberpunkApeExecutives', (accounts) => {
 
     await truffleAssert.fails(
       cyberpunkApeExecutivesInstance.premint(trans.quantity, trans.nonce, signature, { from: accounts[2] })
-    );
-  });
-
-  it('cannot be reentered on mintTo/mint', async () => {
-    const now = Math.floor(new Date().valueOf() / 1000 - 1000);
-    const later = Math.floor(new Date(2030, 10).valueOf() / 1000);
-
-    const { address: signerAddress } = web3.eth.accounts.create();
-    const price = 3;
-    const cyberpunkApeExecutivesInstance = await CyberpunkApeExecutives.new(5500, 1000, 10, price, signerAddress, now, later, now, { from: accounts[0] });
-    const reenterer = await Reenterer.new(price);
-    await truffleAssert.fails(
-      reenterer.proxyMint(2, cyberpunkApeExecutivesInstance.address, { value: String(price * 2) })
     );
   });
 
