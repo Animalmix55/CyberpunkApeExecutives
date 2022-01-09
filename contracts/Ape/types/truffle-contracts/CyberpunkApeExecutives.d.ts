@@ -11,7 +11,7 @@ export interface CyberpunkApeExecutivesContract
     maxSupply: number | BN | string,
     maxPresale: number | BN | string,
     publicTransactionMax: number | BN | string,
-    mintPrice: number | BN | string,
+    price: number | BN | string,
     signer: string,
     presaleMintStart: number | BN | string,
     presaleMintEnd: number | BN | string,
@@ -149,6 +149,8 @@ export interface CyberpunkApeExecutivesInstance
     txDetails?: Truffle.TransactionDetails
   ): Promise<BN>;
 
+  mintPrice(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+
   minted(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
   /**
@@ -174,14 +176,12 @@ export interface CyberpunkApeExecutivesInstance
    */
   presaleMint(
     txDetails?: Truffle.TransactionDetails
-  ): Promise<{ 0: BN; 1: BN; 2: BN; 3: BN; 4: BN }>;
+  ): Promise<{ 0: BN; 1: BN; 2: BN; 3: BN }>;
 
   /**
    * The public mint for everybody.
    */
-  publicMint(
-    txDetails?: Truffle.TransactionDetails
-  ): Promise<{ 0: BN; 1: BN; 2: BN }>;
+  publicMint(txDetails?: Truffle.TransactionDetails): Promise<{ 0: BN; 1: BN }>;
 
   /**
    * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
@@ -365,33 +365,28 @@ export interface CyberpunkApeExecutivesInstance
   /**
    * Updates the presale mint's characteristics
    * @param endDate - the end date for that mint in UNIX seconds
-   * @param mintPrice - the cost for that mint in WEI
    * @param startDate - the start date for that mint in UNIX seconds
    */
   updatePresaleMint: {
     (
-      mintPrice: number | BN | string,
       startDate: number | BN | string,
       endDate: number | BN | string,
       maxMinted: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
-      mintPrice: number | BN | string,
       startDate: number | BN | string,
       endDate: number | BN | string,
       maxMinted: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
-      mintPrice: number | BN | string,
       startDate: number | BN | string,
       endDate: number | BN | string,
       maxMinted: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      mintPrice: number | BN | string,
       startDate: number | BN | string,
       endDate: number | BN | string,
       maxMinted: number | BN | string,
@@ -402,32 +397,51 @@ export interface CyberpunkApeExecutivesInstance
   /**
    * Updates the public mint's characteristics
    * @param maxPerTransaction - the maximum amount allowed in a wallet to mint in the public mint
-   * @param mintPrice - the cost for that mint in WEI
    * @param startDate - the start date for that mint in UNIX seconds
    */
   updatePublicMint: {
     (
-      mintPrice: number | BN | string,
       maxPerTransaction: number | BN | string,
       startDate: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
-      mintPrice: number | BN | string,
       maxPerTransaction: number | BN | string,
       startDate: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
-      mintPrice: number | BN | string,
       maxPerTransaction: number | BN | string,
       startDate: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      mintPrice: number | BN | string,
       maxPerTransaction: number | BN | string,
       startDate: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  /**
+   * only for the contract owner
+   * Sets the mint price for whitelist and public mints.
+   * @param price - the cost for the mints in WEI
+   */
+  setMintPrice: {
+    (
+      price: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      price: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      price: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      price: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -490,6 +504,34 @@ export interface CyberpunkApeExecutivesInstance
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
+      quantity: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  /**
+   * Mints the given quantity of tokens provided it is possible to.This function allows minting in the public sale         or at any time for the owner of the contract.
+   * @param quantity - the number of tokens to mint
+   * @param user - the recipient of the mint
+   */
+  mintTo: {
+    (
+      user: string,
+      quantity: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      user: string,
+      quantity: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      user: string,
+      quantity: number | BN | string,
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      user: string,
       quantity: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
@@ -575,6 +617,8 @@ export interface CyberpunkApeExecutivesInstance
       txDetails?: Truffle.TransactionDetails
     ): Promise<BN>;
 
+    mintPrice(txDetails?: Truffle.TransactionDetails): Promise<BN>;
+
     minted(txDetails?: Truffle.TransactionDetails): Promise<BN>;
 
     /**
@@ -600,14 +644,14 @@ export interface CyberpunkApeExecutivesInstance
      */
     presaleMint(
       txDetails?: Truffle.TransactionDetails
-    ): Promise<{ 0: BN; 1: BN; 2: BN; 3: BN; 4: BN }>;
+    ): Promise<{ 0: BN; 1: BN; 2: BN; 3: BN }>;
 
     /**
      * The public mint for everybody.
      */
     publicMint(
       txDetails?: Truffle.TransactionDetails
-    ): Promise<{ 0: BN; 1: BN; 2: BN }>;
+    ): Promise<{ 0: BN; 1: BN }>;
 
     /**
      * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.
@@ -794,33 +838,28 @@ export interface CyberpunkApeExecutivesInstance
     /**
      * Updates the presale mint's characteristics
      * @param endDate - the end date for that mint in UNIX seconds
-     * @param mintPrice - the cost for that mint in WEI
      * @param startDate - the start date for that mint in UNIX seconds
      */
     updatePresaleMint: {
       (
-        mintPrice: number | BN | string,
         startDate: number | BN | string,
         endDate: number | BN | string,
         maxMinted: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
-        mintPrice: number | BN | string,
         startDate: number | BN | string,
         endDate: number | BN | string,
         maxMinted: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
-        mintPrice: number | BN | string,
         startDate: number | BN | string,
         endDate: number | BN | string,
         maxMinted: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        mintPrice: number | BN | string,
         startDate: number | BN | string,
         endDate: number | BN | string,
         maxMinted: number | BN | string,
@@ -831,32 +870,51 @@ export interface CyberpunkApeExecutivesInstance
     /**
      * Updates the public mint's characteristics
      * @param maxPerTransaction - the maximum amount allowed in a wallet to mint in the public mint
-     * @param mintPrice - the cost for that mint in WEI
      * @param startDate - the start date for that mint in UNIX seconds
      */
     updatePublicMint: {
       (
-        mintPrice: number | BN | string,
         maxPerTransaction: number | BN | string,
         startDate: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
-        mintPrice: number | BN | string,
         maxPerTransaction: number | BN | string,
         startDate: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
-        mintPrice: number | BN | string,
         maxPerTransaction: number | BN | string,
         startDate: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        mintPrice: number | BN | string,
         maxPerTransaction: number | BN | string,
         startDate: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    /**
+     * only for the contract owner
+     * Sets the mint price for whitelist and public mints.
+     * @param price - the cost for the mints in WEI
+     */
+    setMintPrice: {
+      (
+        price: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        price: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        price: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        price: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
@@ -919,6 +977,34 @@ export interface CyberpunkApeExecutivesInstance
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
+        quantity: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    /**
+     * Mints the given quantity of tokens provided it is possible to.This function allows minting in the public sale         or at any time for the owner of the contract.
+     * @param quantity - the number of tokens to mint
+     * @param user - the recipient of the mint
+     */
+    mintTo: {
+      (
+        user: string,
+        quantity: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        user: string,
+        quantity: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        user: string,
+        quantity: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        user: string,
         quantity: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;

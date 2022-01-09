@@ -12,7 +12,7 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
         uint16 maxSupply,
         uint16 maxPresale,
         uint16 publicTransactionMax,
-        uint256 mintPrice,
+        uint256 price,
         address signer,
         uint256 presaleMintStart,
         uint256 presaleMintEnd,
@@ -22,15 +22,14 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
 
         mintSigner = signer;
         totalSupply = maxSupply;
+        mintPrice = price;
 
         // CONFIGURE PRESALE Mint
-        presaleMint.mintPrice = mintPrice;
         presaleMint.startDate = presaleMintStart;
         presaleMint.endDate = presaleMintEnd;
         presaleMint.maxMinted = maxPresale;
 
         // CONFIGURE PUBLIC MINT
-        publicMint.mintPrice = mintPrice;
         publicMint.startDate = publicMintStart;
         publicMint.maxPerTransaction = publicTransactionMax;
     }
@@ -39,10 +38,6 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
     event Withdraw(address recipient, uint256 amount);
 
     struct WhitelistedMint {
-        /**
-         * The price to mint in that whitelist
-         */
-        uint256 mintPrice;
         /**
          * The start date in unix seconds
          */
@@ -67,7 +62,6 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
     }
 
     struct PublicMint {
-        uint256 mintPrice;
         /**
          * The start date in unix seconds
          */
@@ -85,6 +79,7 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
 
     address private mintSigner;
     mapping(address => uint16) public lastMintNonce;
+    uint256 public mintPrice;
 
     /**
      * An exclusive mint for members granted
@@ -124,7 +119,6 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
         mintSigner = signer;
     }
 
-
     /**
      * Burns the provided token id if you own it.
      * Reduces the supply by 1.
@@ -139,28 +133,21 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
 
     // ------------------------------------------------ MINT STUFFS ------------------------------------------------
 
-    function getPresaleMints(address user)
-        external
-        view
-        returns (uint16)
-    {
+    function getPresaleMints(address user) external view returns (uint16) {
         return presaleMint.minted[user];
     }
 
     /**
      * Updates the presale mint's characteristics
      *
-     * @param mintPrice - the cost for that mint in WEI
      * @param startDate - the start date for that mint in UNIX seconds
      * @param endDate - the end date for that mint in UNIX seconds
      */
     function updatePresaleMint(
-        uint256 mintPrice,
         uint256 startDate,
         uint256 endDate,
         uint16 maxMinted
     ) public onlyOwner {
-        presaleMint.mintPrice = mintPrice;
         presaleMint.startDate = startDate;
         presaleMint.endDate = endDate;
         presaleMint.maxMinted = maxMinted;
@@ -169,18 +156,24 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
     /**
      * Updates the public mint's characteristics
      *
-     * @param mintPrice - the cost for that mint in WEI
      * @param maxPerTransaction - the maximum amount allowed in a wallet to mint in the public mint
      * @param startDate - the start date for that mint in UNIX seconds
      */
-    function updatePublicMint(
-        uint256 mintPrice,
-        uint16 maxPerTransaction,
-        uint256 startDate
-    ) public onlyOwner {
-        publicMint.mintPrice = mintPrice;
+    function updatePublicMint(uint16 maxPerTransaction, uint256 startDate)
+        public
+        onlyOwner
+    {
         publicMint.maxPerTransaction = maxPerTransaction;
         publicMint.startDate = startDate;
+    }
+
+    /**
+     * Sets the mint price for whitelist and public mints.
+     * @param price - the cost for the mints in WEI
+     * @dev only for the contract owner
+     */
+    function setMintPrice(uint256 price) external onlyOwner {
+        mintPrice = price;
     }
 
     function getPremintHash(
@@ -228,7 +221,7 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
             ),
             "Invalid sig"
         );
-        require(presaleMint.mintPrice * quantity == msg.value, "Bad value");
+        require(mintPrice * quantity == msg.value, "Bad value");
         require(
             presaleMint.totalMinted + quantity <= presaleMint.maxMinted,
             "Limit exceeded"
@@ -254,7 +247,20 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
      *
      * @param quantity - the number of tokens to mint
      */
-    function mint(uint16 quantity) public payable nonReentrant {
+    function mint(uint16 quantity) public payable {
+        mintTo(msg.sender, quantity);
+    }
+
+    /**
+     * Mints the given quantity of tokens provided it is possible to.
+     *
+     * @notice This function allows minting in the public sale
+     *         or at any time for the owner of the contract.
+     *
+     * @param quantity - the number of tokens to mint
+     * @param user - the recipient of the mint
+     */
+    function mintTo(address user, uint16 quantity) public payable nonReentrant {
         uint256 remaining = totalSupply - minted;
 
         require(remaining > 0, "Mint over");
@@ -267,10 +273,7 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
         } else if (block.timestamp >= publicMint.startDate) {
             // PUBLIC MINT
             require(quantity <= publicMint.maxPerTransaction, "Exceeds max");
-            require(
-                quantity * publicMint.mintPrice == msg.value,
-                "Invalid value"
-            );
+            require(quantity * mintPrice == msg.value, "Invalid value");
         } else {
             // NOT ELIGIBLE FOR PUBLIC MINT
             revert("No mint");
@@ -280,7 +283,7 @@ contract CyberpunkApeExecutives is ERC721, Ownable, ReentrancyGuard {
         uint16 i;
         for (i; i < quantity; i++) {
             minted += 1;
-            _safeMint(msg.sender, minted);
+            _safeMint(user, minted);
         }
     }
 

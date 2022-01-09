@@ -1,6 +1,7 @@
 const truffleAssert = require('truffle-assertions');
 const CyberpunkApeExecutives = artifacts.require("CyberpunkApeExecutives");
 const Signer = artifacts.require("VerifySignature");
+const Reenterer = artifacts.require("Reenterer");
 
 export {};
 
@@ -21,11 +22,10 @@ contract('CyberpunkApeExecutives', (accounts) => {
 
     const { address: signerAddress } = web3.eth.accounts.create();
     const cyberpunkApeExecutivesInstance = await CyberpunkApeExecutives.new(5500, 1000, 10, 3, signerAddress, now, later, later, { from: accounts[0] });
-    const { 0: mintPrice, 1: startDate, 2: endDate } = await cyberpunkApeExecutivesInstance.presaleMint();
+    const { 0: startDate, 1: endDate } = await cyberpunkApeExecutivesInstance.presaleMint();
 
     assert.equal(startDate.toNumber(), now, "Invalid startDate");
     assert.equal(endDate.toNumber(), later, "Invalid endDate");
-    assert.equal(mintPrice.toNumber(), 3, "Invalid presale price");
   });
 
   it('sets public mint', async () => {
@@ -34,11 +34,21 @@ contract('CyberpunkApeExecutives', (accounts) => {
 
     const { privateKey: signerPrivate, address: signerAddress } = web3.eth.accounts.create();
     const cyberpunkApeExecutivesInstance = await CyberpunkApeExecutives.new(5500, 1000, 3, 3, signerAddress, later, later, now, { from: accounts[0] });
-    const { 1: startDate, 0: mintPrice, 2: maxPerWallet } = await cyberpunkApeExecutivesInstance.publicMint();
+    const { 0: startDate, 1: maxPerTransaction } = await cyberpunkApeExecutivesInstance.publicMint();
 
     assert.equal(startDate.toNumber(), now, "Invalid startDate");
-    assert.equal(mintPrice.toNumber(), 3, "Invalid presale price");
-    assert.equal(maxPerWallet.toNumber(), 3, "Invalid max per wallet");
+    assert.equal(maxPerTransaction.toNumber(), 3, "Invalid max per wallet");
+  });
+
+  it('sets mint price', async () => {
+    const now = Math.floor(new Date().valueOf() / 1000);
+    const later = Math.floor(new Date(2030, 10).valueOf() / 1000);
+
+    const { address: signerAddress } = web3.eth.accounts.create();
+    const cyberpunkApeExecutivesInstance = await CyberpunkApeExecutives.new(5500, 1000, 3, 3, signerAddress, later, later, now, { from: accounts[0] });
+    const mintPrice = await cyberpunkApeExecutivesInstance.mintPrice();
+
+    assert.equal(mintPrice.toNumber(), 3, "Invalid mint price");
   });
 
   it('sets baseURI', async () => {
@@ -62,18 +72,16 @@ contract('CyberpunkApeExecutives', (accounts) => {
 
     const { privateKey: signerPrivate, address: signerAddress } = web3.eth.accounts.create();
     const cyberpunkApeExecutivesInstance = await CyberpunkApeExecutives.new(5500, 1000, 10, 3, signerAddress, later, later, later, { from: accounts[0] });
-    let { 0: mintPrice, 1: startDate, 2: endDate } = await cyberpunkApeExecutivesInstance.presaleMint();
+    let { 0: startDate, 1: endDate } = await cyberpunkApeExecutivesInstance.presaleMint();
 
     assert.equal(startDate.toNumber(), later, "Invalid startDate");
     assert.equal(endDate.toNumber(), later, "Invalid endDate");
-    assert.equal(mintPrice.toNumber(), 3, "Invalid presale price");
 
-    await cyberpunkApeExecutivesInstance.updatePresaleMint(2, now, later + 2, 1000);
-    ({ 0: mintPrice, 1: startDate, 2: endDate } = await cyberpunkApeExecutivesInstance.presaleMint());
+    await cyberpunkApeExecutivesInstance.updatePresaleMint(now, later + 2, 1000);
+    ({ 0: startDate, 1: endDate } = await cyberpunkApeExecutivesInstance.presaleMint());
 
     assert.equal(startDate.toNumber(), now, "Invalid startDate");
     assert.equal(endDate.toNumber(), later + 2, "Invalid endDate");
-    assert.equal(mintPrice.toNumber(), 2, "Invalid presale price");
   });
 
   it('updates public mint', async () => {
@@ -82,18 +90,16 @@ contract('CyberpunkApeExecutives', (accounts) => {
 
     const { privateKey: signerPrivate, address: signerAddress } = web3.eth.accounts.create();
     const cyberpunkApeExecutivesInstance = await CyberpunkApeExecutives.new(5500, 1000, 10, 3, signerAddress, later, later, later, { from: accounts[0] });
-    let { 1: startDate, 0: mintPrice, 2: maxPerWallet } = await cyberpunkApeExecutivesInstance.publicMint();
+    let { 0: startDate, 1: maxPerTransaction } = await cyberpunkApeExecutivesInstance.publicMint();
 
     assert.equal(startDate.toNumber(), later, "Invalid startDate");
-    assert.equal(mintPrice.toNumber(), 3, "Invalid public sale price");
-    assert.equal(maxPerWallet.toNumber(), 10, "Invalid public sale max");
+    assert.equal(maxPerTransaction.toNumber(), 10, "Invalid public sale max");
 
-    await cyberpunkApeExecutivesInstance.updatePublicMint(2, 2, now);
-    ({ 1: startDate, 0: mintPrice, 2: maxPerWallet } = await cyberpunkApeExecutivesInstance.publicMint());
+    await cyberpunkApeExecutivesInstance.updatePublicMint(2, now);
+    ({ 0: startDate, 1: maxPerTransaction } = await cyberpunkApeExecutivesInstance.publicMint());
 
     assert.equal(startDate.toNumber(), now, "Invalid startDate");
-    assert.equal(mintPrice.toNumber(), 2, "Invalid public sale price");
-    assert.equal(maxPerWallet.toNumber(), 2, "Invalid public sale max");
+    assert.equal(maxPerTransaction.toNumber(), 2, "Invalid public sale max");
   });
 
   it('sets the owner', async () => {
@@ -120,11 +126,10 @@ contract('CyberpunkApeExecutives', (accounts) => {
 
     assert.equal(newBalance, 3, "Failure to mint 3");
 
-    const { 1: startDate, 0: mintPrice, 2: maxPerWallet } = await cyberpunkApeExecutivesInstance.publicMint();
+    const { 0: startDate, 1: maxPerTransaction } = await cyberpunkApeExecutivesInstance.publicMint();
 
     assert.equal(startDate.toNumber(), now, "Invalid start date");
-    assert.equal(mintPrice.toNumber(), 3, "Invalid mint price");
-    assert.equal(maxPerWallet.toNumber(), 3, "Invalid max per wallet");
+    assert.equal(maxPerTransaction.toNumber(), 3, "Invalid max per wallet");
   });
 
   it('cannot mint more than transaction maximum', async () => {
@@ -308,6 +313,19 @@ contract('CyberpunkApeExecutives', (accounts) => {
 
     await truffleAssert.fails(
       cyberpunkApeExecutivesInstance.premint(trans.quantity, trans.nonce, signature, { from: accounts[2] })
+    );
+  });
+
+  it('cannot be reentered on mintTo/mint', async () => {
+    const now = Math.floor(new Date().valueOf() / 1000 - 1000);
+    const later = Math.floor(new Date(2030, 10).valueOf() / 1000);
+
+    const { address: signerAddress } = web3.eth.accounts.create();
+    const price = 3;
+    const cyberpunkApeExecutivesInstance = await CyberpunkApeExecutives.new(5500, 1000, 10, price, signerAddress, now, later, now, { from: accounts[0] });
+    const reenterer = await Reenterer.new(price);
+    await truffleAssert.fails(
+      reenterer.proxyMint(2, cyberpunkApeExecutivesInstance.address, { value: String(price * 2) })
     );
   });
 
