@@ -11,6 +11,71 @@ import useMobile from '../../hooks/useMobile';
 import { useCyberpunkApesContext } from '../../contexts/CyberpunkApesContext';
 import FollowingEye from '../../atoms/FollowingEye';
 import { Page } from '../../routing/ApeRouter';
+import useMintDetails from '../../hooks/useMintDetails';
+import useCurrentTime from '../../hooks/useCurrentTime';
+import { FormatLargestTimeUnit } from '../../utilties/TimeFormatter';
+
+export const HeaderMintButton = ({
+    style,
+}: {
+    style: React.CSSProperties;
+}): JSX.Element => {
+    const { startDate: publicStartDate } = useMintDetails('public');
+    const { startDate: presaleStartDate } = useMintDetails('presale');
+    const currentTime = useCurrentTime();
+
+    const history = useHistory();
+    const [css] = useStyletron();
+
+    const timeUntilPublic = React.useMemo(
+        () => publicStartDate - currentTime,
+        [currentTime, publicStartDate]
+    );
+
+    const timeUntilPresale = React.useMemo(
+        () => presaleStartDate - currentTime,
+        [currentTime, presaleStartDate]
+    );
+
+    const lastPublic = React.useRef(currentTime);
+    const showPublic = React.useMemo(() => {
+        if (timeUntilPresale <= 0) return true;
+        if (currentTime - lastPublic.current < 5) {
+            return true;
+        }
+        if (currentTime - lastPublic.current > 10) {
+            lastPublic.current = currentTime;
+            return true;
+        }
+        return false;
+    }, [currentTime, timeUntilPresale]);
+
+    return (
+        <Button
+            style={style}
+            className={ClassNameBuilder(
+                css({
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                })
+            )}
+            buttonType={ButtonType.wireframe}
+            onClick={(): void => history.push(Page.Mint)}
+        >
+            <div>Go to Mint Page</div>
+            {showPublic && timeUntilPublic > 0 && (
+                <div className={css({ fontSize: '10px' })}>
+                    {FormatLargestTimeUnit(timeUntilPublic)} Until Public Sale
+                </div>
+            )}
+            {!showPublic && (
+                <div className={css({ fontSize: '10px' })}>
+                    {FormatLargestTimeUnit(timeUntilPresale)} Until Presale
+                </div>
+            )}
+        </Button>
+    );
+};
 
 export const Header = (): JSX.Element => {
     const history = useHistory();
@@ -156,24 +221,15 @@ export const Header = (): JSX.Element => {
                 >
                     FAQ
                 </Button>
-                {tokenContractAddress && (
-                    <Button
-                        style={{
-                            ...buttonStyle,
-                            color:
-                                pathname === Page.Mint
-                                    ? theme.fontColors.hovered.primary.getCSSColor(
-                                          1
-                                      )
-                                    : undefined,
-                        }}
-                        buttonType={ButtonType.clear}
-                        key="mint_button"
-                        onClick={(): void => history.push(Page.Mint)}
-                    >
-                        Mint
-                    </Button>
-                )}
+                <Button
+                    style={buttonStyle}
+                    buttonType={ButtonType.clear}
+                    onClick={(): void => {
+                        window.open(discordUrl);
+                    }}
+                >
+                    Become an Intern
+                </Button>
                 {stakingContractAddress && (
                     <Button
                         style={{
@@ -207,10 +263,10 @@ export const Header = (): JSX.Element => {
             team.onClick,
             faq.selected,
             faq.onClick,
-            tokenContractAddress,
-            pathname,
             stakingContractAddress,
+            pathname,
             goHomeBefore,
+            discordUrl,
             history,
         ]
     );
@@ -318,21 +374,9 @@ export const Header = (): JSX.Element => {
                             >
                                 {buttons}
                             </div>
-                            <Button
-                                style={buttonStyle}
-                                className={ClassNameBuilder(
-                                    css({
-                                        marginLeft: 'auto',
-                                        marginRight: 'auto',
-                                    })
-                                )}
-                                buttonType={ButtonType.wireframe}
-                                onClick={(): void => {
-                                    window.location.href = discordUrl;
-                                }}
-                            >
-                                Become an Intern
-                            </Button>
+                            {tokenContractAddress && (
+                                <HeaderMintButton style={buttonStyle} />
+                            )}
                         </div>
                     )}
                 </div>
@@ -350,6 +394,21 @@ export const Header = (): JSX.Element => {
                 })}
             >
                 {buttons}
+                {tokenContractAddress && (
+                    <Button
+                        style={buttonStyle}
+                        className={ClassNameBuilder(
+                            css({
+                                marginLeft: 'auto',
+                                marginRight: 'auto',
+                            })
+                        )}
+                        buttonType={ButtonType.wireframe}
+                        onClick={(): void => history.push(Page.Mint)}
+                    >
+                        Mint
+                    </Button>
+                )}
                 <div
                     className={css({
                         marginTop: 'auto',

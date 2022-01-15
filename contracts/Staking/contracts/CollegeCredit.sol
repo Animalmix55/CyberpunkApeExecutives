@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/ICollegeCredit.sol";
 
 contract CollegeCredit is ERC20, Ownable, ICollegeCredit {
-    constructor() ERC20("College Credit", "CC") {}
+    constructor() ERC20("College Credit", "CREDIT") {}
     
     function decimals() public view virtual override returns (uint8) {
         return 18;

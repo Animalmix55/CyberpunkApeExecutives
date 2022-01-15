@@ -5,6 +5,7 @@ import MetaMaskButton from '../atoms/MetamaskButton';
 import { useThemeContext } from '../contexts/ThemeContext';
 import useWeb3 from '../contexts/Web3Context';
 import Terms from '../assets/Cyberpunk Ape Executives Terms of Use - 1.6.22.pdf';
+import { MOBILE } from '../utilties/MediaQueries';
 
 export const MetamaskModalInner = (): JSX.Element => {
     const [css] = useStyletron();
@@ -19,6 +20,10 @@ export const MetamaskModalInner = (): JSX.Element => {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
+                [MOBILE]: {
+                    minWidth: 'unset',
+                    width: '90vw',
+                },
             })}
         >
             <h1 className={css({ textAlign: 'center' })}>Connect MetaMask</h1>

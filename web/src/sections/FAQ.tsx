@@ -27,18 +27,19 @@ const FAQItems: FAQItem[] = [
         contents: (
             <div>
                 <div>
-                    <b>Presale</b>: January 20th, 2022 at 6 PM PST (until 2 AM
-                    PST)
+                    <b>Presale</b>: Thursday, January 20th, 2022 at 6 PM EST
+                    (until 6 AM EST)
                 </div>
                 <div>
-                    <b>Public Sale</b>: January 21st, 2022 at 6 PM PST
+                    <b>Public Sale</b>: January 21st, 2022 at 6 PM EST
                 </div>
             </div>
         ),
     },
     {
         title: 'Where can I mint?',
-        contents: 'Once available, you’ll be able to mint on our website.',
+        contents:
+            'Once available, you’ll be able to mint here on this website.',
     },
     {
         title: 'How will minting work?',
@@ -51,15 +52,14 @@ const FAQItems: FAQItem[] = [
                     that everyone from the community gets an equal chance to
                     initially mint. It also means you don&apos;t have to
                     participate in gas wars or run to the primary market to get
-                    yours on mint day. The whitelist mint will run for 24 hours.
+                    yours on mint day. The whitelist mint will run for 12 hours.
                 </div>
                 <h1>Public mint phase</h1>
                 <div>
                     For the limited amount of Ape Executives that are not minted
                     during the whitelist mint, there will be a public mint. This
-                    will also be capped at 1 per wallet, but the practical
-                    reality is that it is very easy to mint from multiple burner
-                    wallets.
+                    will also be capped at 4 per transaction, but buyers can do
+                    multiple transactions one after another if they’d like.
                 </div>
             </div>
         ),
