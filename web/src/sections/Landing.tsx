@@ -46,8 +46,14 @@ export const Landing = (): JSX.Element => {
                         borderRadius: '20px',
                     })}
                 >
-                    <h1 className={css({ width: '100%', textAlign: 'center' })}>
-                        Cyberpunk Executive Apes V2
+                    <h1
+                        className={css({
+                            width: '100%',
+                            textAlign: 'center',
+                            textTransform: 'uppercase',
+                        })}
+                    >
+                        Cyberpunk Ape Executives
                     </h1>
                     <img
                         src={target}

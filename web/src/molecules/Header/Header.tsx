@@ -63,12 +63,15 @@ export const HeaderMintButton = ({
             onClick={(): void => history.push(Page.Mint)}
         >
             <div>Go to Mint Page</div>
-            {showPublic && timeUntilPublic > 0 && (
-                <div className={css({ fontSize: '10px' })}>
-                    {FormatLargestTimeUnit(timeUntilPublic)} Until Public Sale
-                </div>
-            )}
-            {!showPublic && (
+            {showPublic &&
+                timeUntilPublic > 0 &&
+                timeUntilPublic !== Infinity && (
+                    <div className={css({ fontSize: '10px' })}>
+                        {FormatLargestTimeUnit(timeUntilPublic)} Until Public
+                        Sale
+                    </div>
+                )}
+            {!showPublic && timeUntilPresale !== Infinity && (
                 <div className={css({ fontSize: '10px' })}>
                     {FormatLargestTimeUnit(timeUntilPresale)} Until Presale
                 </div>

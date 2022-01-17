@@ -40,19 +40,22 @@ export const generateFinalizedMeta = (
     meta: ERC721Meta[],
     baseURL: string,
     imageExt: string,
-    placeholder?: boolean
+    placeholder?: boolean,
+    externalUrlOverride?: string
 ): ERC721Meta[] => {
     if (placeholder) {
-        return meta.map((m, i) => ({
+        return meta.map((m) => ({
             name: m.name,
             description: m.description,
             attributes: [],
-            image: `${baseURL}/${i + 1}.${imageExt}`,
+            image: `${baseURL}`,
+            external_url: externalUrlOverride,
         }));
     }
 
     return meta.map((m, i) => ({
         ...m,
         image: `${baseURL}/${i + 1}.${imageExt}`,
+        ...(externalUrlOverride && { external_url: externalUrlOverride }),
     }));
 };

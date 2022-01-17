@@ -7,17 +7,20 @@ import Bootleg1 from '../assets/Bootlegs/1.png';
 import Bootleg2 from '../assets/Bootlegs/2.png';
 import Bootleg3 from '../assets/Bootlegs/3.png';
 import Bootleg4 from '../assets/Bootlegs/4.png';
+import Bootleg5 from '../assets/Bootlegs/5.png';
 
 import Genesis1 from '../assets/Genesis/1.gif';
 import Genesis2 from '../assets/Genesis/2.gif';
 import Genesis3 from '../assets/Genesis/3.gif';
 import Genesis4 from '../assets/Genesis/4.gif';
+import Genesis5 from '../assets/Genesis/5.gif';
+
 import Slideshow from '../atoms/Slideshow';
 import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
 import { useThemeContext } from '../contexts/ThemeContext';
 
-const bootlegs = [Bootleg3, Bootleg1, Bootleg4, Bootleg2];
-const genesis = [Genesis1, Genesis2, Genesis3, Genesis4];
+const bootlegs = [Bootleg3, Bootleg1, Bootleg4, Bootleg2, Bootleg5];
+const genesis = [Genesis1, Genesis2, Genesis3, Genesis4, Genesis5];
 
 export const OtherCollections = (): JSX.Element => {
     const [css] = useStyletron();
