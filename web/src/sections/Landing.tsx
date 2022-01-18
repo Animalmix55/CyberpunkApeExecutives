@@ -2,21 +2,13 @@ import React from 'react';
 import { useStyletron } from 'styletron-react';
 import CoverPhoto from '../assets/Cyberscape.png';
 
-import Slideshow1 from '../assets/Animated/preview_animation_1.gif';
-import Slideshow2 from '../assets/Animated/preview_animation_2.gif';
-import Slideshow3 from '../assets/Animated/preview_animation_3.gif';
+import Slideshow from '../assets/Animated/preview_animation.gif';
 
 import useMobile from '../hooks/useMobile';
-
-const slideshows = [Slideshow1, Slideshow2, Slideshow3];
 
 export const Landing = (): JSX.Element => {
     const [css] = useStyletron();
     const isMobile = useMobile();
-
-    const [target] = React.useState(
-        slideshows[Math.floor(Math.random() * (slideshows.length - 1))]
-    );
 
     return (
         <div>
@@ -56,7 +48,7 @@ export const Landing = (): JSX.Element => {
                         Cyberpunk Ape Executives
                     </h1>
                     <img
-                        src={target}
+                        src={Slideshow}
                         alt="Ape Slideshow"
                         className={css({
                             height: 'auto',
