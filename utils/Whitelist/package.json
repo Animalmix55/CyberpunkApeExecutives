@@ -1,0 +1,39 @@
+{
+  "name": "upload-stonenft-assets",
+  "version": "1.0.0",
+  "description": "Uploads assets to IPFS for the Stone NFT",
+  "main": "src/index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "start": "yarn build && node ./dist/index.js",
+    "start:reuse": "node ./dist/index.js"
+  },
+  "dependencies": {
+    "@types/humanize-plus": "^1.8.0",
+    "@types/sharp": "^0.29.2",
+    "@types/web3": "^1.2.2",
+    "dotenv": "^10.0.0",
+    "ethereum-ens": "^0.8.0",
+    "humanize": "^0.0.9",
+    "humanize-plus": "^1.8.2",
+    "ipfs": "^0.59.1",
+    "ipfs-http-client": "^53.0.1",
+    "sharp": "^0.29.2",
+    "typescript": "^4.4.3",
+    "web3": "^1.6.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@typescript-eslint/eslint-plugin": "^4.31.2",
+    "@typescript-eslint/parser": "^4.31.2",
+    "eslint": "^6.5.1",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-markdown": "^1.0.2",
+    "eslint-plugin-prettier": "^3.1.1",
+    "prettier": "^2.4.1"
+  }
+}
