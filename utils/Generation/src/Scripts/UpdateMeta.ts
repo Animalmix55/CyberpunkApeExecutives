@@ -1,3 +1,4 @@
+/* eslint-disable no-continue */
 /* eslint-disable import/prefer-default-export */
 
 import fs from 'fs';
@@ -46,14 +47,98 @@ export const addSpecialCodes = (meta: ERC721Meta[]) => {
         attributes.push({
             trait_type: 'Secret International Megadigital Code',
             value: String(crypto.randomInt(501)),
+            display_type: 'number',
         });
         attributes.push({
             trait_type: 'Super Secret IMD Code',
             value: String(crypto.randomInt(3000)),
+            display_type: 'number',
         });
 
         return { ...m, attributes };
     });
+};
+
+// export const spliceInRares = (
+//     rares: ERC721Meta[],
+//     normals: ERC721Meta[]
+// ): ERC721Meta[] => {
+//     const numRares = rares.length;
+//     const collectionSize = normals.length;
+//     let lastIndex = 0;
+
+//     const placedIds: number[] = [];
+//     const resultantMeta = [...normals];
+
+//     rares.forEach((rare, i) => {
+//         const step = Math.floor(
+//             (collectionSize - lastIndex + 1) / (numRares - i)
+//         );
+//         if (step === 0) throw new Error('Step of 0');
+//         const targetIndex =
+//             lastIndex + crypto.randomInt(Math.max(1, step - 10), step + 1);
+//         if (targetIndex >= collectionSize - 1) throw new Error('Out of bounds');
+
+//         resultantMeta[targetIndex] = rare;
+//         placedIds.push(targetIndex + 1);
+//         lastIndex = targetIndex;
+//     });
+
+//     console.log('Placed rares at: ', JSON.stringify(placedIds));
+//     return resultantMeta;
+// };
+
+export const spliceInRares = (
+    rares: ERC721Meta[],
+    normals: ERC721Meta[]
+): ERC721Meta[] => {
+    const remainingRares = [...rares];
+    const output = [...normals];
+    const placedIds: number[] = [];
+
+    while (remainingRares.length > 0) {
+        const index = crypto.randomInt(normals.length);
+        if (placedIds.some((pid) => Math.abs(pid - index + 1) <= 10)) continue;
+
+        output[index] = remainingRares[remainingRares.length - 1];
+        remainingRares.pop();
+        placedIds.push(index + 1);
+    }
+
+    console.log(
+        'Placed rares at: ',
+        JSON.stringify(placedIds.sort((a, b) => a - b))
+    );
+
+    return output;
+};
+
+export const parseRares = (path: string): ERC721Meta[] => {
+    const file = fs.readFileSync(path).toString();
+    const lines = file.split('\r\n');
+    const traits = lines[0].split(',').slice(1);
+
+    const rares = lines.slice(1).map((line): ERC721Meta => {
+        const attributeCells = line
+            .split(',')
+            .map((l) => l.trim())
+            .slice(1);
+
+        const attributes = attributeCells.map(
+            (a, i): ERC721Meta['attributes'][number] => ({
+                trait_type: traits[i],
+                value: a,
+            })
+        );
+
+        return {
+            name: '',
+            attributes,
+            image: 'placeholder',
+        };
+    });
+
+    return rares;
 };
 
 /**
@@ -68,22 +153,29 @@ export const generateFinalizedMeta = (
     meta: ERC721Meta[],
     baseURL: string,
     imageExt: string,
+    rares: ERC721Meta[],
     placeholder?: boolean,
-    externalUrlOverride?: string
+    externalUrlOverride?: string,
+    nameOverride?: string,
+    descriptionOverride?: string
 ): ERC721Meta[] => {
     if (placeholder) {
-        return meta.map((m) => ({
-            name: m.name,
-            description: m.description,
+        return meta.map((m, i) => ({
+            name: nameOverride ? `${nameOverride} #${i + 1}` : m.name,
+            description: descriptionOverride ?? m.description,
             attributes: [],
             image: `${baseURL}`,
             external_url: externalUrlOverride,
         }));
     }
 
-    return addSpecialCodes(cleanseMetadata(meta)).map((m, i) => ({
-        ...m,
-        image: `${baseURL}/${i + 1}.${imageExt}`,
-        ...(externalUrlOverride && { external_url: externalUrlOverride }),
-    }));
+    return spliceInRares(rares, addSpecialCodes(cleanseMetadata(meta))).map(
+        (m, i) => ({
+            ...m,
+            name: nameOverride ? `${nameOverride} #${i + 1}` : m.name,
+            description: descriptionOverride ?? m.description,
+            image: `${baseURL}/${i + 1}.${imageExt}`,
+            ...(externalUrlOverride && { external_url: externalUrlOverride }),
+        })
+    );
 };
