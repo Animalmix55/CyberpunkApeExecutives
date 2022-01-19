@@ -1,6 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 
 import fs from 'fs';
+import crypto from 'crypto';
 import { ERC721Meta } from '../Models/Meta';
 
 export const LoadMeta = (folder: string) => {
@@ -28,6 +29,33 @@ export const LoadMeta = (folder: string) => {
     return result;
 };
 
+export const cleanseMetadata = (meta: ERC721Meta[]) => {
+    return meta.map((m): ERC721Meta => {
+        const attributes = m.attributes
+            .filter((a) => !a.trait_type.toLowerCase().includes('- x'))
+            .filter((a) => !a.value.match(/^[a-z]/))
+            .filter((a) => !a.value.includes('_'));
+
+        return { ...m, attributes };
+    });
+};
+
+export const addSpecialCodes = (meta: ERC721Meta[]) => {
+    return meta.map((m): ERC721Meta => {
+        const attributes = [...m.attributes];
+        attributes.push({
+            trait_type: 'Secret International Megadigital Code',
+            value: String(crypto.randomInt(501)),
+        });
+        attributes.push({
+            trait_type: 'Super Secret IMD Code',
+            value: String(crypto.randomInt(3000)),
+        });
+
+        return { ...m, attributes };
+    });
+};
+
 /**
  * Adds the url and hides data (if placeholder) to the given meta.
  * @param meta the source metadata
@@ -53,7 +81,7 @@ export const generateFinalizedMeta = (
         }));
     }
 
-    return meta.map((m, i) => ({
+    return addSpecialCodes(cleanseMetadata(meta)).map((m, i) => ({
         ...m,
         image: `${baseURL}/${i + 1}.${imageExt}`,
         ...(externalUrlOverride && { external_url: externalUrlOverride }),

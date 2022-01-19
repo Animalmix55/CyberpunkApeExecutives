@@ -2,17 +2,17 @@ import fs from 'fs';
 import { generateFinalizedMeta, LoadMeta } from './Scripts/UpdateMeta';
 
 const META_IN_DIR =
-    'C:/Users/Cory/source/repos/CyberpunkApeExecutives/utils/Generation/src/Assets/GeneratedMeta';
+    'C:/Users/Cory/source/repos/CyberpunkApeExecutives/utils/Generation/src/Assets/InputMetadata';
 const META_OUT_DIR =
-    'C:/Users/Cory/source/repos/CyberpunkApeExecutives/utils/Generation/src/Assets/OutputMeta';
+    'C:/Users/Cory/source/repos/CyberpunkApeExecutives/utils/Generation/src/Assets/OutputMetadata';
 
 const meta = LoadMeta(META_IN_DIR);
 
 const finalizedMeta = generateFinalizedMeta(
     meta,
     'https://cc_nftstore.mypinata.cloud/ipfs/QmW4EYTJxaDGipvdKf2Jr9UPiRnBzfYK1Nn9iL4ZZg76KG',
-    '',
-    true,
+    'webp',
+    false,
     'https://cyberpunkapes.com/'
 );
 finalizedMeta.forEach((m, i) => {
