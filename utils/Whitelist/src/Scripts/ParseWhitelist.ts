@@ -2,14 +2,7 @@ import fs from 'fs';
 import Web3 from 'web3';
 import { WhitelistDict, WhitelistedUser } from '../Models/Meta';
 
-enum Cells {
-    Address = 0,
-    Discord = 1,
-    ID = 2,
-    NumMints = 3,
-    Description = 4,
-}
-
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const ENS = require('ethereum-ens');
 
 const resolveENS = async (ensAddress: string, provider: string) => {
@@ -27,42 +20,59 @@ const resolveENS = async (ensAddress: string, provider: string) => {
 };
 
 export const parseWhitelist = async (files: string[], web3Provider: string) => {
-    const whitelist = (await Promise.all(files.map(async (filePath) => {
-        const contents = fs.readFileSync(filePath).toString();
-        const lines = contents.split('\r\n');
+    const whitelist = (
+        await Promise.all(
+            files.map(async (filePath) => {
+                const contents = fs.readFileSync(filePath).toString();
+                const lines = contents.split('\r\n');
 
-        const accounts = (await Promise.all(lines.map(async (line, lineNum) => {
-            const cells = line.split(',').map(l => l.trim());
-            const [address, discord, id, numMints, description] = cells;
+                const accounts = (
+                    await Promise.all(
+                        lines.map(async (line) => {
+                            const cells = line.split(',').map((l) => l.trim());
+                            const [address, , , numMints, ,] = cells;
 
-            let finalAddress;
+                            let finalAddress;
 
-            if (address && Web3.utils.isAddress(address)) {
-                finalAddress = address;
-            } else if (address && address.toLowerCase().includes('.eth')) {
-                const resolvedAddress = await resolveENS(address, web3Provider);
-                if (resolvedAddress) finalAddress = resolvedAddress;
-            }
+                            if (address && Web3.utils.isAddress(address)) {
+                                finalAddress = address;
+                            } else if (
+                                address &&
+                                address.toLowerCase().includes('.eth')
+                            ) {
+                                const resolvedAddress = await resolveENS(
+                                    address,
+                                    web3Provider
+                                );
+                                if (resolvedAddress)
+                                    finalAddress = resolvedAddress;
+                            }
 
-            if (!finalAddress) return;
+                            if (!finalAddress) return undefined;
 
-            if (Number.isNaN(Number(numMints))) {
-                console.warn(`Invalid number of mints for ${address}: ${numMints}`);
-                return;
-            }
+                            if (Number.isNaN(Number(numMints))) {
+                                console.warn(
+                                    `Invalid number of mints for ${address}: ${numMints}`
+                                );
+                                return undefined;
+                            }
 
-            const whitelistedUser: WhitelistedUser = {
-                address: finalAddress,
-                amount: Number(numMints),
-            };
+                            const whitelistedUser: WhitelistedUser = {
+                                address: finalAddress,
+                                amount: Number(numMints),
+                            };
 
-            return whitelistedUser;
-        }))).filter(a => !!a) as WhitelistedUser[];
+                            return whitelistedUser;
+                        })
+                    )
+                ).filter((a) => !!a) as WhitelistedUser[];
 
-        return accounts;
-    }))).reduce((agWhitelist, curWhitelist) => {
+                return accounts;
+            })
+        )
+    ).reduce((agWhitelist, curWhitelist) => {
         const whitelist = { ...agWhitelist };
-        curWhitelist.forEach(wlUser => {
+        curWhitelist.forEach((wlUser) => {
             const curRecord = whitelist[wlUser.address];
             if (curRecord && curRecord.amount >= wlUser.amount) return;
 
@@ -72,5 +82,7 @@ export const parseWhitelist = async (files: string[], web3Provider: string) => {
         return whitelist;
     }, {} as WhitelistDict);
 
-    return Object.keys(whitelist).map(address => whitelist[address]);
-}
+    return Object.keys(whitelist).map((address) => whitelist[address]);
+};
+
+export default parseWhitelist;
