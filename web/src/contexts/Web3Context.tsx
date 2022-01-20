@@ -1,4 +1,3 @@
-import MetaMaskOnboarding from '@metamask/onboarding';
 import React from 'react';
 import Web3 from 'web3';
 import detectEthereumProvider from '@metamask/detect-provider';
@@ -18,12 +17,10 @@ export interface Web3ContextType {
     web3?: Web3;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     reload: () => Promise<any>;
-    login: () => Promise<string[]>;
 }
 
 const Web3Context = React.createContext<Web3ContextType>({
     reload: () => Promise.resolve(undefined),
-    login: () => Promise.resolve([]),
     accounts: [],
 });
 
@@ -39,24 +36,6 @@ export const Web3ContextProvider = ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [provider, _setProvider] = React.useState<any>();
     const web3 = React.useMemo(() => new Web3(provider as never), [provider]);
-    const onboarding = React.useRef<MetaMaskOnboarding>();
-
-    React.useEffect(() => {
-        if (!onboarding.current) {
-            onboarding.current = new MetaMaskOnboarding();
-        }
-    }, []);
-
-    const login = React.useCallback(async (): Promise<string[]> => {
-        if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-            const promise = provider.request({ method: 'eth_requestAccounts' });
-
-            promise.then(setAccounts);
-            return promise;
-        }
-        onboarding.current.startOnboarding();
-        return Promise.resolve([] as string[]);
-    }, [provider]);
 
     const reload = React.useCallback(async () => {
         const provider = await detectEthereumProvider();
@@ -79,6 +58,9 @@ export const Web3ContextProvider = ({
         };
 
         if (provider) {
+            provider
+                .request({ method: 'eth_requestAccounts' })
+                .then(handleNewAccounts);
             provider.request({ method: 'eth_chainId' }).then(handleChainChange);
             provider.on('chainChanged', handleChainChange);
             provider.on('accountsChanged', handleNewAccounts);
@@ -97,7 +79,6 @@ export const Web3ContextProvider = ({
                 accounts,
                 chainId,
                 provider,
-                login,
             }}
         >
             {children}

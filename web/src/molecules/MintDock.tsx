@@ -189,55 +189,49 @@ export const MintDock = (): JSX.Element => {
                 marginBottom: '30px',
             })}
         >
+            {showAlert && (
+                <MessageBar
+                    onDismiss={(): void => setShowAlert(false)}
+                    title="Notice"
+                    className={css({ margin: '10px' })}
+                    messageBarType={MessageBarType.warning}
+                    messageBarIconProps={{ iconName: 'Warning' }}
+                >
+                    Heads up: Only one whitelist mint transaction can occur at a
+                    time. Only the first verified transaction will succeed.
+                </MessageBar>
+            )}
+            {showInfo && (presaleStart >= loadTime || publicStart >= loadTime) && (
+                <MessageBar
+                    onDismiss={(): void => setShowInfo(false)}
+                    className={css({ margin: '10px' })}
+                    messageBarType={MessageBarType.info}
+                    messageBarIconProps={{ iconName: 'Warning' }}
+                >
+                    You should not need to refresh the page when mints begin.
+                    But you can if you want to!{' '}
+                    <b>
+                        Be aware that mints may take up to 1-2 minutes to open
+                        after the timer completes due to delays in block
+                        generation.
+                    </b>
+                </MessageBar>
+            )}
             {presaleCount > 0 && (
-                <>
-                    {showAlert && (
-                        <MessageBar
-                            onDismiss={(): void => setShowAlert(false)}
-                            title="Notice"
-                            className={css({ margin: '10px' })}
-                            messageBarType={MessageBarType.warning}
-                            messageBarIconProps={{ iconName: 'Warning' }}
-                        >
-                            Heads up: Only one whitelist mint transaction can
-                            occur at a time. Only the first verified transaction
-                            will succeed.
-                        </MessageBar>
-                    )}
-                    {showInfo &&
-                        (presaleStart <= loadTime ||
-                            publicStart <= loadTime ||
-                            publicStart <= loadTime) && (
-                            <MessageBar
-                                onDismiss={(): void => setShowInfo(false)}
-                                className={css({ margin: '10px' })}
-                                messageBarType={MessageBarType.info}
-                                messageBarIconProps={{ iconName: 'Warning' }}
-                            >
-                                You should not need to refresh the page when
-                                mints begin. But you can if you want to!{' '}
-                                <b>
-                                    Be aware that mints may take up to 1-2
-                                    minutes to open after the timer completes
-                                    due to delays in block generation.
-                                </b>
-                            </MessageBar>
-                        )}
-                    <SaleModule
-                        target="presale"
-                        startDate={presaleStart}
-                        endDate={presaleEnd}
-                        eligibleCount={presaleCount}
-                        disabled={disablePreminting}
-                        refreshCounts={reload}
-                        onTransact={(v): void => {
-                            setShowAlert(true);
-                            setDisablePreminting(true);
+                <SaleModule
+                    target="presale"
+                    startDate={presaleStart}
+                    endDate={presaleEnd}
+                    eligibleCount={presaleCount}
+                    disabled={disablePreminting}
+                    refreshCounts={reload}
+                    onTransact={(v): void => {
+                        setShowAlert(true);
+                        setDisablePreminting(true);
 
-                            v.finally(() => setDisablePreminting(false));
-                        }}
-                    />
-                </>
+                        v.finally(() => setDisablePreminting(false));
+                    }}
+                />
             )}
             <SaleModule
                 target="public"

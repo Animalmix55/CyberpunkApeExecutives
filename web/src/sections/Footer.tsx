@@ -34,7 +34,9 @@ export const Footer = (): JSX.Element => {
                     }),
                 })}
             >
-                <div>© 2021 Cyberpunk Ape Executives. All rights reserved</div>
+                <div className={css({ textAlign: 'center' })}>
+                    © 2021 Cyberpunk Ape Executives. All rights reserved
+                </div>
                 <div
                     className={css({
                         display: 'flex',

@@ -22,7 +22,6 @@ export const MetamaskModalInner = (): JSX.Element => {
                 alignItems: 'center',
                 [MOBILE]: {
                     minWidth: 'unset',
-                    width: '90vw',
                 },
             })}
         >
@@ -71,7 +70,11 @@ export const MetamaskModalInner = (): JSX.Element => {
             </div>
             <MetaMaskButton
                 disabled={!agreed}
-                className={css({ height: '90px' })}
+                className={css({
+                    height: '90px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                })}
             />
         </div>
     );

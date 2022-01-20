@@ -9,7 +9,7 @@ module.exports = {
     entry: './src/index.tsx',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle-01172022-2.js',
+        filename: 'bundle-01192022.js',
     },
     devtool: 'inline-source-map',
     mode: 'development',
