@@ -38,10 +38,11 @@ export const Web3ContextProvider = ({
     const web3 = React.useMemo(() => new Web3(provider as never), [provider]);
 
     const reload = React.useCallback(async () => {
-        const provider = await detectEthereumProvider();
-        _setProvider(provider);
+        _setProvider(undefined);
+        const promise = detectEthereumProvider();
+        promise.then(_setProvider);
 
-        return provider;
+        return promise;
     }, []);
 
     React.useEffect(() => {
@@ -65,8 +66,8 @@ export const Web3ContextProvider = ({
             provider.on('chainChanged', handleChainChange);
             provider.on('accountsChanged', handleNewAccounts);
             return (): void => {
-                provider.off('chainChanged', handleChainChange);
-                provider.off('accountsChanged', handleNewAccounts);
+                provider.removeListener('chainChanged', handleChainChange);
+                provider.removeListener('accountsChanged', handleNewAccounts);
             };
         }
     }, [provider]);

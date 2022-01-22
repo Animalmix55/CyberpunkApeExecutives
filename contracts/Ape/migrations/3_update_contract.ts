@@ -8,7 +8,7 @@ module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
     deployer: Truffle.Deployer,
   ) => {
     const contract = await CyberpunkApeExecutivesContract.deployed()
-    await contract.setBaseURI('https://cc_nftstore.mypinata.cloud/ipfs/QmNwf7LEdghyqntvdkxyomMZ2Jc4Y9Z6Ks76JitGctMvBb/');
+    await contract.setBaseURI('https://cc_nftstore.mypinata.cloud/ipfs/QmUt6XK24ejiBi2cJprN4TTEfF3N9dJHcDLvpxt7JLwU5Y/');
     await contract.mint('20');
   }
 }

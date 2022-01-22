@@ -6,14 +6,17 @@ import { ZERO } from '../utilties/Numbers';
 
 export const useHeldTokens = (
     contract?: IERC721Metadata
-): { update: () => void; ids: number[] } => {
+): { update: () => void; ids: number[]; loading: boolean } => {
     const { accounts } = useWeb3();
     const [ids, setIds] = React.useState<number[]>([]);
+    const [loading, setLoading] = React.useState(true);
     const balance = useBalance(contract, accounts[0]);
 
     const update = React.useCallback(() => {
+        setIds([]);
+        setLoading(true);
         if (!contract || !accounts[0] || balance.compareTo(ZERO) === 0) {
-            setIds([]);
+            setLoading(false);
             return;
         }
 
@@ -33,8 +36,10 @@ export const useHeldTokens = (
                             ids[tokenId] = true;
 
                         const results = Object.keys(ids).length;
-                        if (results === Number(balance.getValue()))
+                        if (results === Number(balance.getValue())) {
                             setIds(Object.keys(ids).map(Number));
+                            setLoading(false);
+                        }
                     });
             }
         );
@@ -42,7 +47,7 @@ export const useHeldTokens = (
 
     React.useEffect(update, [update]);
 
-    return { update, ids };
+    return { update, ids, loading };
 };
 
 export default useHeldTokens;

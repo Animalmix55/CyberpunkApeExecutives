@@ -1,5 +1,6 @@
 import React from 'react';
 import { useStyletron } from 'styletron-react';
+import { Spinner, SpinnerSize } from '@fluentui/react';
 import StakingControlBar, { Mode } from '../molecules/StakingControlBar';
 import { useContractContext } from '../contexts/ContractContext';
 import useWeb3 from '../contexts/Web3Context';
@@ -25,8 +26,9 @@ export const Staking = (): JSX.Element => {
     }, [stakingMode]);
 
     const [css] = useStyletron();
-    const { ids: heldIds } = useHeldTokens(tokenContract);
-    const { ids: stakedIds } = useStakedTokens(
+    const { ids: heldIds, loading: heldIdsLoading } =
+        useHeldTokens(tokenContract);
+    const { ids: stakedIds, loading: stakedIdsLoading } = useStakedTokens(
         stakingContract,
         tokenContractAddress
     );
@@ -57,9 +59,19 @@ export const Staking = (): JSX.Element => {
             >
                 {stakingMode}
             </h1>
+            {((heldIdsLoading && stakingMode === 'Stake') ||
+                (stakingMode === 'Unstake' && stakedIdsLoading)) && (
+                <Spinner
+                    className={css({ margin: 'auto' })}
+                    size={SpinnerSize.large}
+                />
+            )}
             <TokenGrid
                 className={css({
-                    display: stakingMode === 'Stake' ? 'flex' : 'none',
+                    display:
+                        stakingMode === 'Stake' && !heldIdsLoading
+                            ? 'flex'
+                            : 'none',
                 })}
                 selectedTokens={selectedTokens}
                 onChange={setSelectedTokens}
@@ -68,7 +80,10 @@ export const Staking = (): JSX.Element => {
             />
             <TokenGrid
                 className={css({
-                    display: stakingMode === 'Unstake' ? 'flex' : 'none',
+                    display:
+                        stakingMode === 'Unstake' && !stakedIdsLoading
+                            ? 'flex'
+                            : 'none',
                 })}
                 selectedTokens={selectedTokens}
                 onChange={setSelectedTokens}
