@@ -1,28 +1,22 @@
-import { Modal } from '@fluentui/react';
 import React from 'react';
 import { useStyletron } from 'styletron-react';
+import ModalBase from '../atoms/ModalBase';
 import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
 import { useThemeContext } from '../contexts/ThemeContext';
 import useWeb3, { Chain } from '../contexts/Web3Context';
 
-export const InvalidChainModalInner = ({
-    desiredChain,
-}: {
-    desiredChain: Chain;
-}): JSX.Element => {
-    const [css] = useStyletron();
+export const InvalidChainModal = (): JSX.Element => {
     const theme = useThemeContext();
+    const { chainId: expectedChainId } = useCyberpunkApesContext();
+    const { chainId } = useWeb3();
+    const isOpen = React.useMemo(
+        () => chainId !== expectedChainId,
+        [chainId, expectedChainId]
+    );
+    const [css] = useStyletron();
 
     return (
-        <div
-            className={css({
-                minWidth: '500px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-            })}
-        >
+        <ModalBase isOpen={isOpen}>
             <h1
                 className={css({
                     textAlign: 'center',
@@ -31,39 +25,15 @@ export const InvalidChainModalInner = ({
             >
                 Connected to the Wrong Chain
             </h1>
+            <div className={css({ maxWidth: '500px', textAlign: 'center' })}>
+                You might be on the wrong chain, or be running two Web3
+                providers simultaneously (ex: Coinbase Wallet and MetaMask)
+            </div>
             <h2 className={css({ textAlign: 'center' })}>
-                Connect to {desiredChain}
+                Connect to {Chain[expectedChainId]}
             </h2>
-        </div>
+        </ModalBase>
     );
 };
 
-export const InvalidChainModal = (): JSX.Element => {
-    const theme = useThemeContext();
-    const { chainId: expectedChainId } = useCyberpunkApesContext();
-    const { chainId } = useWeb3();
-
-    const isOpen = React.useMemo(
-        () => chainId !== expectedChainId,
-        [chainId, expectedChainId]
-    );
-
-    return (
-        <Modal
-            isOpen={isOpen}
-            styles={{
-                main: {
-                    borderRadius: '10px',
-                    padding: '10px',
-                    color: theme.fontColors.normal.primary.getCSSColor(1),
-                    backgroundColor:
-                        theme.lighterBackgroundColor.getCSSColor(1),
-                },
-            }}
-        >
-            <InvalidChainModalInner
-                desiredChain={Chain[expectedChainId] as never}
-            />
-        </Modal>
-    );
-};
+export default InvalidChainModal;
