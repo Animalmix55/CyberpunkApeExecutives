@@ -13,10 +13,28 @@ export const MetamaskModal = (): JSX.Element => {
     const [css] = useStyletron();
     const [agreed, setAgreed] = React.useState(false);
     const isOpen = React.useMemo(() => !accounts[0], [accounts]);
+    const { provider } = useWeb3();
+
+    const isMetaMask = React.useMemo(
+        () => !!provider?.isMetaMask as boolean,
+        [provider]
+    );
+    const isCoinbase = React.useMemo(
+        () => !!provider?.isCoinbaseWallet as boolean,
+        [provider]
+    );
+
+    const web3Provider = React.useMemo(() => {
+        if (isMetaMask) return 'MetaMask';
+        if (isCoinbase) return 'Coinbase Wallet';
+        return 'Web3';
+    }, [isCoinbase, isMetaMask]);
 
     return (
         <ModalBase isOpen={isOpen}>
-            <h1 className={css({ textAlign: 'center' })}>Connect MetaMask</h1>
+            <h1 className={css({ textAlign: 'center' })}>
+                Connect {web3Provider}
+            </h1>
             <div className={css({ display: 'flex' })}>
                 <Checkbox
                     checked={agreed}
