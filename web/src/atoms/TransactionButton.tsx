@@ -53,10 +53,12 @@ export const TransactionButton = <
 
                 onClickProp?.(e);
 
-                const functionParams =
-                    typeof params === 'function' ? await params(props) : params;
-
+                let functionParams: Parameters<T['methods'][M]>;
                 try {
+                    functionParams =
+                        typeof params === 'function'
+                            ? await params(props)
+                            : params;
                     await contract.methods[method](
                         ...functionParams
                     ).estimateGas(tx);

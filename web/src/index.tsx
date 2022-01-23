@@ -19,6 +19,7 @@ import ApeRouter from './routing/ApeRouter';
 import Header from './molecules/Header/Header';
 import Footer from './sections/Footer';
 import { Web3ContextProvider } from './contexts/Web3Context';
+import { ConfirmationContextProvider } from './contexts/ConfirmationPromptContext';
 
 initializeIcons();
 
@@ -44,28 +45,30 @@ const Root = (): JSX.Element => {
                     <Provider value={styletron}>
                         <ThemeContextProvider value={defaultTheme}>
                             <HashRouter>
-                                <CyberpunkApesContextProvider
-                                    value={{
-                                        api,
-                                        etherscanUrl,
-                                        chainId,
-                                        stakingContractAddress,
-                                        tokenContractAddress,
-                                        discordUrl,
-                                        twitterUrl,
-                                        genesisUrl,
-                                        bootlegUrl,
-                                    }}
-                                >
-                                    <ContractContextProvider>
-                                        <>
-                                            <Header />
-                                            <ToastContainer position="bottom-left" />
-                                            <ApeRouter />
-                                            <Footer />
-                                        </>
-                                    </ContractContextProvider>
-                                </CyberpunkApesContextProvider>
+                                <ConfirmationContextProvider>
+                                    <CyberpunkApesContextProvider
+                                        value={{
+                                            api,
+                                            etherscanUrl,
+                                            chainId,
+                                            stakingContractAddress,
+                                            tokenContractAddress,
+                                            discordUrl,
+                                            twitterUrl,
+                                            genesisUrl,
+                                            bootlegUrl,
+                                        }}
+                                    >
+                                        <ContractContextProvider>
+                                            <>
+                                                <Header />
+                                                <ToastContainer position="bottom-left" />
+                                                <ApeRouter />
+                                                <Footer />
+                                            </>
+                                        </ContractContextProvider>
+                                    </CyberpunkApesContextProvider>
+                                </ConfirmationContextProvider>
                             </HashRouter>
                         </ThemeContextProvider>
                     </Provider>

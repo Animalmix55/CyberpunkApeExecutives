@@ -15,6 +15,7 @@ import RewardBalanceWidget from '../atoms/StakingWidgets/RewardBalanceWidget';
 import { MOBILE } from '../utilties/MediaQueries';
 import DividendWidget from '../atoms/StakingWidgets/DividendWidget';
 import ClaimDividendButton from './ClaimDividendButton';
+import { useConfirmationContext } from '../contexts/ConfirmationPromptContext';
 
 export type Mode = 'Stake' | 'Unstake';
 
@@ -55,6 +56,8 @@ const StakingButton = (props: StakingButtonProps): JSX.Element => {
         stakingContractAddress
     );
 
+    const confirm = useConfirmationContext();
+
     const onTransact = React.useCallback(() => {
         if (mode === 'Stake') onStaked();
         if (mode === 'Unstake') onUnstaked();
@@ -67,7 +70,16 @@ const StakingButton = (props: StakingButtonProps): JSX.Element => {
                 method="setApprovalForAll"
                 buttonType={ButtonType.primary}
                 className={className}
-                params={[stakingContractAddress, true]}
+                params={async (): Promise<[string, boolean]> => {
+                    const response = await confirm(
+                        'Heads Up',
+                        'Approval gives our contract access to stake APEs on your behalf. After the approval transaction completes, you will need to click the Stake button to stake your APEs. This transaction DOES NOT stake any APEs.',
+                        'Continue',
+                        'Go Back'
+                    );
+                    if (!response) throw new Error('Approval Canceled');
+                    return [stakingContractAddress, true];
+                }}
                 onTransact={(v): Promise<void> => v.then(update)}
                 tx={{ from: accounts[0] }}
             >
