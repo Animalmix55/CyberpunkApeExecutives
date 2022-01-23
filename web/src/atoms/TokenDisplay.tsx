@@ -5,7 +5,7 @@ import { useThemeContext } from '../contexts/ThemeContext';
 import useTokenDetails from '../hooks/useTokenDetails';
 import { IERC721Metadata } from '../models/IERC721Metadata';
 import ClassNameBuilder from '../utilties/ClassNameBuilder';
-import { MOBILE } from '../utilties/MediaQueries';
+import { MOBILE, MOUSE } from '../utilties/MediaQueries';
 import TokenDetails from './TokenDetails';
 import { TooltipHost } from './Tooltip';
 
@@ -46,8 +46,10 @@ export const TokenDisplay = (props: Props): JSX.Element => {
                         ...(selected && {
                             boxShadow: '0px 0px 5px #fff',
                         }),
-                        ':hover': {
-                            boxShadow: '0px 0px 5px #fff',
+                        [MOUSE]: {
+                            ':hover': {
+                                boxShadow: '0px 0px 5px #fff',
+                            },
                         },
                         [MOBILE]: {
                             width: 'auto',

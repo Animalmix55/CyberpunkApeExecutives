@@ -18,7 +18,7 @@ export const MetaMaskButton = (props: Props): JSX.Element => {
     const { className, style, disabled } = props;
     const [css] = useStyletron();
     const iconRef = React.useRef<HTMLDivElement>(null);
-    const { accounts, reload } = useWeb3();
+    const { accounts, login } = useWeb3();
 
     const metaMaskInstalled = React.useMemo(
         () => MetaMaskOnboarding.isMetaMaskInstalled(),
@@ -41,13 +41,7 @@ export const MetaMaskButton = (props: Props): JSX.Element => {
     }, [accounts, metaMaskInstalled]);
 
     const onClick = (): void => {
-        reload().then((prov) => {
-            if (prov) {
-                prov.request({ method: 'eth_requestAccounts' });
-            } else {
-                onboarding.current?.startOnboarding();
-            }
-        });
+        login(onboarding.current?.startOnboarding);
     };
 
     const child = React.useRef<HTMLElement>();

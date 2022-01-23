@@ -17,10 +17,12 @@ export interface Web3ContextType {
     web3?: Web3;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     reload: () => Promise<any>;
+    login: (onboardingHandler?: () => void) => Promise<string[]>;
 }
 
 const Web3Context = React.createContext<Web3ContextType>({
     reload: () => Promise.resolve(undefined),
+    login: () => Promise.resolve([]),
     accounts: [],
 });
 
@@ -39,11 +41,26 @@ export const Web3ContextProvider = ({
 
     const reload = React.useCallback(async () => {
         _setProvider(undefined);
-        const promise = detectEthereumProvider();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const promise = detectEthereumProvider() as Promise<any>;
         promise.then(_setProvider);
 
         return promise;
     }, []);
+
+    const login = React.useCallback(
+        async (onboardingHandler?: () => void) => {
+            const prov = await reload();
+            if (prov) {
+                return prov
+                    .request({ method: 'eth_requestAccounts' })
+                    .then(setAccounts);
+            }
+            onboardingHandler?.();
+            return Promise.resolve([]);
+        },
+        [reload]
+    );
 
     React.useEffect(() => {
         reload();
@@ -59,9 +76,6 @@ export const Web3ContextProvider = ({
         };
 
         if (provider) {
-            provider
-                .request({ method: 'eth_requestAccounts' })
-                .then(handleNewAccounts);
             provider.request({ method: 'eth_chainId' }).then(handleChainChange);
             provider.on('chainChanged', handleChainChange);
             provider.on('accountsChanged', handleNewAccounts);
@@ -80,6 +94,7 @@ export const Web3ContextProvider = ({
                 accounts,
                 chainId,
                 provider,
+                login,
             }}
         >
             {children}
