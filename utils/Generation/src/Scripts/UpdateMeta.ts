@@ -91,16 +91,20 @@ export const addSpecialCodes = (meta: ERC721Meta[]) => {
 export const spliceInRares = (
     rares: ERC721Meta[],
     normals: ERC721Meta[]
-): ERC721Meta[] => {
+): { meta: ERC721Meta[]; idRareOverrides: { [index: number]: number } } => {
+    // idRareOverrides = index in output array as key to index in rare array
     const remainingRares = [...rares];
     const output = [...normals];
     const placedIds: number[] = [];
+    const idRareOverrides: { [index: number]: number } = {};
 
     while (remainingRares.length > 0) {
         const index = crypto.randomInt(normals.length);
         if (placedIds.some((pid) => Math.abs(pid - index + 1) <= 10)) continue;
 
         output[index] = remainingRares[remainingRares.length - 1];
+        idRareOverrides[index] = remainingRares.length - 1;
+
         remainingRares.pop();
         placedIds.push(index + 1);
     }
@@ -110,33 +114,45 @@ export const spliceInRares = (
         JSON.stringify(placedIds.sort((a, b) => a - b))
     );
 
-    return output;
+    return { meta: output, idRareOverrides };
 };
 
-export const parseRares = (path: string): ERC721Meta[] => {
+type ERC721MetaWithFilenames = ERC721Meta & { fileName: string };
+
+export const parseRares = (path: string): ERC721MetaWithFilenames[] => {
     const file = fs.readFileSync(path).toString();
     const lines = file.split('\r\n');
     const traits = lines[0].split(',').slice(1);
 
-    const rares = lines.slice(1).map((line): ERC721Meta => {
-        const attributeCells = line
-            .split(',')
-            .map((l) => l.trim())
-            .slice(1);
+    const rares = lines
+        .slice(1)
+        .map((line): ERC721MetaWithFilenames | undefined => {
+            const allCells = line.split(',').map((l) => l.trim());
+            const attributeCells = allCells.splice(1);
+            const fileName = allCells[0];
 
-        const attributes = attributeCells.map(
-            (a, i): ERC721Meta['attributes'][number] => ({
-                trait_type: traits[i],
-                value: a,
-            })
-        );
+            if (!fileName.trim()) return undefined;
 
-        return {
-            name: '',
-            attributes,
-            image: 'placeholder',
-        };
-    });
+            const attributes = attributeCells
+                .map((a, i): ERC721Meta['attributes'][number] => ({
+                    trait_type: traits[i],
+                    value: a,
+                    ...((traits[i] === 'Super Secret IMD Code' ||
+                        traits[i] ===
+                            'Secret International Megadigital Code') && {
+                        display_type: 'number',
+                    }),
+                }))
+                .filter((a) => !!a.value.trim());
+
+            return {
+                name: '',
+                attributes,
+                image: 'placeholder',
+                fileName,
+            };
+        })
+        .filter((f) => !!f) as ERC721MetaWithFilenames[];
 
     return rares;
 };
@@ -153,29 +169,48 @@ export const generateFinalizedMeta = (
     meta: ERC721Meta[],
     baseURL: string,
     imageExt: string,
-    rares: ERC721Meta[],
+    rares: ERC721MetaWithFilenames[],
     placeholder?: boolean,
     externalUrlOverride?: string,
     nameOverride?: string,
     descriptionOverride?: string
-): ERC721Meta[] => {
+): { meta: ERC721Meta[]; idRareOverrides: { [index: number]: number } } => {
     if (placeholder) {
-        return meta.map((m, i) => ({
-            name: nameOverride ? `${nameOverride} #${i + 1}` : m.name,
-            description: descriptionOverride ?? m.description,
-            attributes: [],
-            image: `${baseURL}`,
-            external_url: externalUrlOverride,
-        }));
+        return {
+            meta: meta.map((m, i) => ({
+                name: nameOverride ? `${nameOverride} #${i + 1}` : m.name,
+                description: descriptionOverride ?? m.description,
+                attributes: [],
+                image: `${baseURL}`,
+                external_url: externalUrlOverride,
+            })),
+            idRareOverrides: {},
+        };
     }
 
-    return spliceInRares(rares, addSpecialCodes(cleanseMetadata(meta))).map(
-        (m, i) => ({
-            ...m,
-            name: nameOverride ? `${nameOverride} #${i + 1}` : m.name,
-            description: descriptionOverride ?? m.description,
-            image: `${baseURL}/${i + 1}.${imageExt}`,
-            ...(externalUrlOverride && { external_url: externalUrlOverride }),
-        })
+    const { meta: splicedMeta, idRareOverrides } = spliceInRares(
+        rares,
+        addSpecialCodes(cleanseMetadata(meta))
     );
+
+    return {
+        meta: splicedMeta
+            .map((m) => {
+                const newM = { ...m };
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                delete (newM as any).fileName;
+
+                return newM;
+            })
+            .map((m, i) => ({
+                ...m,
+                name: nameOverride ? `${nameOverride} #${i + 1}` : m.name,
+                description: descriptionOverride ?? m.description,
+                image: `${baseURL}/${i + 1}.${imageExt}`,
+                ...(externalUrlOverride && {
+                    external_url: externalUrlOverride,
+                }),
+            })),
+        idRareOverrides,
+    };
 };
