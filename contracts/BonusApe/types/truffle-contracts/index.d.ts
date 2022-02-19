@@ -5,7 +5,9 @@
 import { CyberpunkApeLegendsContract } from "./CyberpunkApeLegends";
 import { ERC165Contract } from "./ERC165";
 import { ERC20Contract } from "./ERC20";
+import { ERC721Contract } from "./ERC721";
 import { ERC721AContract } from "./ERC721A";
+import { ERC721EnumerableContract } from "./ERC721Enumerable";
 import { IERC165Contract } from "./IERC165";
 import { IERC20Contract } from "./IERC20";
 import { IERC20MetadataContract } from "./IERC20Metadata";
@@ -23,7 +25,9 @@ declare global {
       require(name: "CyberpunkApeLegends"): CyberpunkApeLegendsContract;
       require(name: "ERC165"): ERC165Contract;
       require(name: "ERC20"): ERC20Contract;
+      require(name: "ERC721"): ERC721Contract;
       require(name: "ERC721A"): ERC721AContract;
+      require(name: "ERC721Enumerable"): ERC721EnumerableContract;
       require(name: "IERC165"): IERC165Contract;
       require(name: "IERC20"): IERC20Contract;
       require(name: "IERC20Metadata"): IERC20MetadataContract;
@@ -44,7 +48,12 @@ export {
 } from "./CyberpunkApeLegends";
 export { ERC165Contract, ERC165Instance } from "./ERC165";
 export { ERC20Contract, ERC20Instance } from "./ERC20";
+export { ERC721Contract, ERC721Instance } from "./ERC721";
 export { ERC721AContract, ERC721AInstance } from "./ERC721A";
+export {
+  ERC721EnumerableContract,
+  ERC721EnumerableInstance,
+} from "./ERC721Enumerable";
 export { IERC165Contract, IERC165Instance } from "./IERC165";
 export { IERC20Contract, IERC20Instance } from "./IERC20";
 export {

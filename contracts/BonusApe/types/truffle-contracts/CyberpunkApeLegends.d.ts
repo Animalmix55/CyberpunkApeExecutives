@@ -386,6 +386,29 @@ export interface CyberpunkApeLegendsInstance extends Truffle.ContractInstance {
   };
 
   /**
+   * Mints the given token ids provided it is possible to. transfers the required number of payment tokens from the user's walletThis function allows minting for the set cost, or free for the contract owner
+   * @param tokenIds - the token ids to mint
+   */
+  mintMany: {
+    (
+      tokenIds: (number | BN | string)[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<Truffle.TransactionResponse<AllEvents>>;
+    call(
+      tokenIds: (number | BN | string)[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<void>;
+    sendTransaction(
+      tokenIds: (number | BN | string)[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<string>;
+    estimateGas(
+      tokenIds: (number | BN | string)[],
+      txDetails?: Truffle.TransactionDetails
+    ): Promise<number>;
+  };
+
+  /**
    * Burns the provided token id if you own it. Reduces the supply by 1.
    * @param tokenId - the ID of the token to be burned.
    */
@@ -758,6 +781,29 @@ export interface CyberpunkApeLegendsInstance extends Truffle.ContractInstance {
       ): Promise<string>;
       estimateGas(
         tokenId: number | BN | string,
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<number>;
+    };
+
+    /**
+     * Mints the given token ids provided it is possible to. transfers the required number of payment tokens from the user's walletThis function allows minting for the set cost, or free for the contract owner
+     * @param tokenIds - the token ids to mint
+     */
+    mintMany: {
+      (
+        tokenIds: (number | BN | string)[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<Truffle.TransactionResponse<AllEvents>>;
+      call(
+        tokenIds: (number | BN | string)[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<void>;
+      sendTransaction(
+        tokenIds: (number | BN | string)[],
+        txDetails?: Truffle.TransactionDetails
+      ): Promise<string>;
+      estimateGas(
+        tokenIds: (number | BN | string)[],
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };

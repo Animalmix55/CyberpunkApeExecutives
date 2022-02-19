@@ -1,4 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
+import { Spinner, SpinnerSize } from '@fluentui/react';
 import React from 'react';
 import { useStyletron } from 'styletron-react';
 import TokenDisplay from '../atoms/TokenDisplay';
@@ -23,6 +24,53 @@ export const HeldTokenGrid = (
     const { ids } = useHeldTokens(tokenContract);
 
     return <TokenGrid {...props} contract={tokenContract} tokens={ids} />;
+};
+
+export const UnmintedLegendsGrid = (
+    props: Omit<Omit<Props, 'tokens'>, 'contract'>
+): JSX.Element => {
+    const { className } = props;
+    const { legendsContract } = useContractContext();
+    const [unminted, setUnminted] = React.useState<number[]>();
+
+    React.useEffect(() => {
+        if (!legendsContract) {
+            setUnminted([]);
+            return;
+        }
+
+        legendsContract.methods
+            .unmintedTokens()
+            .call()
+            .then((ids) => setUnminted(ids.map(Number)));
+    }, [legendsContract]);
+
+    const [css] = useStyletron();
+
+    if (!unminted) {
+        return (
+            <div
+                className={ClassNameBuilder(
+                    className,
+                    css({
+                        display: 'flex',
+                        flexGrow: 1,
+                        alignSelf: 'stretch',
+                        flexWrap: 'wrap',
+                        margin: '20px',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    })
+                )}
+            >
+                <Spinner size={SpinnerSize.large} />
+            </div>
+        );
+    }
+
+    return (
+        <TokenGrid {...props} contract={legendsContract} tokens={unminted} />
+    );
 };
 
 export const TokenGrid = (props: Props): JSX.Element => {

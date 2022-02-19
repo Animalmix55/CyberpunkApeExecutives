@@ -5,9 +5,9 @@ module.exports = (artifacts: Truffle.Artifacts) => {
     return async (deployer: Truffle.Deployer) => {
         return deployer.deploy(
             LegendsContract,
-            5500,
+            100,
             (await CREDIT.deployed()).address,
-            '10000000000000000000', // 10 ROOLAH
+            '10000000000000000000', // 10 CREDIT
             'http://localhost/joey.php?tokenId='
         );
     };

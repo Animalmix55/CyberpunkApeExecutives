@@ -98,7 +98,7 @@ contract CyberpunkApeLegends is ERC721Enumerable, Ownable, ReentrancyGuard {
      * token will be the concatenation of the `baseURI` and the `tokenId`. Empty
      * by default, can be overriden in child contracts.
      */
-    function _baseURI() internal override view virtual returns (string memory) {
+    function _baseURI() internal view virtual override returns (string memory) {
         return baseURI;
     }
 
@@ -114,16 +114,53 @@ contract CyberpunkApeLegends is ERC721Enumerable, Ownable, ReentrancyGuard {
      * @param tokenId - the token id to mint
      */
     function mint(uint256 tokenId) public nonReentrant {
-        require(tokenId <= maxSupply && tokenId >= 1, "Bad id");
         bool isOwner = msg.sender == owner();
 
         if (!isOwner) {
             // transfers out token if not owner
-            IERC20(paymentToken).transferFrom(msg.sender, address(this), mintCost);
+            IERC20(paymentToken).transferFrom(
+                msg.sender,
+                address(this),
+                mintCost
+            );
         }
 
         // DISTRIBUTE THE TOKENS
-        _safeMint(msg.sender, tokenId);
+        _tryMint(msg.sender, tokenId);
+    }
+
+    /**
+     * Mints the given token ids provided it is possible to.
+     * transfers the required number of payment tokens from the user's wallet
+     *
+     * @notice This function allows minting for the set cost,
+     * or free for the contract owner
+     *
+     * @param tokenIds - the token ids to mint
+     */
+    function mintMany(uint256[] calldata tokenIds) public nonReentrant {
+        bool isOwner = msg.sender == owner();
+
+        if (!isOwner) {
+            // transfers out token if not owner
+            IERC20(paymentToken).transferFrom(
+                msg.sender,
+                address(this),
+                mintCost * tokenIds.length
+            );
+        }
+
+        for (uint256 i; i < tokenIds.length; i++) {
+            _tryMint(msg.sender, tokenIds[i]);
+        }
+    }
+
+    /**
+     * @dev mints the token after ensuring it is in the token range.
+     */
+    function _tryMint(address to, uint256 tokenId) internal {
+        require(tokenId <= maxSupply && tokenId >= 1, "Bad id");
+        _safeMint(to, tokenId);
     }
 
     // ------------------------------------------------ BURN LOGIC ------------------------------------------------
