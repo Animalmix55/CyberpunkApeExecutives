@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Switch } from 'react-router';
 import { useStyletron } from 'styletron-react';
 import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
+import LegendsPage from '../pages/Legends';
 import MainPage from '../pages/Main';
 import MintPage from '../pages/Mint';
 import StakingPage from '../pages/Staking';
@@ -10,12 +11,17 @@ export enum Page {
     Main = '/',
     Staking = '/staking',
     Mint = '/mint',
+    Legends = '/legends',
 }
 
 export const ApeRouter = (): JSX.Element => {
     const [css] = useStyletron();
-    const { stakingContractAddress, tokenContractAddress } =
-        useCyberpunkApesContext();
+    const {
+        stakingContractAddress,
+        tokenContractAddress,
+        creditContractAddress,
+        lengendsContractAddress,
+    } = useCyberpunkApesContext();
 
     return (
         <div
@@ -32,6 +38,9 @@ export const ApeRouter = (): JSX.Element => {
                 )}
                 {tokenContractAddress && (
                     <Route path={Page.Mint} exact component={MintPage} />
+                )}
+                {creditContractAddress && lengendsContractAddress && (
+                    <Route path={Page.Legends} exact component={LegendsPage} />
                 )}
             </Switch>
         </div>

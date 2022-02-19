@@ -198,7 +198,7 @@ export interface CyberpunkApeLegendsInstance extends Truffle.ContractInstance {
   symbol(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
   /**
-   * See {IERC721Enumerable-tokenByIndex}. This read function is O(totalSupply). If calling from a separate contract, be sure to test gas first. It may also degrade with extremely large collection sizes (e.g >> 10000), test for your use case.
+   * See {IERC721Enumerable-tokenByIndex}.
    */
   tokenByIndex(
     index: number | BN | string,
@@ -206,7 +206,7 @@ export interface CyberpunkApeLegendsInstance extends Truffle.ContractInstance {
   ): Promise<BN>;
 
   /**
-   * See {IERC721Enumerable-tokenOfOwnerByIndex}. This read function is O(totalSupply). If calling from a separate contract, be sure to test gas first. It may also degrade with extremely large collection sizes (e.g >> 10000), test for your use case.
+   * See {IERC721Enumerable-tokenOfOwnerByIndex}.
    */
   tokenOfOwnerByIndex(
     owner: string,
@@ -363,24 +363,24 @@ export interface CyberpunkApeLegendsInstance extends Truffle.ContractInstance {
   };
 
   /**
-   * Mints the given quantity of tokens provided it is possible to. transfers the required number of tokens from the user's walletThis function allows minting for the set cost, or free for the contract owner
-   * @param _quantity - the number of tokens to mint
+   * Mints the given token id provided it is possible to. transfers the required number of payment tokens from the user's walletThis function allows minting for the set cost, or free for the contract owner
+   * @param tokenId - the token id to mint
    */
   mint: {
     (
-      _quantity: number | BN | string,
+      tokenId: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<Truffle.TransactionResponse<AllEvents>>;
     call(
-      _quantity: number | BN | string,
+      tokenId: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<void>;
     sendTransaction(
-      _quantity: number | BN | string,
+      tokenId: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<string>;
     estimateGas(
-      _quantity: number | BN | string,
+      tokenId: number | BN | string,
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
@@ -435,6 +435,8 @@ export interface CyberpunkApeLegendsInstance extends Truffle.ContractInstance {
       txDetails?: Truffle.TransactionDetails
     ): Promise<number>;
   };
+
+  unmintedTokens(txDetails?: Truffle.TransactionDetails): Promise<BN[]>;
 
   methods: {
     /**
@@ -573,7 +575,7 @@ export interface CyberpunkApeLegendsInstance extends Truffle.ContractInstance {
     symbol(txDetails?: Truffle.TransactionDetails): Promise<string>;
 
     /**
-     * See {IERC721Enumerable-tokenByIndex}. This read function is O(totalSupply). If calling from a separate contract, be sure to test gas first. It may also degrade with extremely large collection sizes (e.g >> 10000), test for your use case.
+     * See {IERC721Enumerable-tokenByIndex}.
      */
     tokenByIndex(
       index: number | BN | string,
@@ -581,7 +583,7 @@ export interface CyberpunkApeLegendsInstance extends Truffle.ContractInstance {
     ): Promise<BN>;
 
     /**
-     * See {IERC721Enumerable-tokenOfOwnerByIndex}. This read function is O(totalSupply). If calling from a separate contract, be sure to test gas first. It may also degrade with extremely large collection sizes (e.g >> 10000), test for your use case.
+     * See {IERC721Enumerable-tokenOfOwnerByIndex}.
      */
     tokenOfOwnerByIndex(
       owner: string,
@@ -738,24 +740,24 @@ export interface CyberpunkApeLegendsInstance extends Truffle.ContractInstance {
     };
 
     /**
-     * Mints the given quantity of tokens provided it is possible to. transfers the required number of tokens from the user's walletThis function allows minting for the set cost, or free for the contract owner
-     * @param _quantity - the number of tokens to mint
+     * Mints the given token id provided it is possible to. transfers the required number of payment tokens from the user's walletThis function allows minting for the set cost, or free for the contract owner
+     * @param tokenId - the token id to mint
      */
     mint: {
       (
-        _quantity: number | BN | string,
+        tokenId: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<Truffle.TransactionResponse<AllEvents>>;
       call(
-        _quantity: number | BN | string,
+        tokenId: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<void>;
       sendTransaction(
-        _quantity: number | BN | string,
+        tokenId: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<string>;
       estimateGas(
-        _quantity: number | BN | string,
+        tokenId: number | BN | string,
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
@@ -810,6 +812,8 @@ export interface CyberpunkApeLegendsInstance extends Truffle.ContractInstance {
         txDetails?: Truffle.TransactionDetails
       ): Promise<number>;
     };
+
+    unmintedTokens(txDetails?: Truffle.TransactionDetails): Promise<BN[]>;
 
     /**
      * See {IERC721-safeTransferFrom}.

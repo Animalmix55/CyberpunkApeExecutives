@@ -11,6 +11,8 @@ export interface CyberpunkApesContextType {
     etherscanUrl: string;
     genesisUrl: string;
     bootlegUrl: string;
+    creditContractAddress: string;
+    lengendsContractAddress: string;
 }
 
 const CyberpunkApesContext = React.createContext<CyberpunkApesContextType>({
@@ -18,6 +20,8 @@ const CyberpunkApesContext = React.createContext<CyberpunkApesContextType>({
     chainId: Chain.Test,
     tokenContractAddress: '',
     stakingContractAddress: '',
+    creditContractAddress: '',
+    lengendsContractAddress: '',
     etherscanUrl: '',
     discordUrl: '',
     twitterUrl: '',

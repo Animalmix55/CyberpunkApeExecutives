@@ -111,6 +111,8 @@ export const Header = (): JSX.Element => {
         twitterUrl,
         tokenContractAddress,
         stakingContractAddress,
+        creditContractAddress,
+        lengendsContractAddress,
     } = useCyberpunkApesContext();
 
     const [isOpen, setOpen] = React.useState(false);
@@ -224,15 +226,6 @@ export const Header = (): JSX.Element => {
                 >
                     FAQ
                 </Button>
-                <Button
-                    style={buttonStyle}
-                    buttonType={ButtonType.clear}
-                    onClick={(): void => {
-                        window.open(discordUrl);
-                    }}
-                >
-                    Become an Intern
-                </Button>
                 {stakingContractAddress && (
                     <Button
                         style={{
@@ -249,6 +242,24 @@ export const Header = (): JSX.Element => {
                         onClick={(): void => history.push(Page.Staking)}
                     >
                         Staking
+                    </Button>
+                )}
+                {creditContractAddress && lengendsContractAddress && (
+                    <Button
+                        style={{
+                            ...buttonStyle,
+                            color:
+                                pathname === Page.Legends
+                                    ? theme.fontColors.hovered.primary.getCSSColor(
+                                          1
+                                      )
+                                    : undefined,
+                        }}
+                        buttonType={ButtonType.clear}
+                        key="legends_button"
+                        onClick={(): void => history.push(Page.Legends)}
+                    >
+                        CAE Legends
                     </Button>
                 )}
             </>
@@ -268,8 +279,9 @@ export const Header = (): JSX.Element => {
             faq.onClick,
             stakingContractAddress,
             pathname,
+            creditContractAddress,
+            lengendsContractAddress,
             goHomeBefore,
-            discordUrl,
             history,
         ]
     );

@@ -12,7 +12,7 @@ enum ErrorMessages {
     BadToken = 'Bad token',
     BadCost = 'Bad cost',
     MintOver = 'Mint over',
-    BadQuantity = 'Bad quantity',
+    BadId = 'Bad id',
     NotEnough = 'Not enough',
     NotOwner = 'Not owner',
     NotAdmin = 'Ownable: caller is not the owner',
@@ -42,11 +42,9 @@ contract('CyberpunkApeLegends', (accounts) => {
         const { CyberpunkApeLegendsInstance, PaymentTokenInstance } =
             await deploy(5500, 10000, 'baseURI/', { from: accounts[0] });
 
-        await CyberpunkApeLegendsInstance.mint(1); // mint 1 for URI access
-
         assert.equal(
-            await CyberpunkApeLegendsInstance.tokenURI(0),
-            'baseURI/0'
+            await CyberpunkApeLegendsInstance.tokenURI(1),
+            'baseURI/1'
         );
 
         assert.equal(
@@ -67,7 +65,7 @@ contract('CyberpunkApeLegends', (accounts) => {
             { from: accounts[0] }
         );
 
-        assert.equal(await CyberpunkApeLegendsInstance.ownerOf(0), accounts[0]);
+        assert.equal(await CyberpunkApeLegendsInstance.ownerOf(1), accounts[0]);
     });
 
     it('allows owners to mint for free', async () => {
@@ -78,7 +76,7 @@ contract('CyberpunkApeLegends', (accounts) => {
             { from: accounts[0] }
         );
 
-        await CyberpunkApeLegendsInstance.mint(1, { from: accounts[0] }); // mint 1 for URI access
+        await CyberpunkApeLegendsInstance.mint(2, { from: accounts[0] }); // mint 1 for URI access
         assert.equal(
             (
                 await CyberpunkApeLegendsInstance.balanceOf(accounts[0])
@@ -96,7 +94,7 @@ contract('CyberpunkApeLegends', (accounts) => {
         );
 
         await truffleAssert.reverts(
-            CyberpunkApeLegendsInstance.mint(1, { from: accounts[1] }) // mint 1 to fail
+            CyberpunkApeLegendsInstance.mint(2, { from: accounts[1] }) // mint 1 to fail
         );
     });
 
@@ -116,6 +114,7 @@ contract('CyberpunkApeLegends', (accounts) => {
         );
 
         await CyberpunkApeLegendsInstance.mint(2, { from: accounts[1] }); // mint 2
+        await CyberpunkApeLegendsInstance.mint(3, { from: accounts[1] }); // mint 3
         assert.equal(
             (
                 await CyberpunkApeLegendsInstance.balanceOf(accounts[1])
@@ -144,10 +143,10 @@ contract('CyberpunkApeLegends', (accounts) => {
             { from: accounts[0] }
         );
 
-        assert(await CyberpunkApeLegendsInstance.tokenURI(0), 'baseURI/0');
+        assert(await CyberpunkApeLegendsInstance.tokenURI(1), 'baseURI/1');
     });
 
-    it('does not allow minting more than supply', async () => {
+    it('does not allow minting outside of supply', async () => {
         const { CyberpunkApeLegendsInstance } = await deploy(
             3,
             10000,
@@ -156,15 +155,16 @@ contract('CyberpunkApeLegends', (accounts) => {
         );
 
         await truffleAssert.reverts(
-            CyberpunkApeLegendsInstance.mint(3, { from: accounts[0] }), // mint >2 to fail
-            ErrorMessages.NotEnough
+            CyberpunkApeLegendsInstance.mint(0, { from: accounts[0] }), // mint <= 0 fails
+            ErrorMessages.BadId
+        );
+
+        await truffleAssert.reverts(
+            CyberpunkApeLegendsInstance.mint(4, { from: accounts[0] }), // mint > 3 fails
+            ErrorMessages.BadId
         );
 
         await CyberpunkApeLegendsInstance.mint(2, { from: accounts[0] });
-        await truffleAssert.reverts(
-            CyberpunkApeLegendsInstance.mint(1, { from: accounts[0] }), // mint 1 more to fail
-            ErrorMessages.MintOver
-        );
     });
 
     it('allows withdrawing of ERC20 token', async () => {
@@ -183,6 +183,7 @@ contract('CyberpunkApeLegends', (accounts) => {
         );
 
         await CyberpunkApeLegendsInstance.mint(2, { from: accounts[1] }); // mint 2
+        await CyberpunkApeLegendsInstance.mint(3, { from: accounts[1] }); // mint 3
 
         assert.equal(
             (
@@ -225,8 +226,8 @@ contract('CyberpunkApeLegends', (accounts) => {
         );
 
         assert.equal(
-            await CyberpunkApeLegendsInstance.tokenURI(0),
-            'baseURI/0'
+            await CyberpunkApeLegendsInstance.tokenURI(1),
+            'baseURI/1'
         );
         // reverts when not owner
         await truffleAssert.reverts(
@@ -237,8 +238,8 @@ contract('CyberpunkApeLegends', (accounts) => {
         );
         await CyberpunkApeLegendsInstance.setBaseURI('newbaseURI/');
         assert.equal(
-            await CyberpunkApeLegendsInstance.tokenURI(0),
-            'newbaseURI/0'
+            await CyberpunkApeLegendsInstance.tokenURI(1),
+            'newbaseURI/1'
         );
     });
 
@@ -306,6 +307,41 @@ contract('CyberpunkApeLegends', (accounts) => {
         assert.equal(
             await CyberpunkApeLegendsInstance.paymentToken(),
             NewPaymentTokenInstance.address
+        );
+    });
+
+    it('allows fetching unminted tokens', async () => {
+        const { CyberpunkApeLegendsInstance } = await deploy(
+            20,
+            10000,
+            'baseURI/',
+            {
+                from: accounts[0],
+            }
+        );
+
+        let unminted = (await CyberpunkApeLegendsInstance.unmintedTokens()).map(
+            (f) => f.toNumber()
+        );
+        assert.lengthOf(unminted, 19); // 1 minted on deployment
+
+        assert.deepEqual(
+            unminted,
+            Array.from(new Array(19)).map((_, i) => i + 2)
+        );
+
+        await CyberpunkApeLegendsInstance.mint(15);
+
+        unminted = (await CyberpunkApeLegendsInstance.unmintedTokens()).map(
+            (f) => f.toNumber()
+        );
+        assert.lengthOf(unminted, 18); // 1 and 15 minted
+
+        assert.deepEqual(
+            unminted,
+            Array.from(new Array(19))
+                .map((_, i) => i + 2)
+                .filter((v) => v !== 15)
         );
     });
 });

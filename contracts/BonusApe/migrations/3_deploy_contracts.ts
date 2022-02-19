@@ -1,14 +1,13 @@
-module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
-    const JoeyContract = artifacts.require('Joey');
-    const Roolah = artifacts.require('MockERC20');
+module.exports = (artifacts: Truffle.Artifacts) => {
+    const LegendsContract = artifacts.require('CyberpunkApeLegends');
+    const CREDIT = artifacts.require('MockERC20');
 
     return async (deployer: Truffle.Deployer) => {
         return deployer.deploy(
-            JoeyContract,
+            LegendsContract,
             5500,
-            (await Roolah.deployed()).address,
+            (await CREDIT.deployed()).address,
             '10000000000000000000', // 10 ROOLAH
-            60 * 10, // 10 minutes
             'http://localhost/joey.php?tokenId='
         );
     };

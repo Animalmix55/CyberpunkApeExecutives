@@ -5,7 +5,6 @@
 import { CyberpunkApeLegendsContract } from "./CyberpunkApeLegends";
 import { ERC165Contract } from "./ERC165";
 import { ERC20Contract } from "./ERC20";
-import { ERC721Contract } from "./ERC721";
 import { ERC721AContract } from "./ERC721A";
 import { IERC165Contract } from "./IERC165";
 import { IERC20Contract } from "./IERC20";
@@ -14,12 +13,9 @@ import { IERC721Contract } from "./IERC721";
 import { IERC721EnumerableContract } from "./IERC721Enumerable";
 import { IERC721MetadataContract } from "./IERC721Metadata";
 import { IERC721ReceiverContract } from "./IERC721Receiver";
-import { JoeyContract } from "./Joey";
 import { MigrationsContract } from "./Migrations";
 import { MockERC20Contract } from "./MockERC20";
 import { OwnableContract } from "./Ownable";
-import { RooTroopContract } from "./RooTroop";
-import { VerifySignatureContract } from "./VerifySignature";
 
 declare global {
   namespace Truffle {
@@ -27,7 +23,6 @@ declare global {
       require(name: "CyberpunkApeLegends"): CyberpunkApeLegendsContract;
       require(name: "ERC165"): ERC165Contract;
       require(name: "ERC20"): ERC20Contract;
-      require(name: "ERC721"): ERC721Contract;
       require(name: "ERC721A"): ERC721AContract;
       require(name: "IERC165"): IERC165Contract;
       require(name: "IERC20"): IERC20Contract;
@@ -36,12 +31,9 @@ declare global {
       require(name: "IERC721Enumerable"): IERC721EnumerableContract;
       require(name: "IERC721Metadata"): IERC721MetadataContract;
       require(name: "IERC721Receiver"): IERC721ReceiverContract;
-      require(name: "Joey"): JoeyContract;
       require(name: "Migrations"): MigrationsContract;
       require(name: "MockERC20"): MockERC20Contract;
       require(name: "Ownable"): OwnableContract;
-      require(name: "RooTroop"): RooTroopContract;
-      require(name: "VerifySignature"): VerifySignatureContract;
     }
   }
 }
@@ -52,7 +44,6 @@ export {
 } from "./CyberpunkApeLegends";
 export { ERC165Contract, ERC165Instance } from "./ERC165";
 export { ERC20Contract, ERC20Instance } from "./ERC20";
-export { ERC721Contract, ERC721Instance } from "./ERC721";
 export { ERC721AContract, ERC721AInstance } from "./ERC721A";
 export { IERC165Contract, IERC165Instance } from "./IERC165";
 export { IERC20Contract, IERC20Instance } from "./IERC20";
@@ -73,12 +64,6 @@ export {
   IERC721ReceiverContract,
   IERC721ReceiverInstance,
 } from "./IERC721Receiver";
-export { JoeyContract, JoeyInstance } from "./Joey";
 export { MigrationsContract, MigrationsInstance } from "./Migrations";
 export { MockERC20Contract, MockERC20Instance } from "./MockERC20";
 export { OwnableContract, OwnableInstance } from "./Ownable";
-export { RooTroopContract, RooTroopInstance } from "./RooTroop";
-export {
-  VerifySignatureContract,
-  VerifySignatureInstance,
-} from "./VerifySignature";

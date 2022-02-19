@@ -33,6 +33,8 @@ const {
     twitterUrl,
     genesisUrl,
     bootlegUrl,
+    creditContractAddress,
+    lengendsContractAddress,
 } = { ...window } as unknown as CyberpunkApesContextType;
 
 const styletron = new Client();
@@ -53,6 +55,8 @@ const Root = (): JSX.Element => {
                                             chainId,
                                             stakingContractAddress,
                                             tokenContractAddress,
+                                            creditContractAddress,
+                                            lengendsContractAddress,
                                             discordUrl,
                                             twitterUrl,
                                             genesisUrl,

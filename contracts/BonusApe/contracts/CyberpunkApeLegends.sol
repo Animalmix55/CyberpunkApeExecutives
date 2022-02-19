@@ -2,13 +2,13 @@
 
 pragma solidity ^0.8.9;
 
-import "erc721a/contracts/ERC721A.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract CyberpunkApeLegends is ERC721A, Ownable, ReentrancyGuard {
+contract CyberpunkApeLegends is ERC721Enumerable, Ownable, ReentrancyGuard {
     /**
      * The baseURI for tokens
      */
@@ -30,18 +30,18 @@ contract CyberpunkApeLegends is ERC721A, Ownable, ReentrancyGuard {
      * Will never exceed this supply.
      * @dev is mutable
      */
-    uint64 public maxSupply;
+    uint256 public maxSupply;
 
     /**
      * Deploys the contract and mints the first token to the deployer.
      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
      */
     constructor(
-        uint64 _initialSupply,
+        uint256 _initialSupply,
         address _paymentToken,
         uint256 _mintCost,
         string memory _baseUri
-    ) ERC721A("Cyberpunk Ape Executives Legends", "CAEL") {
+    ) ERC721("Cyberpunk Ape Executives Legends", "CAEL") {
         require(_initialSupply >= 1, "Bad supply");
         require(_paymentToken != address(0), "Bad token");
         require(_mintCost > 0, "Bad cost");
@@ -67,7 +67,7 @@ contract CyberpunkApeLegends is ERC721A, Ownable, ReentrancyGuard {
         baseURI = uri;
     }
 
-    function setMaxSupply(uint64 supply) public onlyOwner {
+    function setMaxSupply(uint256 supply) public onlyOwner {
         require(supply > maxSupply, "Too small");
 
         maxSupply = supply;
@@ -105,30 +105,25 @@ contract CyberpunkApeLegends is ERC721A, Ownable, ReentrancyGuard {
     // ------------------------------------------------ MINT LOGIC ------------------------------------------------
 
     /**
-     * Mints the given quantity of tokens provided it is possible to.
-     * transfers the required number of tokens from the user's wallet
+     * Mints the given token id provided it is possible to.
+     * transfers the required number of payment tokens from the user's wallet
      *
      * @notice This function allows minting for the set cost,
      * or free for the contract owner
      *
-     * @param _quantity - the number of tokens to mint
+     * @param tokenId - the token id to mint
      */
-    function mint(uint64 _quantity) public nonReentrant {
-        uint256 remaining = maxSupply - _currentIndex;
-
-        require(remaining > 0, "Mint over");
-        require(_quantity >= 1, "Bad quantity");
-        require(_quantity <= remaining, "Not enough");
+    function mint(uint256 tokenId) public nonReentrant {
+        require(tokenId <= maxSupply && tokenId >= 1, "Bad id");
         bool isOwner = msg.sender == owner();
 
         if (!isOwner) {
             // transfers out token if not owner
-            uint256 cost = _quantity * mintCost;
-            IERC20(paymentToken).transferFrom(msg.sender, address(this), cost);
+            IERC20(paymentToken).transferFrom(msg.sender, address(this), mintCost);
         }
 
         // DISTRIBUTE THE TOKENS
-        _safeMint(msg.sender, _quantity);
+        _safeMint(msg.sender, tokenId);
     }
 
     // ------------------------------------------------ BURN LOGIC ------------------------------------------------
@@ -163,6 +158,22 @@ contract CyberpunkApeLegends is ERC721A, Ownable, ReentrancyGuard {
         require(this.balance() >= amount, "Not enough");
 
         paymentToken.transfer(msg.sender, amount);
+    }
+
+    function unmintedTokens() external view returns (uint256[] memory) {
+        uint256 numUnminted = maxSupply - totalSupply();
+
+        uint256[] memory tokens = new uint256[](numUnminted);
+        uint256 nextIndex;
+
+        for (uint256 i = 1; i <= maxSupply; i++) {
+            if (!_exists(i)) {
+                tokens[nextIndex] = i;
+                nextIndex += 1;
+            }
+        }
+
+        return tokens;
     }
 
     /**
