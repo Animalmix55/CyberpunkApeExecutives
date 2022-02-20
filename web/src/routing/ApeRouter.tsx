@@ -6,12 +6,14 @@ import LegendsPage from '../pages/Legends';
 import MainPage from '../pages/Main';
 import MintPage from '../pages/Mint';
 import StakingPage from '../pages/Staking';
+import { StatsPage } from '../pages/Stats';
 
 export enum Page {
     Main = '/',
     Staking = '/staking',
     Mint = '/mint',
     Legends = '/legends',
+    Stats = '/stats',
 }
 
 export const ApeRouter = (): JSX.Element => {
@@ -42,6 +44,7 @@ export const ApeRouter = (): JSX.Element => {
                 {creditContractAddress && lengendsContractAddress && (
                     <Route path={Page.Legends} exact component={LegendsPage} />
                 )}
+                <Route path={Page.Stats} exact component={StatsPage} />
             </Switch>
         </div>
     );

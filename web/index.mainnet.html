@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <style>
+            /* custom scrollbar */
+            ::-webkit-scrollbar {
+                width: 20px;
+            }
+            
+            ::-webkit-scrollbar-track {
+                background-color: transparent;
+            }
+            
+            ::-webkit-scrollbar-thumb {
+                background-color: #d6dee1;
+                border-radius: 20px;
+                border: 6px solid transparent;
+                background-clip: content-box;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background-color: #a8bbbf;
+            }
+
+            body {
+                overflow: overlay;
+            }
+        </style>
+        <meta charset="UTF-8">
+        <title>Cyberpunk Ape Executives</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="theme-color" content="#ffffff">
+    </head>
+    <body>
+        <div id="self-injecting-react-app"></div>
+    </body>
+    <footer>
+        <script>
+            window.api = 'https://api.cyberpunkapes.com';
+            window.etherscanUrl = 'https://etherscan.io';
+            window.chainId = 1;
+            window.stakingContractAddress = '0x8A793cC858eDdd4e581726302A99E9f871AeEEF5';
+            window.tokenContractAddress ='0x1103ce6136306FEDcC56FE7236B9e52F0C109D49';
+            window.creditContractAddress = '0x6C2C73A48791743336e6249739a346743d04c847';
+            // window.lengendsContractAddress ='0xdD8DB3cF347Cd62808c260aA95eA852afB5eEf92';
+            window.discordUrl = 'https://discord.gg/UUaSqahHZw';
+            window.twitterUrl = 'https://twitter.com/ApeExecutives';
+            window.genesisUrl = 'https://opensea.io/collection/cyberpunk-apes';
+            window.bootlegUrl = 'https://opensea.io/collection/bootleg-ape-executives';
+        </script>
+        <script src="dist/bundle-01232022-3.js"></script>
+    </footer>
+</html>
