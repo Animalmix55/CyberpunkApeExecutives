@@ -235,6 +235,14 @@ export interface CyberpunkApeLegends extends BaseContract {
     mint(tokenId: number | string | BN): NonPayableTransactionObject<void>;
 
     /**
+     * Mints the given token ids provided it is possible to. transfers the required number of payment tokens from the user's walletThis function allows minting for the set cost, or free for the contract owner
+     * @param tokenIds - the token ids to mint
+     */
+    mintMany(
+      tokenIds: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
+
+    /**
      * Burns the provided token id if you own it. Reduces the supply by 1.
      * @param tokenId - the ID of the token to be burned.
      */

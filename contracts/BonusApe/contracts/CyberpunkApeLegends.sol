@@ -9,6 +9,8 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract CyberpunkApeLegends is ERC721Enumerable, Ownable, ReentrancyGuard {
+    using Strings for uint256;
+
     /**
      * The baseURI for tokens
      */
@@ -94,12 +96,10 @@ contract CyberpunkApeLegends is ERC721Enumerable, Ownable, ReentrancyGuard {
     // ------------------------------------------------ URI LOGIC -------------------------------------------------
 
     /**
-     * @dev Base URI for computing {tokenURI}. If set, the resulting URI for each
-     * token will be the concatenation of the `baseURI` and the `tokenId`. Empty
-     * by default, can be overriden in child contracts.
+     * @dev See {IERC721Metadata-tokenURI}.
      */
-    function _baseURI() internal view virtual override returns (string memory) {
-        return baseURI;
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
     }
 
     // ------------------------------------------------ MINT LOGIC ------------------------------------------------

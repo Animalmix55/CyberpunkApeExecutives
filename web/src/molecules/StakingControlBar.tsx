@@ -9,11 +9,11 @@ import useApproved from '../hooks/useApproved';
 import { IMDStaking } from '../models/IMDStaking';
 import Button, { ButtonType } from '../atoms/Button';
 import TransactionButton from '../atoms/TransactionButton';
-import TotalStakedWidget from '../atoms/StakingWidgets/TotalStakedWidget';
-import MyStakeWidget from '../atoms/StakingWidgets/MyStakeWidget';
-import RewardBalanceWidget from '../atoms/StakingWidgets/RewardBalanceWidget';
+import TotalStakedWidget from '../atoms/Widgets/StakingWidgets/TotalStakedWidget';
+import MyStakeWidget from '../atoms/Widgets/StakingWidgets/MyStakeWidget';
+import RewardBalanceWidget from '../atoms/Widgets/RewardBalanceWidget';
 import { MOBILE } from '../utilties/MediaQueries';
-import DividendWidget from '../atoms/StakingWidgets/DividendWidget';
+import DividendWidget from '../atoms/Widgets/StakingWidgets/DividendWidget';
 import ClaimDividendButton from './ClaimDividendButton';
 import { useConfirmationContext } from '../contexts/ConfirmationPromptContext';
 
