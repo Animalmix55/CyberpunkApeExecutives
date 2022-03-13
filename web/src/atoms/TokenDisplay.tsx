@@ -1,5 +1,6 @@
 import { Spinner, SpinnerSize } from '@fluentui/react';
 import React from 'react';
+import BigDecimal from 'js-big-decimal';
 import { useStyletron } from 'styletron-react';
 import { useThemeContext } from '../contexts/ThemeContext';
 import useTokenDetails from '../hooks/useTokenDetails';
@@ -8,16 +9,18 @@ import ClassNameBuilder from '../utilties/ClassNameBuilder';
 import { MOBILE, MOUSE } from '../utilties/MediaQueries';
 import TokenDetails from './TokenDetails';
 import { TooltipHost } from './Tooltip';
+import { roundAndDisplay } from '../utilties/Numbers';
 
 interface Props {
     id: number;
     selected?: boolean;
+    price?: BigDecimal;
     onClick?: (id: number, selected: boolean) => void;
     contract?: IERC721Metadata;
     className?: string;
 }
 export const TokenDisplay = (props: Props): JSX.Element => {
-    const { id, selected, onClick, contract, className } = props;
+    const { id, selected, onClick, contract, className, price } = props;
     const [css] = useStyletron();
     const meta = useTokenDetails(id, contract);
     const theme = useThemeContext();
@@ -92,6 +95,7 @@ export const TokenDisplay = (props: Props): JSX.Element => {
                 >
                     {meta && meta?.name}
                     {!meta && `Loading #${id}`}
+                    {price && ` (${roundAndDisplay(price)} $CREDIT)`}
                 </div>
             </div>
         </TooltipHost>

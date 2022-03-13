@@ -99,6 +99,13 @@ export interface CyberpunkApeLegends extends BaseContract {
     mintCost(): NonPayableTransactionObject<string>;
 
     /**
+     * Manual overrides for mint costs
+     */
+    mintCostOverrides(
+      arg0: number | string | BN
+    ): NonPayableTransactionObject<string>;
+
+    /**
      * See {IERC721Metadata-name}.
      */
     name(): NonPayableTransactionObject<string>;
@@ -178,13 +185,6 @@ export interface CyberpunkApeLegends extends BaseContract {
     ): NonPayableTransactionObject<string>;
 
     /**
-     * See {IERC721Metadata-tokenURI}.
-     */
-    tokenURI(
-      tokenId: number | string | BN
-    ): NonPayableTransactionObject<string>;
-
-    /**
      * See {IERC721Enumerable-totalSupply}.
      */
     totalSupply(): NonPayableTransactionObject<string>;
@@ -229,6 +229,24 @@ export interface CyberpunkApeLegends extends BaseContract {
     ): NonPayableTransactionObject<void>;
 
     /**
+     * any prices equal to the current mint cost will not be registered as overrides.
+     * Sets overrides for the mint prices
+     * @param prices - an array of prices starting at (inclusive) the start id.
+     * @param startId - the start id from which to start setting mint costs.
+     */
+    setMintPriceOverrides(
+      startId: number | string | BN,
+      prices: (number | string | BN)[]
+    ): NonPayableTransactionObject<void>;
+
+    /**
+     * See {IERC721Metadata-tokenURI}.
+     */
+    tokenURI(
+      tokenId: number | string | BN
+    ): NonPayableTransactionObject<string>;
+
+    /**
      * Mints the given token id provided it is possible to. transfers the required number of payment tokens from the user's walletThis function allows minting for the set cost, or free for the contract owner
      * @param tokenId - the token id to mint
      */
@@ -249,6 +267,12 @@ export interface CyberpunkApeLegends extends BaseContract {
     burn(tokenId: number | string | BN): NonPayableTransactionObject<void>;
 
     /**
+     * does not check if that token has already been purchased
+     * Returns the price of a given token id.
+     */
+    priceOf(tokenId: number | string | BN): NonPayableTransactionObject<string>;
+
+    /**
      * Gets the balance of the contract in payment tokens.
      */
     balance(): NonPayableTransactionObject<string>;
@@ -259,7 +283,13 @@ export interface CyberpunkApeLegends extends BaseContract {
      */
     withdraw(amount: number | string | BN): NonPayableTransactionObject<void>;
 
-    unmintedTokens(): NonPayableTransactionObject<string[]>;
+    /**
+     * Returns all of the unminted token ids as well as their prices
+     */
+    unmintedTokens(): NonPayableTransactionObject<{
+      0: string[];
+      1: string[];
+    }>;
   };
   events: {
     Approval(cb?: Callback<Approval>): EventEmitter;

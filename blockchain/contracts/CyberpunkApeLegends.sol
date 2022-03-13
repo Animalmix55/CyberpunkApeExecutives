@@ -145,12 +145,11 @@ contract CyberpunkApeLegends is ERC721Enumerable, Ownable, ReentrancyGuard {
         bool isOwner = msg.sender == owner();
 
         if (!isOwner) {
-            uint256 overrideCost = mintCostOverrides[tokenId];
             // transfers out token if not owner
             IERC20(paymentToken).transferFrom(
                 msg.sender,
                 address(this),
-                overrideCost != 0 ? overrideCost : mintCost
+                priceOf(tokenId)
             );
         }
 
@@ -172,8 +171,7 @@ contract CyberpunkApeLegends is ERC721Enumerable, Ownable, ReentrancyGuard {
 
         uint256 price;
         for (uint256 i; i < tokenIds.length; i++) {
-            uint256 overrideCost = mintCostOverrides[tokenIds[i]];
-            price += overrideCost != 0 ? overrideCost : mintCost;
+            price += priceOf(tokenIds[i]);
 
             _tryMint(msg.sender, tokenIds[i]);
         }
@@ -213,6 +211,15 @@ contract CyberpunkApeLegends is ERC721Enumerable, Ownable, ReentrancyGuard {
     // ------------------------------------------------ BALANCE STUFFS ------------------------------------------------
 
     /**
+     * Returns the price of a given token id.
+     * @dev does not check if that token has already been purchased
+     */
+    function priceOf(uint256 tokenId) public view returns (uint256) {
+        if (mintCostOverrides[tokenId] != 0) return mintCostOverrides[tokenId];
+        return mintCost;
+    }
+
+    /**
      * Gets the balance of the contract in payment tokens.
      * @return the amount held by the contract.
      */
@@ -230,20 +237,26 @@ contract CyberpunkApeLegends is ERC721Enumerable, Ownable, ReentrancyGuard {
         paymentToken.transfer(msg.sender, amount);
     }
 
-    function unmintedTokens() external view returns (uint256[] memory) {
+    /**
+     * Returns all of the unminted token ids as well as their prices
+     * @return an array of ids and an array of prices
+     */
+    function unmintedTokens() external view returns (uint256[] memory, uint256[] memory) {
         uint256 numUnminted = maxSupply - totalSupply();
 
         uint256[] memory tokens = new uint256[](numUnminted);
+        uint256[] memory prices = new uint256[](numUnminted);
         uint256 nextIndex;
 
         for (uint256 i = 1; i <= maxSupply; i++) {
             if (!_exists(i)) {
                 tokens[nextIndex] = i;
+                prices[nextIndex] = priceOf(i);
                 nextIndex += 1;
             }
         }
 
-        return tokens;
+        return (tokens, prices);
     }
 
     /**

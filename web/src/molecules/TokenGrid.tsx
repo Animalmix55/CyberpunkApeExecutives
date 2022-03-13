@@ -1,11 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { Icon, Spinner, SpinnerSize } from '@fluentui/react';
+import BigDecimal from 'js-big-decimal';
 import React from 'react';
 import { useStyletron } from 'styletron-react';
 import Button, { ButtonType } from '../atoms/Button';
 import TokenDisplay from '../atoms/TokenDisplay';
 import { useContractContext } from '../contexts/ContractContext';
 import { useThemeContext } from '../contexts/ThemeContext';
+import { useUnmintedLegends } from '../contexts/UnmintedLegendContext';
 import useHeldTokens from '../hooks/useHeldTokens';
 import { IERC721Metadata } from '../models/IERC721Metadata';
 import ClassNameBuilder from '../utilties/ClassNameBuilder';
@@ -14,6 +16,7 @@ import { MOBILE } from '../utilties/MediaQueries';
 interface Props {
     selectedTokens: number[];
     tokens: number[];
+    prices?: BigDecimal[];
     contract?: IERC721Metadata;
     onChange: (selection: number[]) => void;
     className?: string;
@@ -30,27 +33,15 @@ export const HeldTokenGrid = (
 };
 
 export const UnmintedLegendsGrid = (
-    props: Omit<Omit<Props, 'tokens'>, 'contract'>
+    props: Omit<Omit<Omit<Props, 'tokens'>, 'contract'>, 'prices'>
 ): JSX.Element => {
     const { className } = props;
     const { legendsContract } = useContractContext();
-    const [unminted, setUnminted] = React.useState<number[]>();
-
-    React.useEffect(() => {
-        if (!legendsContract) {
-            setUnminted([]);
-            return;
-        }
-
-        legendsContract.methods
-            .unmintedTokens()
-            .call()
-            .then((ids) => setUnminted(ids.map(Number)));
-    }, [legendsContract]);
+    const unmintedLegends = useUnmintedLegends();
 
     const [css] = useStyletron();
 
-    if (!unminted) {
+    if (!unmintedLegends) {
         return (
             <div
                 className={ClassNameBuilder(
@@ -71,8 +62,15 @@ export const UnmintedLegendsGrid = (
         );
     }
 
+    const { ids, prices } = unmintedLegends;
+
     return (
-        <TokenGrid {...props} contract={legendsContract} tokens={unminted} />
+        <TokenGrid
+            {...props}
+            contract={legendsContract}
+            tokens={ids}
+            prices={prices}
+        />
     );
 };
 
@@ -177,6 +175,7 @@ export const TokenGrid = (props: Props): JSX.Element => {
         className,
         tokens: ids,
         maxPerPage,
+        prices,
     } = props;
 
     const onClickItem = React.useCallback(
@@ -200,19 +199,22 @@ export const TokenGrid = (props: Props): JSX.Element => {
         const start = (pageNum - 1) * (maxPerPage || 15);
         const end = pageNum * (maxPerPage || 15);
 
-        return ids.slice(start, end);
-    }, [ids, maxPerPage, pageNum]);
+        return ids
+            .map((id, i) => ({ id, price: prices?.[i] }))
+            .slice(start, end);
+    }, [ids, maxPerPage, pageNum, prices]);
 
     const items = React.useMemo(
         () =>
-            paginatedIds.map((id) => (
+            paginatedIds.map((token) => (
                 <TokenDisplay
-                    key={id}
-                    id={id}
+                    price={token.price}
+                    key={token.id}
+                    id={token.id}
                     className={css({ margin: '10px' })}
                     contract={contract}
                     onClick={onClickItem}
-                    selected={selectedTokens.includes(id)}
+                    selected={selectedTokens.includes(token.id)}
                 />
             )),
         [contract, css, paginatedIds, onClickItem, selectedTokens]

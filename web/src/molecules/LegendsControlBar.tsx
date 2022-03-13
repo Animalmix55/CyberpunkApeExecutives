@@ -13,8 +13,8 @@ import { CyberpunkApeLegends } from '../models/CyberpunkApeLegends';
 import useWeb3 from '../contexts/Web3Context';
 import TransactionButton from '../atoms/TransactionButton';
 import { ButtonType } from '../atoms/Button';
-import { MAXUINT256, roundAndDisplay } from '../utilties/Numbers';
-import useLegendsCost from '../hooks/useLegendsCost';
+import { MAXUINT256, roundAndDisplay, ZERO } from '../utilties/Numbers';
+import { useUnmintedLegends } from '../contexts/UnmintedLegendContext';
 
 interface PurchaseButtonProps {
     legendContract: CyberpunkApeLegends;
@@ -37,10 +37,17 @@ const PurchaseButton = (props: PurchaseButtonProps): JSX.Element => {
     const { accounts } = useWeb3();
     const [css] = useStyletron();
 
-    const mintPrice = useLegendsCost(legendContract);
+    const unmintedLegends = useUnmintedLegends();
+
     const totalPrice = React.useMemo(() => {
-        return mintPrice.multiply(new BigDecimal(selectedIds.length));
-    }, [mintPrice, selectedIds.length]);
+        if (!unmintedLegends) return ZERO;
+        const { prices, ids } = unmintedLegends;
+
+        return selectedIds.reduce((prev, cur): BigDecimal => {
+            const index = ids.indexOf(cur);
+            return prev.add(prices[index]);
+        }, ZERO);
+    }, [selectedIds, unmintedLegends]);
 
     const { approved, update } = useApproved(
         rewardTokenContract,

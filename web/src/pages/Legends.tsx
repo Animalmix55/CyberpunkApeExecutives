@@ -1,5 +1,6 @@
 import React from 'react';
 import { useStyletron } from 'styletron-react';
+import { UnmintedLegendContextProvider } from '../contexts/UnmintedLegendContext';
 import useWeb3 from '../contexts/Web3Context';
 import LegendsControlBar from '../molecules/LegendsControlBar';
 import MetamaskModal from '../molecules/MetamaskModal';
@@ -15,26 +16,28 @@ export const LegendsPage = (): JSX.Element => {
     if (!accounts[0]) return <MetamaskModal />;
 
     return (
-        <div
-            className={css({
-                paddingTop: '130px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                [MOBILE]: {
-                    paddingTop: '40px',
-                },
-            })}
-        >
-            <LegendsControlBar
-                selectedIds={selectedIds}
-                setSelectedIds={setSelectedIds}
-            />
-            <UnmintedLegendsGrid
-                selectedTokens={selectedIds}
-                onChange={setSelectedIds}
-            />
-        </div>
+        <UnmintedLegendContextProvider>
+            <div
+                className={css({
+                    paddingTop: '130px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    [MOBILE]: {
+                        paddingTop: '40px',
+                    },
+                })}
+            >
+                <LegendsControlBar
+                    selectedIds={selectedIds}
+                    setSelectedIds={setSelectedIds}
+                />
+                <UnmintedLegendsGrid
+                    selectedTokens={selectedIds}
+                    onChange={setSelectedIds}
+                />
+            </div>
+        </UnmintedLegendContextProvider>
     );
 };
 

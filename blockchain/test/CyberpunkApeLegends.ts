@@ -179,6 +179,19 @@ contract('CyberpunkApeLegends', (accounts) => {
             [1000, 1500, 10000]
         );
 
+        assert.equal(
+            (await CyberpunkApeLegendsInstance.priceOf(2)).toString(),
+            '1000'
+        );
+        assert.equal(
+            (await CyberpunkApeLegendsInstance.priceOf(3)).toString(),
+            '1500'
+        );
+        assert.equal(
+            (await CyberpunkApeLegendsInstance.priceOf(4)).toString(),
+            '10000'
+        );
+
         await PaymentTokenInstance.mint(accounts[1], 2500);
         await PaymentTokenInstance.approve(
             CyberpunkApeLegendsInstance.address,
@@ -211,6 +224,12 @@ contract('CyberpunkApeLegends', (accounts) => {
 
         // update mint price, ensure not overridden
         await CyberpunkApeLegendsInstance.setMintPrice(1000);
+
+        assert.equal(
+            (await CyberpunkApeLegendsInstance.priceOf(4)).toString(),
+            '1000'
+        );
+
         await PaymentTokenInstance.mint(accounts[1], 1000);
         await PaymentTokenInstance.approve(
             CyberpunkApeLegendsInstance.address,
@@ -562,9 +581,9 @@ contract('CyberpunkApeLegends', (accounts) => {
             }
         );
 
-        let unminted = (await CyberpunkApeLegendsInstance.unmintedTokens()).map(
-            (f) => f.toNumber()
-        );
+        let result = await CyberpunkApeLegendsInstance.unmintedTokens();
+
+        let unminted = result[0].map((f) => f.toNumber());
         assert.lengthOf(unminted, 19); // 1 minted on deployment
 
         assert.deepEqual(
@@ -574,9 +593,8 @@ contract('CyberpunkApeLegends', (accounts) => {
 
         await CyberpunkApeLegendsInstance.mint(15);
 
-        unminted = (await CyberpunkApeLegendsInstance.unmintedTokens()).map(
-            (f) => f.toNumber()
-        );
+        result = await CyberpunkApeLegendsInstance.unmintedTokens();
+        unminted = result[0].map((f) => f.toNumber());
         assert.lengthOf(unminted, 18); // 1 and 15 minted
 
         assert.deepEqual(
