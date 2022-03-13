@@ -35,6 +35,11 @@ contract CyberpunkApeLegends is ERC721Enumerable, Ownable, ReentrancyGuard {
     uint256 public maxSupply;
 
     /**
+     * Manual overrides for mint costs
+     */
+    mapping(uint256 => uint256) public mintCostOverrides;
+
+    /**
      * Deploys the contract and mints the first token to the deployer.
      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
      */
@@ -93,13 +98,36 @@ contract CyberpunkApeLegends is ERC721Enumerable, Ownable, ReentrancyGuard {
         mintCost = _mintCost;
     }
 
+    /**
+    * Sets overrides for the mint prices
+    * @dev any prices equal to the current mint cost will not be registered as overrides.
+    *
+    * @param startId - the start id from which to start setting mint costs.
+    * @param prices - an array of prices starting at (inclusive) the start id.
+    */
+    function setMintPriceOverrides(uint256 startId, uint256[] calldata prices) external onlyOwner {
+        for (uint256 i; i < prices.length; i++) {
+            if (prices[i] != mintCost)
+                mintCostOverrides[startId + i] = prices[i];
+        }
+    }
+
     // ------------------------------------------------ URI LOGIC -------------------------------------------------
 
     /**
      * @dev See {IERC721Metadata-tokenURI}.
      */
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        virtual
+        override
+        returns (string memory)
+    {
+        return
+            bytes(baseURI).length > 0
+                ? string(abi.encodePacked(baseURI, tokenId.toString()))
+                : "";
     }
 
     // ------------------------------------------------ MINT LOGIC ------------------------------------------------
@@ -117,11 +145,12 @@ contract CyberpunkApeLegends is ERC721Enumerable, Ownable, ReentrancyGuard {
         bool isOwner = msg.sender == owner();
 
         if (!isOwner) {
+            uint256 overrideCost = mintCostOverrides[tokenId];
             // transfers out token if not owner
             IERC20(paymentToken).transferFrom(
                 msg.sender,
                 address(this),
-                mintCost
+                overrideCost != 0 ? overrideCost : mintCost
             );
         }
 
@@ -141,17 +170,21 @@ contract CyberpunkApeLegends is ERC721Enumerable, Ownable, ReentrancyGuard {
     function mintMany(uint256[] calldata tokenIds) public nonReentrant {
         bool isOwner = msg.sender == owner();
 
+        uint256 price;
+        for (uint256 i; i < tokenIds.length; i++) {
+            uint256 overrideCost = mintCostOverrides[tokenIds[i]];
+            price += overrideCost != 0 ? overrideCost : mintCost;
+
+            _tryMint(msg.sender, tokenIds[i]);
+        }
+
         if (!isOwner) {
             // transfers out token if not owner
             IERC20(paymentToken).transferFrom(
                 msg.sender,
                 address(this),
-                mintCost * tokenIds.length
+                price
             );
-        }
-
-        for (uint256 i; i < tokenIds.length; i++) {
-            _tryMint(msg.sender, tokenIds[i]);
         }
     }
 

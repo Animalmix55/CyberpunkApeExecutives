@@ -167,6 +167,80 @@ contract('CyberpunkApeLegends', (accounts) => {
         );
     });
 
+    it('allows payment in the ERC20 token to mint (with override)', async () => {
+        const { CyberpunkApeLegendsInstance, PaymentTokenInstance } =
+            await deploy(5500, 10000, 'baseURI/', {
+                from: accounts[0],
+            });
+
+        // set 2 to 1000, 3 to 1500, 4 to 10000 (same as global cost)
+        await CyberpunkApeLegendsInstance.setMintPriceOverrides(
+            2,
+            [1000, 1500, 10000]
+        );
+
+        await PaymentTokenInstance.mint(accounts[1], 2500);
+        await PaymentTokenInstance.approve(
+            CyberpunkApeLegendsInstance.address,
+            2500,
+            {
+                from: accounts[1],
+            }
+        );
+
+        await CyberpunkApeLegendsInstance.mint(2, { from: accounts[1] }); // mint 2
+        await CyberpunkApeLegendsInstance.mint(3, { from: accounts[1] }); // mint 3
+        assert.equal(
+            (
+                await CyberpunkApeLegendsInstance.balanceOf(accounts[1])
+            ).toNumber(),
+            2
+        );
+        assert.equal(
+            (await PaymentTokenInstance.balanceOf(accounts[1])).toNumber(),
+            0
+        );
+        assert.equal(
+            (
+                await PaymentTokenInstance.balanceOf(
+                    CyberpunkApeLegendsInstance.address
+                )
+            ).toNumber(),
+            2500
+        );
+
+        // update mint price, ensure not overridden
+        await CyberpunkApeLegendsInstance.setMintPrice(1000);
+        await PaymentTokenInstance.mint(accounts[1], 1000);
+        await PaymentTokenInstance.approve(
+            CyberpunkApeLegendsInstance.address,
+            1000,
+            {
+                from: accounts[1],
+            }
+        );
+
+        await CyberpunkApeLegendsInstance.mint(4, { from: accounts[1] }); // mint 4
+        assert.equal(
+            (
+                await CyberpunkApeLegendsInstance.balanceOf(accounts[1])
+            ).toNumber(),
+            3
+        );
+        assert.equal(
+            (await PaymentTokenInstance.balanceOf(accounts[1])).toNumber(),
+            0
+        );
+        assert.equal(
+            (
+                await PaymentTokenInstance.balanceOf(
+                    CyberpunkApeLegendsInstance.address
+                )
+            ).toNumber(),
+            3500
+        );
+    });
+
     it('allows payment in the ERC20 token to bulk mint', async () => {
         const { CyberpunkApeLegendsInstance, PaymentTokenInstance } =
             await deploy(5500, 10000, 'baseURI/', {
@@ -202,6 +276,93 @@ contract('CyberpunkApeLegends', (accounts) => {
                 )
             ).toNumber(),
             20000
+        );
+    });
+
+    it('allows payment in the ERC20 token to bulk mint (with overrides)', async () => {
+        const { CyberpunkApeLegendsInstance, PaymentTokenInstance } =
+            await deploy(5500, 10000, 'baseURI/', {
+                from: accounts[0],
+            });
+
+        await truffleAssert.reverts(
+            CyberpunkApeLegendsInstance.setMintPriceOverrides(
+                2,
+                [1000, 1500, 10000],
+                {
+                    from: accounts[1],
+                }
+            ) // bad owner
+        );
+
+        // set 2 to 1000, 3 to 1500, 4 to 10000 (same as global cost)
+        await CyberpunkApeLegendsInstance.setMintPriceOverrides(
+            2,
+            [1000, 1500, 10000]
+        );
+        await PaymentTokenInstance.mint(accounts[1], 2500);
+        await PaymentTokenInstance.approve(
+            CyberpunkApeLegendsInstance.address,
+            2500,
+            {
+                from: accounts[1],
+            }
+        );
+
+        await CyberpunkApeLegendsInstance.mintMany([2, 3], {
+            from: accounts[1],
+        }); // mint 2 and 3
+        assert.equal(
+            (
+                await CyberpunkApeLegendsInstance.balanceOf(accounts[1])
+            ).toNumber(),
+            2
+        );
+        assert.equal(
+            (await PaymentTokenInstance.balanceOf(accounts[1])).toNumber(),
+            0
+        );
+        assert.equal(
+            (
+                await PaymentTokenInstance.balanceOf(
+                    CyberpunkApeLegendsInstance.address
+                )
+            ).toNumber(),
+            2500
+        );
+
+        // update mint cost, make sure #4 updates
+        await CyberpunkApeLegendsInstance.setMintPrice(1000);
+        await PaymentTokenInstance.mint(accounts[1], 1000);
+        await PaymentTokenInstance.approve(
+            CyberpunkApeLegendsInstance.address,
+            1000,
+            {
+                from: accounts[1],
+            }
+        );
+
+        await CyberpunkApeLegendsInstance.mintMany([4], {
+            from: accounts[1],
+        }); // mint 4
+
+        assert.equal(
+            (
+                await CyberpunkApeLegendsInstance.balanceOf(accounts[1])
+            ).toNumber(),
+            3
+        );
+        assert.equal(
+            (await PaymentTokenInstance.balanceOf(accounts[1])).toNumber(),
+            0
+        );
+        assert.equal(
+            (
+                await PaymentTokenInstance.balanceOf(
+                    CyberpunkApeLegendsInstance.address
+                )
+            ).toNumber(),
+            3500
         );
     });
 
