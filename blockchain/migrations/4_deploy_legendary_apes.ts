@@ -7,16 +7,25 @@ module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
         const creditAddress = await stakingInstance.rewardToken();
 
         const accounts = await web3.eth.getAccounts();
-        await stakingInstance.mintRewardToken(accounts[0], '10000000000000');
-        await stakingInstance.mintRewardToken(accounts[1], '10000000000000');
-        await stakingInstance.mintRewardToken(accounts[2], '10000000000000');
+        await stakingInstance.mintRewardToken(
+            accounts[0],
+            '300000000000000000000' // 300
+        );
+        await stakingInstance.mintRewardToken(
+            accounts[1],
+            '300000000000000000000'
+        );
+        await stakingInstance.mintRewardToken(
+            accounts[2],
+            '300000000000000000000'
+        );
 
         return deployer.deploy(
             LegendsContract,
-            100,
+            26,
             creditAddress,
-            '10000000000000000000', // 10 CREDIT
-            'https://cc_nftstore.mypinata.cloud/ipfs/Qmby8DnCNmVc1siUAmxXzXYndYTXX4ewWt6ZSZThiLFZ4g/'
+            '375000000000000000000', // 375 CREDIT
+            'http://localhost/legends.php?tokenId='
         );
     };
 };

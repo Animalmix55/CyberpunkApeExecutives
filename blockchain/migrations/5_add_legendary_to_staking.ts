@@ -10,10 +10,17 @@ module.exports = (artifacts: Truffle.Artifacts) => {
 
     return async (deployer: Truffle.Deployer) => {
         const stakingInstance = await Staking.deployed();
-        const { address: legendsAddress } = await LegendsContract.deployed();
+        const legendsInstance = await LegendsContract.deployed();
+
+        const exceptions = [
+            325, 375, 375, 375, 375, 375, 375, 325, 325, 325, 325, 375, 375,
+            375, 375, 375, 375, 400, 400, 400, 375, 375, 450, 375, 375, 400,
+        ].map((v) => `${v}000000000000000000`);
+
+        await legendsInstance.setMintPriceOverrides(1, exceptions);
 
         await stakingInstance.addStakableToken(
-            legendsAddress,
+            legendsInstance.address,
             to18Decimals(5),
             to18Decimals(15),
             to18Decimals(5),
