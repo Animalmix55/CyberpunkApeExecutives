@@ -125,7 +125,7 @@ contract('CyberpunkApeLegends', (accounts) => {
             { from: accounts[0] }
         );
 
-        await truffleAssert.reverts(
+        await truffleAssert.fails(
             CyberpunkApeLegendsInstance.mintMany([2], { from: accounts[1] }) // mint 1 to fail
         );
     });
