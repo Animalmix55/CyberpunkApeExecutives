@@ -6,7 +6,6 @@ import { useContractContext } from '../contexts/ContractContext';
 import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
 import { useThemeContext } from '../contexts/ThemeContext';
 import useBalance from '../hooks/useBalance';
-import useStakedTokens from '../hooks/useStakedTokens';
 import { ClaimDividend, Staked, Unstaked } from '../models/IMDStaking';
 import { MOBILE } from '../utilties/MediaQueries';
 import { BASE, roundAndDisplay, ZERO } from '../utilties/Numbers';
@@ -15,14 +14,22 @@ interface Stats {
     claimableCredit?: BigDecimal;
     creditClaimed?: BigDecimal;
     stakers?: string[];
+    dividends?: BigDecimal[];
 }
 
 const useStats = (token?: string): Stats => {
     const { stakingContract } = useContractContext();
 
     const [stakers, setStakers] = React.useState<string[]>();
-    const [totalDividend, setTotalDividend] = React.useState<BigDecimal>();
     const [creditClaimed, setCreditClaimed] = React.useState<BigDecimal>();
+    const [dividends, setDividends] = React.useState<BigDecimal[]>();
+    const totalDividend = React.useMemo(
+        () =>
+            dividends?.reduce((prev, cur) => {
+                return cur.add(prev);
+            }, ZERO),
+        [dividends]
+    );
 
     React.useEffect(() => {
         if (!stakingContract || !token) {
@@ -112,10 +119,10 @@ const useStats = (token?: string): Stats => {
 
     React.useEffect(() => {
         if (!stakingContract || !token) {
-            setTotalDividend(ZERO);
+            setDividends([]);
             return;
         }
-        setTotalDividend(undefined);
+        setDividends(undefined);
         if (!stakers) return;
 
         const fetch = async (): Promise<void> => {
@@ -125,28 +132,27 @@ const useStats = (token?: string): Stats => {
                         stakingContract.methods.dividendOf(staker, token).call()
                     )
                 )
-            ).map((v) => new BigDecimal(v));
+            ).map((v) => new BigDecimal(v).divide(BASE, 30));
 
-            const total = dividends
-                .reduce((prev, cur) => {
-                    return cur.add(prev);
-                }, ZERO)
-                .divide(BASE, 30);
-
-            setTotalDividend(total);
+            setDividends(dividends);
         };
 
         fetch();
     }, [stakers, stakingContract, token]);
 
-    return { claimableCredit: totalDividend, stakers, creditClaimed };
+    return {
+        claimableCredit: totalDividend,
+        stakers,
+        creditClaimed,
+        dividends,
+    };
 };
 
 export const StatsPage = (): JSX.Element => {
     const [css] = useStyletron();
     const { stakingContractAddress, tokenContractAddress } =
         useCyberpunkApesContext();
-    const { claimableCredit, stakers, creditClaimed } =
+    const { claimableCredit, stakers, creditClaimed, dividends } =
         useStats(tokenContractAddress);
     const { tokenContract } = useContractContext();
     const stakedApes = useBalance(tokenContract, stakingContractAddress);
@@ -254,6 +260,26 @@ export const StatsPage = (): JSX.Element => {
                         Total Number of Apes Staked
                     </div>
                     <div>{roundAndDisplay(stakedApes)}</div>
+                </div>
+                <div>
+                    <div
+                        className={css({
+                            color: theme.fontColors.normal.secondary.getCSSColor(
+                                1
+                            ),
+                        })}
+                    >
+                        Top Ten Dividends
+                    </div>
+                    {dividends && (
+                        <div>
+                            {dividends
+                                .sort((a, b) => b.compareTo(a))
+                                .slice(0, 10)
+                                .map((d) => roundAndDisplay(d))
+                                .join(', ')}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
