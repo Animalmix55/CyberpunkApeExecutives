@@ -18,7 +18,7 @@ interface Output {
  */
 export function useStakableTokenAttributes(
     contract: IMDStaking | undefined,
-    tokenAddress: string
+    tokenAddress?: string
 ): Output {
     const [tokenAttributes, setTokenAttributes] = React.useState<Output>({
         minYield: ZERO,

@@ -10,7 +10,7 @@ import { IMDStaking } from '../models/IMDStaking';
  */
 export function useAmountStaked(
     contract: IMDStaking | undefined,
-    tokenAddress: string
+    tokenAddress?: string
 ): BigDecimal {
     const [balance, setBalance] = React.useState<BigDecimal>(new BigDecimal(0));
     const { accounts } = useWeb3();

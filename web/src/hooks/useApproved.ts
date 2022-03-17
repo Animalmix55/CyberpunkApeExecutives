@@ -12,7 +12,7 @@ const isERC721 = (
 ): token is IERC721 | IERC721Metadata => {
     if (!token) return false;
 
-    if ((token as IERC721).methods.setApprovalForAll) return true;
+    if ((token as IERC721 | undefined)?.methods.setApprovalForAll) return true;
     return false;
 };
 

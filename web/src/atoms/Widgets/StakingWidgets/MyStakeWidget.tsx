@@ -1,7 +1,7 @@
 import React from 'react';
 import { useStyletron } from 'styletron-react';
 import { useContractContext } from '../../../contexts/ContractContext';
-import { useCyberpunkApesContext } from '../../../contexts/CyberpunkApesContext';
+import { useStakingToken } from '../../../contexts/StakingTokenContext';
 import { useThemeContext } from '../../../contexts/ThemeContext';
 import useAmountStaked from '../../../hooks/useAmountStaked';
 import Tooltip from '../../Tooltip';
@@ -14,12 +14,16 @@ interface Props {
 export const MyStakeWidget = (props: Props): JSX.Element => {
     const { className } = props;
 
-    const { tokenContractAddress } = useCyberpunkApesContext();
+    const { tokenAddress, selectedOption } = useStakingToken();
     const { stakingContract } = useContractContext();
 
-    const myStake = useAmountStaked(stakingContract, tokenContractAddress);
+    const myStake = useAmountStaked(stakingContract, tokenAddress);
     const [css] = useStyletron();
     const theme = useThemeContext();
+
+    if (!tokenAddress || !selectedOption) return <></>;
+
+    const { shortName } = selectedOption;
 
     return (
         <BaseWidget className={className}>
@@ -38,7 +42,9 @@ export const MyStakeWidget = (props: Props): JSX.Element => {
                     alignItems: 'center',
                 })}
             >
-                <span>{myStake.floor().getValue()} APE</span>
+                <span>
+                    {myStake.floor().getValue()} {shortName}
+                </span>
                 <Tooltip
                     className={css({
                         fontSize: '12px',

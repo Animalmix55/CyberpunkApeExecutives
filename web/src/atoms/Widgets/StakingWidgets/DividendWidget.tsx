@@ -1,7 +1,7 @@
 import React from 'react';
 import { useStyletron } from 'styletron-react';
 import { useContractContext } from '../../../contexts/ContractContext';
-import { useCyberpunkApesContext } from '../../../contexts/CyberpunkApesContext';
+import { useStakingToken } from '../../../contexts/StakingTokenContext';
 import { useThemeContext } from '../../../contexts/ThemeContext';
 import useDividend from '../../../hooks/useDividend';
 import useStakableTokenAttributes from '../../../hooks/useStakableTokenAttributes';
@@ -17,15 +17,15 @@ interface Props {
 export const DividendWidget = (props: Props): JSX.Element => {
     const { className } = props;
 
-    const { tokenContractAddress } = useCyberpunkApesContext();
+    const { tokenAddress } = useStakingToken();
     const { stakingContract } = useContractContext();
 
-    const dividend = useDividend(stakingContract, tokenContractAddress);
+    const dividend = useDividend(stakingContract, tokenAddress);
     const [css] = useStyletron();
     const theme = useThemeContext();
 
     const { maxYield, minYield, step, yieldPeriod } =
-        useStakableTokenAttributes(stakingContract, tokenContractAddress);
+        useStakableTokenAttributes(stakingContract, tokenAddress);
 
     return (
         <BaseWidget className={className}>

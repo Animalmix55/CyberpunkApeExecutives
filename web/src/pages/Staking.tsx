@@ -10,13 +10,13 @@ import { MetamaskModal } from '../molecules/MetamaskModal';
 import TokenGrid from '../molecules/TokenGrid';
 import { MOBILE } from '../utilties/MediaQueries';
 import { useThemeContext } from '../contexts/ThemeContext';
-import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
 import { InvalidChainModal } from '../molecules/InvalidChainModal';
+import { useStakingToken } from '../contexts/StakingTokenContext';
 
 export const Staking = (): JSX.Element => {
+    const { tokenAddress, setTokenAddress, tokenContract } = useStakingToken();
     const [selectedTokens, setSelectedTokens] = React.useState<number[]>([]);
-    const { tokenContract, stakingContract } = useContractContext();
-    const { tokenContractAddress } = useCyberpunkApesContext();
+    const { stakingContract } = useContractContext();
     const [stakingMode, setStakingMode] = React.useState<Mode>('Stake');
     const { accounts } = useWeb3();
     const theme = useThemeContext();
@@ -30,7 +30,7 @@ export const Staking = (): JSX.Element => {
         useHeldTokens(tokenContract);
     const { ids: stakedIds, loading: stakedIdsLoading } = useStakedTokens(
         stakingContract,
-        tokenContractAddress
+        tokenAddress
     );
 
     if (!accounts[0]) return <MetamaskModal />;

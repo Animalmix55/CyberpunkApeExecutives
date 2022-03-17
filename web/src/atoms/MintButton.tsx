@@ -53,6 +53,8 @@ export const MintButton = (props: MintButtonProps): JSX.Element => {
         return [amount, nonce, signature];
     }, [accounts, amount, api, contract]);
 
+    if (!contract) return <></>;
+
     if (sale === 'public') {
         return (
             <TransactionButton

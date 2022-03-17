@@ -41,7 +41,7 @@ export class RGB {
         this.r = r;
         this.g = g;
         this.b = b;
-        this.a = a;
+        this.a = a ?? 1;
     }
 
     public getRGB = (): { r: number; g: number; b: number } => ({

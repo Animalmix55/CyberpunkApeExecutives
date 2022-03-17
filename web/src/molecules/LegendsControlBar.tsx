@@ -56,7 +56,9 @@ const PurchaseButton = (props: PurchaseButtonProps): JSX.Element => {
 
     const confirm = useConfirmationContext();
 
-    if (!approved)
+    if (!lengendsContractAddress) return <></>;
+
+    if (!approved && rewardTokenContract)
         return (
             <TransactionButton
                 contract={rewardTokenContract}
@@ -136,6 +138,8 @@ export const LegendsControlBar = (props: Props): JSX.Element => {
     const { reload } = useWeb3();
     const { lengendsContractAddress } = useCyberpunkApesContext();
     const { legendsContract } = useContractContext();
+
+    if (!legendsContract) return <></>;
 
     return (
         <div

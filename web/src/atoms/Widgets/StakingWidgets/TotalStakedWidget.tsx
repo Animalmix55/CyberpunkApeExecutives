@@ -1,7 +1,7 @@
 import React from 'react';
 import { useStyletron } from 'styletron-react';
-import { useContractContext } from '../../../contexts/ContractContext';
 import { useCyberpunkApesContext } from '../../../contexts/CyberpunkApesContext';
+import { useStakingToken } from '../../../contexts/StakingTokenContext';
 import { useThemeContext } from '../../../contexts/ThemeContext';
 import useBalance from '../../../hooks/useBalance';
 import Tooltip from '../../Tooltip';
@@ -15,11 +15,15 @@ export const TotalStakedWidget = (props: Props): JSX.Element => {
     const { className } = props;
 
     const { stakingContractAddress } = useCyberpunkApesContext();
-    const { tokenContract } = useContractContext();
+    const { tokenContract, selectedOption } = useStakingToken();
 
     const totalStaked = useBalance(tokenContract, stakingContractAddress);
     const [css] = useStyletron();
     const theme = useThemeContext();
+
+    if (!selectedOption || !tokenContract) return <></>;
+
+    const { shortName } = selectedOption;
 
     return (
         <BaseWidget className={className}>
@@ -38,7 +42,9 @@ export const TotalStakedWidget = (props: Props): JSX.Element => {
                     alignItems: 'center',
                 })}
             >
-                <span>{totalStaked.floor().getValue()} APE</span>
+                <span>
+                    {totalStaked.floor().getValue()} {shortName}
+                </span>
                 <Tooltip
                     className={css({
                         fontSize: '12px',

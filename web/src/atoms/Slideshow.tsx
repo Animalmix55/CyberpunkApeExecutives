@@ -20,7 +20,7 @@ export const Slideshow = (props: Props): JSX.Element => {
         }, duration);
 
         return (): void => {
-            clearInterval(interval.current);
+            if (interval.current) clearInterval(interval.current);
             interval.current = undefined;
         };
     }, [duration, imageUrls]);

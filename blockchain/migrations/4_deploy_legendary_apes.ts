@@ -24,7 +24,7 @@ module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
             LegendsContract,
             26,
             creditAddress,
-            '375000000000000000000', // 375 CREDIT
+            '1500000000000000000000', // 1500 CREDIT
             'http://localhost/legends.php?tokenId='
         );
     };

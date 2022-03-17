@@ -13,8 +13,9 @@ module.exports = (artifacts: Truffle.Artifacts) => {
         const legendsInstance = await LegendsContract.deployed();
 
         const exceptions = [
-            325, 375, 375, 375, 375, 375, 375, 325, 325, 325, 325, 375, 375,
-            375, 375, 375, 375, 400, 400, 400, 375, 375, 450, 375, 375, 400,
+            1250, 1500, 1500, 1500, 1500, 1500, 1500, 1250, 1250, 1250, 1250,
+            1500, 1500, 1500, 1500, 1500, 1500, 1750, 1750, 1750, 1500, 1500,
+            450, 1500, 1500, 1750,
         ].map((v) => `${v}000000000000000000`);
 
         await legendsInstance.setMintPriceOverrides(1, exceptions);

@@ -72,9 +72,9 @@ export const useTransactions = (
         );
         cancelLastPromise.current = cancel;
 
-        promise.then(onAllCompleted);
+        promise.then((v) => onAllCompleted?.(v as never));
         promise.catch((e) => {
-            if (e) onAllCompleted();
+            if (e) onAllCompleted?.();
         });
     }, [onAllCompleted, target, transactions]);
 
@@ -82,7 +82,7 @@ export const useTransactions = (
         if (transactions.length === prevLength.current) return;
         prevLength.current = transactions.length;
 
-        onAdded(transactions[transactions.length - 1]);
+        onAdded?.(transactions[transactions.length - 1]);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [onAllCompleted, target, transactions]);
 

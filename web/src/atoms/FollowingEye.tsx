@@ -22,8 +22,8 @@ export const FollowingEye = (props: Props): JSX.Element => {
         ref: imageRef,
     } = useResizeDetector<HTMLImageElement>();
 
-    const scaleW = React.useMemo(() => width / 2610, [width]);
-    const scaleH = React.useMemo(() => height / 2160, [height]);
+    const scaleW = React.useMemo(() => (width || 0) / 2610, [width]);
+    const scaleH = React.useMemo(() => (height || 0) / 2160, [height]);
 
     const EYELEFTOFFSET = React.useMemo(() => scaleW * 1309, [scaleW]);
     const EYETOPOFFSET = React.useMemo(() => scaleH * 1072, [scaleH]);

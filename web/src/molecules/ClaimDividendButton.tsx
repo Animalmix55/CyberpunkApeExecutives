@@ -30,6 +30,8 @@ export const ClaimDividendButton = (props: Props): JSX.Element => {
 
     const targetRef = React.useRef<HTMLButtonElement>(null);
 
+    if (!tokenContractAddress) return <></>;
+
     return (
         <div
             className={ClassNameBuilder(

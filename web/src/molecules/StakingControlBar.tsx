@@ -16,6 +16,7 @@ import { MOBILE } from '../utilties/MediaQueries';
 import DividendWidget from '../atoms/Widgets/StakingWidgets/DividendWidget';
 import ClaimDividendButton from './ClaimDividendButton';
 import { useConfirmationContext } from '../contexts/ConfirmationPromptContext';
+import { useStakingToken } from '../contexts/StakingTokenContext';
 
 export type Mode = 'Stake' | 'Unstake';
 
@@ -29,7 +30,6 @@ interface Props {
 interface StakingButtonProps {
     stakingContract: IMDStaking;
     className?: string;
-    tokenContractAddress?: string;
     selectedIds: number[];
     onStaked?: () => void;
     onUnstaked?: () => void;
@@ -40,7 +40,6 @@ const StakingButton = (props: StakingButtonProps): JSX.Element => {
     const {
         stakingContract,
         className,
-        tokenContractAddress,
         selectedIds,
         onStaked,
         mode,
@@ -48,7 +47,7 @@ const StakingButton = (props: StakingButtonProps): JSX.Element => {
     } = props;
 
     const { stakingContractAddress } = useCyberpunkApesContext();
-    const { tokenContract } = useContractContext();
+    const { tokenContract, tokenAddress, selectedOption } = useStakingToken();
     const { accounts } = useWeb3();
 
     const { approved, update } = useApproved(
@@ -59,9 +58,13 @@ const StakingButton = (props: StakingButtonProps): JSX.Element => {
     const confirm = useConfirmationContext();
 
     const onTransact = React.useCallback(() => {
-        if (mode === 'Stake') onStaked();
-        if (mode === 'Unstake') onUnstaked();
+        if (mode === 'Stake') onStaked?.();
+        if (mode === 'Unstake') onUnstaked?.();
     }, [mode, onStaked, onUnstaked]);
+
+    if (!tokenContract || !tokenAddress || !selectedOption) return <></>;
+
+    const { shortName } = selectedOption;
 
     if (!approved)
         return (
@@ -73,7 +76,7 @@ const StakingButton = (props: StakingButtonProps): JSX.Element => {
                 params={async (): Promise<[string, boolean]> => {
                     const response = await confirm(
                         'Heads Up',
-                        'Approval gives our contract access to stake APEs on your behalf. After the approval transaction completes, you will need to click the Stake button to stake your APEs. This transaction DOES NOT stake any APEs.',
+                        `Approval gives our contract access to stake ${shortName}s on your behalf. After the approval transaction completes, you will need to click the Stake button to stake your ${shortName}s. This transaction DOES NOT stake any ${shortName}s.`,
                         'Continue',
                         'Go Back'
                     );
@@ -95,7 +98,7 @@ const StakingButton = (props: StakingButtonProps): JSX.Element => {
                     method={mode === 'Stake' ? 'stakeMany' : 'unstakeMany'}
                     buttonType={ButtonType.primary}
                     className={className}
-                    params={[tokenContractAddress, selectedIds]}
+                    params={[tokenAddress, selectedIds]}
                     tx={{ from: accounts[0] }}
                     onTransact={(v): Promise<void> => v.then(onTransact)}
                 >
@@ -107,7 +110,7 @@ const StakingButton = (props: StakingButtonProps): JSX.Element => {
                     contract={stakingContract}
                     method={mode === 'Stake' ? 'stake' : 'unstake'}
                     buttonType={ButtonType.primary}
-                    params={[tokenContractAddress, selectedIds[0]]}
+                    params={[tokenAddress, selectedIds[0]]}
                     disabled={selectedIds.length === 0}
                     tx={{ from: accounts[0] }}
                     className={className}
@@ -122,7 +125,7 @@ const StakingButton = (props: StakingButtonProps): JSX.Element => {
 
 export const StakingControlBar = (props: Props): JSX.Element => {
     const { selectedIds, setSelectedIds, mode, setMode } = props;
-    const { tokenContractAddress } = useCyberpunkApesContext();
+    const { tokenAddress } = useStakingToken();
     const { stakingContract } = useContractContext();
     const { reload } = useWeb3();
 
@@ -130,14 +133,16 @@ export const StakingControlBar = (props: Props): JSX.Element => {
     const theme = useThemeContext();
     const onStaked = (): void => {
         setSelectedIds([]);
-        setMode('Unstake');
+        setMode?.('Unstake');
         reload();
     };
     const onUnstaked = (): void => {
         setSelectedIds([]);
-        setMode('Stake');
+        setMode?.('Stake');
         reload();
     };
+
+    if (!stakingContract) return <></>;
 
     return (
         <div
@@ -211,32 +216,37 @@ export const StakingControlBar = (props: Props): JSX.Element => {
                     >
                         <Icon iconName="Switch" />
                     </Button>
-                    <StakingButton
-                        stakingContract={stakingContract}
-                        className={css({
-                            borderRadius: '10px',
-                            paddingLeft: '20px',
-                            paddingRight: '20px',
-                            height: '70px',
-                            margin: '10px',
-                        })}
-                        tokenContractAddress={tokenContractAddress}
-                        selectedIds={selectedIds}
-                        onStaked={onStaked}
-                        onUnstaked={onUnstaked}
-                        mode={mode}
-                    />
-                    <ClaimDividendButton
-                        stakingContract={stakingContract}
-                        tokenContractAddress={tokenContractAddress}
-                        className={css({
-                            margin: '10px',
-                            borderRadius: '10px',
-                            overflow: 'hidden',
-                            height: '70px',
-                        })}
-                        unstakeIds={mode === 'Unstake' && selectedIds}
-                    />
+                    {tokenAddress && (
+                        <>
+                            <StakingButton
+                                stakingContract={stakingContract}
+                                className={css({
+                                    borderRadius: '10px',
+                                    paddingLeft: '20px',
+                                    paddingRight: '20px',
+                                    height: '70px',
+                                    margin: '10px',
+                                })}
+                                selectedIds={selectedIds}
+                                onStaked={onStaked}
+                                onUnstaked={onUnstaked}
+                                mode={mode}
+                            />
+                            <ClaimDividendButton
+                                stakingContract={stakingContract}
+                                tokenContractAddress={tokenAddress}
+                                className={css({
+                                    margin: '10px',
+                                    borderRadius: '10px',
+                                    overflow: 'hidden',
+                                    height: '70px',
+                                })}
+                                unstakeIds={
+                                    mode === 'Unstake' ? selectedIds : undefined
+                                }
+                            />
+                        </>
+                    )}
                 </div>
             </div>
         </div>

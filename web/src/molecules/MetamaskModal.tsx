@@ -51,7 +51,7 @@ export const MetamaskModal = (): JSX.Element => {
                         },
                     }}
                     onChange={(_, v): void => {
-                        setAgreed(v);
+                        setAgreed(!!v);
                     }}
                 />
                 <span

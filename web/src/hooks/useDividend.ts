@@ -11,7 +11,7 @@ import { BASE, ZERO } from '../utilties/Numbers';
  */
 export function useDividend(
     contract: IMDStaking | undefined,
-    tokenAddress: string
+    tokenAddress?: string
 ): BigDecimal {
     const [balance, setBalance] = React.useState<BigDecimal>(ZERO);
     const { accounts } = useWeb3();
