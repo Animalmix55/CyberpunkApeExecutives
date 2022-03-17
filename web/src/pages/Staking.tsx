@@ -11,9 +11,12 @@ import TokenGrid from '../molecules/TokenGrid';
 import { MOBILE } from '../utilties/MediaQueries';
 import { useThemeContext } from '../contexts/ThemeContext';
 import { InvalidChainModal } from '../molecules/InvalidChainModal';
-import { useStakingToken } from '../contexts/StakingTokenContext';
+import {
+    StakingTokenProvider,
+    useStakingToken,
+} from '../contexts/StakingTokenContext';
 
-export const Staking = (): JSX.Element => {
+const StakingInner = (): JSX.Element => {
     const { tokenAddress, tokenContract } = useStakingToken();
     const [selectedTokens, setSelectedTokens] = React.useState<number[]>([]);
     const { stakingContract } = useContractContext();
@@ -93,5 +96,11 @@ export const Staking = (): JSX.Element => {
         </div>
     );
 };
+
+export const Staking = (): JSX.Element => (
+    <StakingTokenProvider>
+        <StakingInner />
+    </StakingTokenProvider>
+);
 
 export default Staking;

@@ -2,7 +2,6 @@ import React from 'react';
 import { Route, Switch } from 'react-router';
 import { useStyletron } from 'styletron-react';
 import { useCyberpunkApesContext } from '../contexts/CyberpunkApesContext';
-import { StakingTokenProvider } from '../contexts/StakingTokenContext';
 import LegendsPage from '../pages/Legends';
 import MainPage from '../pages/Main';
 import MintPage from '../pages/Mint';
@@ -37,13 +36,7 @@ export const ApeRouter = (): JSX.Element => {
             <Switch>
                 <Route path={Page.Main} exact component={MainPage} />
                 {stakingContractAddress && (
-                    <StakingTokenProvider>
-                        <Route
-                            path={Page.Staking}
-                            exact
-                            component={StakingPage}
-                        />
-                    </StakingTokenProvider>
+                    <Route path={Page.Staking} exact component={StakingPage} />
                 )}
                 {tokenContractAddress && (
                     <Route path={Page.Mint} exact component={MintPage} />

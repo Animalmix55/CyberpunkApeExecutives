@@ -60,8 +60,7 @@ export const ContractContextProvider = ({
     }, [tokenContractAddress, web3]);
 
     const legendsContract = React.useMemo(() => {
-        if (!lengendsContractAddress) return undefined;
-        if (!web3) return undefined;
+        if (!lengendsContractAddress || !web3) return undefined;
 
         const token = new web3.eth.Contract(
             legendsAbi as never,
