@@ -17,6 +17,7 @@ import DividendWidget from '../atoms/Widgets/StakingWidgets/DividendWidget';
 import ClaimDividendButton from './ClaimDividendButton';
 import { useConfirmationContext } from '../contexts/ConfirmationPromptContext';
 import { useStakingToken } from '../contexts/StakingTokenContext';
+import StakingTokenWidget from '../atoms/Widgets/StakingWidgets/StakingTokenWidget';
 
 export type Mode = 'Stake' | 'Unstake';
 
@@ -164,6 +165,14 @@ export const StakingControlBar = (props: Props): JSX.Element => {
                     flexWrap: 'wrap',
                 })}
             >
+                <StakingTokenWidget
+                    className={css({
+                        margin: '10px',
+                        [MOBILE]: {
+                            flexGrow: 1,
+                        },
+                    })}
+                />
                 <TotalStakedWidget
                     className={css({
                         margin: '10px',
