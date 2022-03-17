@@ -14,7 +14,7 @@ import { InvalidChainModal } from '../molecules/InvalidChainModal';
 import { useStakingToken } from '../contexts/StakingTokenContext';
 
 export const Staking = (): JSX.Element => {
-    const { tokenAddress, setTokenAddress, tokenContract } = useStakingToken();
+    const { tokenAddress, tokenContract } = useStakingToken();
     const [selectedTokens, setSelectedTokens] = React.useState<number[]>([]);
     const { stakingContract } = useContractContext();
     const [stakingMode, setStakingMode] = React.useState<Mode>('Stake');
